@@ -64,20 +64,29 @@
             <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                 <i class="fa-solid fa-city text-blue-600"></i> HDB Insights
             </h1>
-            <p class="text-sm text-slate-500 mt-1">Property Analysis 2026</p>
+            <p class="text-sm text-slate-500 mt-1">Property Analysis</p>
         </div>
         
         <div class="p-6 flex-1 overflow-y-auto">
             <!-- Data Loader Status & Manual Uploader -->
-            <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <h3 class="text-sm font-semibold text-blue-800 mb-2">Dataset Source</h3>
-                <p class="text-xs text-blue-600 mb-3">System tries auto-loading hdb_resale_full_2026.csv first. You can also upload manually.</p>
+                <p class="text-xs text-blue-600 mb-3">System loads corresponding local files first automatically. Custom overrides allowed.</p>
                 
                 <input type="file" id="csvFileInput" accept=".csv" class="hidden">
                 <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded transition-colors shadow-sm mb-2">
                     <i class="fa-solid fa-upload mr-2"></i> Upload Custom CSV
                 </button>
                 <div id="uploadStatus" class="text-xs mt-1 text-slate-600 font-medium italic">Initializing dashboard...</div>
+            </div>
+
+            <!-- Timeline/Date Filter -->
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Timeline / Year</label>
+                <select id="yearSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <option value="2026" selected>Year 2026 (Latest)</option>
+                    <option value="2025">Year 2025</option>
+                </select>
             </div>
 
             <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
@@ -115,7 +124,7 @@
                 <div class="flex justify-between items-end mb-8">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
-                        <p class="text-slate-500 mt-1" id="dataContextLabel">Loading real dataset...</p>
+                        <p class="text-slate-500 mt-1" id="dataContextLabel">Loading dataset...</p>
                     </div>
                 </div>
 
@@ -202,21 +211,25 @@
         let filteredData = [];
         let activeTowns = new Set();
         let activeFlatTypes = new Set();
+        let currentYear = '2026'; // Default selected timeline
 
-        // --- Mock Data Generator ---
-        function generateMockData() {
+        // --- Mock Data Generator supporting timeline years ---
+        function generateMockData(year) {
             const towns = ['ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST', 'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG', 'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'];
             const flatTypes = ['2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
-            const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
+            const months = [`${year}-01`, `${year}-02`, `${year}-03`, `${year}-04`, `${year}-05`, `${year}-06`];
             
             const data = [];
+            // Slightly lower valuation for 2025 to create realistic historic comparison
+            const marketTrendFactor = year === '2025' ? 0.94 : 1.0; 
+
             for (let i = 0; i < 2000; i++) {
                 const town = towns[Math.floor(Math.random() * towns.length)];
                 const flatType = flatTypes[Math.floor(Math.random() * flatTypes.length)];
                 
                 // Base metrics
                 let baseArea = 0;
-                let basePricePerSqm = 5000 + (Math.random() * 3000); // Base price variance
+                let basePricePerSqm = (5000 + (Math.random() * 3000)) * marketTrendFactor; 
                 
                 // Adjust by location (Central/Queenstown is more expensive)
                 if (['CENTRAL AREA', 'QUEENSTOWN', 'BISHAN', 'BUKIT MERAH'].includes(town)) basePricePerSqm *= 1.4;
@@ -246,6 +259,7 @@
             return data;
         }
 
+        // --- STREAMING_CHUNK: Filtering interface initialization ---
         // --- Initializing filter components ---
         function initializeFilters() {
             const uniqueTowns = [...new Set(allData.map(d => d.town))].sort();
@@ -296,6 +310,7 @@
             updateDashboard();
         }
 
+        // --- STREAMING_CHUNK: Formatting metrics output ---
         // --- Calculations and formatting ---
         function formatCurrency(num) {
             return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(num);
@@ -332,6 +347,7 @@
             renderTable();
         }
 
+        // --- STREAMING_CHUNK: Drawing graphics in Plotly ---
         // --- Render Plotly interactive charts ---
         function renderCharts() {
             const chartConfig = { responsive: true, displayModeBar: false };
@@ -407,6 +423,7 @@
             }, chartConfig);
         }
 
+        // --- STREAMING_CHUNK: Processing list tabular rows ---
         // --- Render Table ---
         function renderTable() {
             const tableBody = document.getElementById('table-body');
@@ -426,6 +443,7 @@
             `).join('');
         }
 
+        // --- STREAMING_CHUNK: Setting up auto fetch and parser events ---
         // --- Dataset Handlers & CSV Parser (PapaParse helper) ---
         function handleCSVString(csvString, sourceName) {
             Papa.parse(csvString, {
@@ -433,7 +451,6 @@
                 dynamicTyping: true,
                 skipEmptyLines: true,
                 complete: function(results) {
-                    // Filter row logic to handle empty items safely
                     allData = results.data.filter(d => d.resale_price && d.town && d.flat_type);
                     
                     document.getElementById('dataContextLabel').innerText = `Showing Real Data (${sourceName})`;
@@ -447,45 +464,53 @@
                 },
                 error: function(err) {
                     console.error("CSV Parse Error:", err);
-                    triggerFallback("Parsing error inside uploaded file.");
+                    triggerFallback("Parsing error inside file.", currentYear);
                 }
             });
         }
 
-        function triggerFallback(reason) {
+        function triggerFallback(reason, year) {
             console.warn("Fallback triggered. Reason:", reason);
-            allData = generateMockData();
+            allData = generateMockData(year);
             
-            document.getElementById('dataContextLabel').innerText = "Showing Sample Data (Auto Fallback)";
+            document.getElementById('dataContextLabel').innerText = `Showing Sample Data (${year} Fallback)`;
             document.getElementById('dataContextLabel').className = "text-slate-500 mt-1";
             
-            document.getElementById('uploadStatus').innerText = "Using simulated demo fallback data.";
+            document.getElementById('uploadStatus').innerText = `Using simulated ${year} fallback data.`;
             document.getElementById('uploadStatus').className = "text-xs mt-2 text-amber-600 font-medium";
             
             initializeFilters();
             applyFilters();
         }
 
-        // --- Auto-loader on boot ---
-        async function loadHDBDataset() {
-            document.getElementById('uploadStatus').innerText = "Fetching hdb_resale_full_2026.csv...";
+        // --- Auto-loader on timeline trigger ---
+        async function loadHDBDataset(year) {
+            const csvFilename = `hdb_resale_full_${year}.csv`;
+            document.getElementById('uploadStatus').innerText = `Fetching ${csvFilename}...`;
             document.getElementById('uploadStatus').className = "text-xs mt-2 text-blue-600 font-medium";
 
             try {
-                // Fetch relative to current directory
-                const response = await fetch('hdb_resale_full_2026.csv');
+                // Fetch dynamic CSV timeline
+                const response = await fetch(csvFilename);
                 if (!response.ok) {
                     throw new Error(`File access returned status: ${response.status}`);
                 }
                 const csvString = await response.text();
-                handleCSVString(csvString, 'hdb_resale_full_2026.csv');
+                handleCSVString(csvString, csvFilename);
             } catch (err) {
-                // Catches offline locally, CORS blocks, or file missing issues
-                triggerFallback(err.message);
+                // CORS or network fallback
+                triggerFallback(err.message, year);
             }
         }
 
-        // --- Manual Upload File listener ---
+        // --- Event Listeners ---
+        // Timeline switcher trigger
+        document.getElementById('yearSelector').addEventListener('change', function(e) {
+            currentYear = e.target.value;
+            loadHDBDataset(currentYear);
+        });
+
+        // Manual upload listener
         document.getElementById('csvFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -498,15 +523,15 @@
                 handleCSVString(evt.target.result, file.name);
             };
             reader.onerror = function() {
-                document.getElementById('uploadStatus').innerText = "Error reading directory file.";
+                document.getElementById('uploadStatus').innerText = "Error reading uploaded file.";
                 document.getElementById('uploadStatus').className = "text-xs mt-2 text-red-600 font-medium";
             };
             reader.readAsText(file);
         });
 
-        // Initialize App on Page load
+        // Initial setup boot
         window.onload = () => {
-            loadHDBDataset();
+            loadHDBDataset(currentYear);
         };
     </script>
 </body>
