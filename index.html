@@ -1,567 +1,513 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Singapore HDB Market Insights</title>
-  
-  <!-- Tailwind CSS CDN untuk styling yang instan dan cantik -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React 18, ReactDOM & Babel Standalone untuk kompilasi langsung di browser -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <!-- Prop-types & Recharts CDN untuk visualisasi grafik data -->
-  <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
-  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore HDB Resale Dashboard</title>
+    
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Plotly for interactive charts -->
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    
+    <!-- Load PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <!-- Load FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Google Fonts: Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-  </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+        }
+        
+        .chart-container {
+            height: 350px;
+            width: 100%;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="antialiased flex h-screen overflow-hidden">
 
-  <!-- Tempat React me-render seluruh aplikasi -->
-  <div id="root"></div>
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white border-r border-slate-200 flex flex-col h-full z-10 hidden md:flex">
+        <div class="p-6 border-b border-slate-200">
+            <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-city text-blue-600"></i> HDB Insights
+            </h1>
+            <p class="text-sm text-slate-500 mt-1">Property Analysis 2026</p>
+        </div>
+        
+        <div class="p-6 flex-1 overflow-y-auto">
+            <!-- Data Loader Status & Manual Uploader -->
+            <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <h3 class="text-sm font-semibold text-blue-800 mb-2">Dataset Source</h3>
+                <p class="text-xs text-blue-600 mb-3">System tries auto-loading hdb_resale_full_2026.csv first. You can also upload manually.</p>
+                
+                <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded transition-colors shadow-sm mb-2">
+                    <i class="fa-solid fa-upload mr-2"></i> Upload Custom CSV
+                </button>
+                <div id="uploadStatus" class="text-xs mt-1 text-slate-600 font-medium italic">Initializing dashboard...</div>
+            </div>
 
-  <!-- Script type="text/babel" agar Babel Standalone mengompilasi JSX di browser -->
-  <script type="text/babel">
-    const { useState, useMemo, useEffect } = React;
-    const { 
-      LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, 
-      XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
-    } = window.Recharts;
-
-    // Generates high-quality, realistic mock data if the CSV fetch fails (e.g. CORS locally or file missing)
-    const generateMockData = () => {
-      const towns = ['TAMPINES', 'PUNGGOL', 'YISHUN', 'BISHAN', 'QUEENSTOWN', 'SENGKANG', 'WOODLANDS', 'BUKIT MERAH', 'BEDOK', 'ANG MO KIO'];
-      const flatTypes = ['3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
-      const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05'];
-      
-      const basePrices = {
-        '3 ROOM': 380000,
-        '4 ROOM': 560000,
-        '5 ROOM': 740000,
-        'EXECUTIVE': 900000,
-      };
-      
-      const townMultipliers = {
-        'BISHAN': 1.35,
-        'QUEENSTOWN': 1.45,
-        'BUKIT MERAH': 1.38,
-        'TAMPINES': 1.05,
-        'BEDOK': 1.08,
-        'ANG MO KIO': 1.12,
-        'SENGKANG': 0.95,
-        'PUNGGOL': 0.98,
-        'YISHUN': 0.82,
-        'WOODLANDS': 0.78,
-      };
-
-      const mock = [];
-      let id = 1;
-
-      for (let m of months) {
-        for (let t of towns) {
-          for (let f of flatTypes) {
-            const seed = (id * 23) % 100;
-            if (seed > 75) continue; 
+            <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
             
-            const base = basePrices[f];
-            const multiplier = townMultipliers[t];
-            const monthIndex = months.indexOf(m);
-            const trendFactor = 1 + (monthIndex * 0.015); 
-            const noise = 1 + ((seed - 50) / 250); 
-            
-            const resale_price = Math.round(base * multiplier * trendFactor * noise);
-            const baseArea = f === '3 ROOM' ? 68 : f === '4 ROOM' ? 92 : f === '5 ROOM' ? 110 : 130;
-            const floor_area_sqm = Math.round(baseArea * (0.95 + (seed % 10) / 100));
-            const remaining_lease = Math.round(99 - ((id * 3) % 35));
+            <!-- Town Filter -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Town</label>
+                <div id="townFilterContainer" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                    <!-- Checkboxes injected by JS -->
+                </div>
+            </div>
 
-            mock.push({
-              month: m,
-              town: t,
-              flat_type: f,
-              resale_price,
-              floor_area_sqm,
-              remaining_lease
+            <!-- Flat Type Filter -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Flat Type</label>
+                <div id="flatTypeFilterContainer" class="space-y-2">
+                    <!-- Checkboxes injected by JS -->
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Mobile Header (Visible only on small screens) -->
+        <header class="md:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center">
+            <h1 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-city text-blue-600"></i> HDB Insights</h1>
+            <button class="text-slate-500"><i class="fa-solid fa-bars text-xl"></i></button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
+                        <p class="text-slate-500 mt-1" id="dataContextLabel">Loading real dataset...</p>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-blue-500">
+                        <div class="p-3 bg-blue-100 rounded-full text-blue-600">
+                            <i class="fa-solid fa-exchange-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Total Transactions</p>
+                            <h3 class="text-2xl font-bold text-slate-800" id="kpi-transactions">-</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-emerald-500">
+                        <div class="p-3 bg-emerald-100 rounded-full text-emerald-600">
+                            <i class="fa-solid fa-dollar-sign text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Median Resale Price</p>
+                            <h3 class="text-2xl font-bold text-slate-800" id="kpi-price">-</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-purple-500">
+                        <div class="p-3 bg-purple-100 rounded-full text-purple-600">
+                            <i class="fa-solid fa-ruler-combined text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Median Price / Sqm</p>
+                            <h3 class="text-2xl font-bold text-slate-800" id="kpi-psm">-</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Price Trend by Month</h3>
+                        <div id="chart-trend" class="chart-container"></div>
+                    </div>
+                    
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Median Price Comparison by Town</h3>
+                        <div id="chart-town" class="chart-container"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Price vs. Floor Area</h3>
+                    <div id="chart-scatter" class="chart-container" style="height: 450px;"></div>
+                </div>
+
+                <!-- Recent Transactions Table -->
+                <div class="glass-card p-6 mb-12">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Recent Transactions</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-600">
+                                <tr>
+                                    <th class="p-3 rounded-tl-lg font-medium">Month</th>
+                                    <th class="p-3 font-medium">Town</th>
+                                    <th class="p-3 font-medium">Flat Type</th>
+                                    <th class="p-3 font-medium">Street Name</th>
+                                    <th class="p-3 font-medium">Area (sqm)</th>
+                                    <th class="p-3 rounded-tr-lg font-medium">Price (S$)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-slate-100">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- State Management ---
+        let allData = [];
+        let filteredData = [];
+        let activeTowns = new Set();
+        let activeFlatTypes = new Set();
+
+        // --- Mock Data Generator ---
+        function generateMockData() {
+            const towns = ['ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST', 'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG', 'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'];
+            const flatTypes = ['2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
+            const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
+            
+            const data = [];
+            for (let i = 0; i < 2000; i++) {
+                const town = towns[Math.floor(Math.random() * towns.length)];
+                const flatType = flatTypes[Math.floor(Math.random() * flatTypes.length)];
+                
+                // Base metrics
+                let baseArea = 0;
+                let basePricePerSqm = 5000 + (Math.random() * 3000); // Base price variance
+                
+                // Adjust by location (Central/Queenstown is more expensive)
+                if (['CENTRAL AREA', 'QUEENSTOWN', 'BISHAN', 'BUKIT MERAH'].includes(town)) basePricePerSqm *= 1.4;
+                if (['WOODLANDS', 'CHOA CHU KANG', 'YISHUN'].includes(town)) basePricePerSqm *= 0.85;
+
+                switch(flatType) {
+                    case '2 ROOM': baseArea = 45; break;
+                    case '3 ROOM': baseArea = 65; break;
+                    case '4 ROOM': baseArea = 90; break;
+                    case '5 ROOM': baseArea = 110; break;
+                    case 'EXECUTIVE': baseArea = 140; break;
+                }
+                
+                const area = baseArea + (Math.random() * 10 - 5);
+                const price = Math.round(area * basePricePerSqm / 1000) * 1000; // Round to nearest 1000
+
+                data.push({
+                    month: months[Math.floor(Math.random() * months.length)],
+                    town: town,
+                    flat_type: flatType,
+                    street_name: `${town} ST ${Math.floor(Math.random() * 90) + 10}`,
+                    floor_area_sqm: area.toFixed(1),
+                    resale_price: price,
+                    price_per_sqm: price / area
+                });
+            }
+            return data;
+        }
+
+        // --- Initializing filter components ---
+        function initializeFilters() {
+            const uniqueTowns = [...new Set(allData.map(d => d.town))].sort();
+            const uniqueFlatTypes = [...new Set(allData.map(d => d.flat_type))].sort();
+
+            // Default check first 6 towns to avoid visual clutter, check all flats
+            activeTowns = new Set(uniqueTowns.slice(0, 6));
+            activeFlatTypes = new Set(uniqueFlatTypes);
+
+            const townContainer = document.getElementById('townFilterContainer');
+            townContainer.innerHTML = uniqueTowns.map(town => `
+                <label class="flex items-center space-x-2 text-sm text-slate-600 cursor-pointer">
+                    <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 filter-checkbox" 
+                           data-type="town" value="${town}" ${activeTowns.has(town) ? 'checked' : ''}>
+                    <span>${town}</span>
+                </label>
+            `).join('');
+
+            const flatContainer = document.getElementById('flatTypeFilterContainer');
+            flatContainer.innerHTML = uniqueFlatTypes.map(flat => `
+                <label class="flex items-center space-x-2 text-sm text-slate-600 cursor-pointer">
+                    <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 filter-checkbox" 
+                           data-type="flat" value="${flat}" checked>
+                    <span>${flat}</span>
+                </label>
+            `).join('');
+
+            // Clean previous listeners by replacement
+            document.querySelectorAll('.filter-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    const isTown = e.target.dataset.type === 'town';
+                    const targetSet = isTown ? activeTowns : activeFlatTypes;
+
+                    if (e.target.checked) targetSet.add(val);
+                    else targetSet.delete(val);
+
+                    applyFilters();
+                });
             });
-            id++;
-          }
         }
-      }
-      return mock;
-    };
 
-    // A robust CSV parser to parse the fetched hdb_resale_full_2026.csv
-    const parseCSV = (csvText) => {
-      const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
-      if (lines.length < 2) throw new Error("File CSV kosong atau tidak valid.");
-
-      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-      const data = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.trim().replace(/^"|"$/g, ''));
-        
-        if (row.length === headers.length) {
-          const obj = {};
-          headers.forEach((header, index) => {
-            let val = row[index];
-            if (header === 'resale_price' || header === 'floor_area_sqm' || header === 'remaining_lease') {
-              if (header === 'remaining_lease' && typeof val === 'string') {
-                const yearMatch = val.match(/(\d+)\s*years?/);
-                val = yearMatch ? parseInt(yearMatch[1], 10) : parseFloat(val);
-              } else {
-                val = parseFloat(val);
-              }
-              val = isNaN(val) ? 0 : val;
-            }
-            obj[header] = val;
-          });
-          data.push(obj);
+        function applyFilters() {
+            filteredData = allData.filter(d => 
+                activeTowns.has(d.town) && 
+                activeFlatTypes.has(d.flat_type)
+            );
+            updateDashboard();
         }
-      }
-      return { headers, data };
-    };
 
-    const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+        // --- Calculations and formatting ---
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(num);
+        }
 
-    const formatCurrency = (value) => {
-      if (value >= 1000000) return `$${(value / 1000000).toFixed(2)}M`;
-      if (value >= 1000) return `$${(value / 1000).toFixed(0)}k`;
-      return `$${value}`;
-    };
+        function getMedian(arr) {
+            if (!arr || arr.length === 0) return 0;
+            const sorted = [...arr].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        }
 
-    const CustomTooltip = ({ active, payload, label }) => {
-      if (active && payload && payload.length) {
-        return (
-          <div class="bg-white p-3 border border-slate-200 shadow-lg rounded-lg">
-            <p class="font-semibold text-slate-800 mb-1">{label}</p>
-            {payload.map((entry, index) => (
-              <p key={index} class="text-sm font-medium" style={{ color: entry.color }}>
-                {entry.name}: {entry.name.toLowerCase().includes('price') || entry.name.toLowerCase().includes('cost') 
-                  ? new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(entry.value) 
-                  : entry.value.toLocaleString('en-SG')}
-              </p>
-            ))}
-          </div>
-        );
-      }
-      return null;
-    };
-
-    const Card = ({ children, className = '' }) => (
-      <div class={`bg-white rounded-xl shadow-sm border border-slate-200 p-5 ${className}`}>
-        {children}
-      </div>
-    );
-
-    const KPICard = ({ title, value, icon, subtitle }) => (
-      <Card className="flex items-center space-x-4 transition-all hover:shadow-md hover:border-slate-300">
-        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-          {icon}
-        </div>
-        <div>
-          <h3 class="text-sm font-medium text-slate-500">{title}</h3>
-          <p class="text-2xl font-bold text-slate-800 mt-0.5">{value}</p>
-          {subtitle && <p class="text-xs text-slate-400 mt-1">{subtitle}</p>}
-        </div>
-      </Card>
-    );
-
-    const BuildingIcon = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="16"></line><line x1="15" y1="22" x2="15" y2="16"></line><line x1="9" y1="16" x2="15" y2="16"></line><path d="M8 6h.01M16 6h.01M9 10h.01M15 10h.01M12 6h.01M12 10h.01M8 14h.01M15 14h.01M12 14h.01"></path></svg>
-    );
-    const MapPinIcon = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-    );
-    const HomeIcon = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-    );
-    const TrendingUpIcon = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-    );
-    const DollarIcon = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-    );
-    const ActivityIcon = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-    );
-
-    function App() {
-      const [data, setData] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const [error, setError] = useState('');
-      const [dataSource, setDataSource] = useState('');
-      
-      const [selectedTown, setSelectedTown] = useState('All');
-      const [selectedFlatType, setSelectedFlatType] = useState('All');
-
-      // Secara otomatis menarik file CSV lokal pada saat inisialisasi aplikasi
-      useEffect(() => {
-        const fetchDataset = async () => {
-          try {
-            setLoading(true);
-            setError('');
-            
-            // Mencoba menarik berkas hdb_resale_full_2026.csv di folder yang sama
-            const response = await fetch('hdb_resale_full_2026.csv');
-            
-            if (!response.ok) {
-              throw new Error(`Gagal membaca berkas CSV (Status: ${response.status}).`);
-            }
-            
-            const csvText = await response.text();
-            const { data: parsedData } = parseCSV(csvText);
-            
-            if (parsedData.length === 0) {
-              throw new Error("Berkas CSV berhasil dibaca tetapi tidak memiliki data.");
+        function updateDashboard() {
+            if (filteredData.length === 0) {
+                document.getElementById('kpi-transactions').innerText = '0';
+                document.getElementById('kpi-price').innerText = '-';
+                document.getElementById('kpi-psm').innerText = '-';
+                Plotly.purge('chart-trend');
+                Plotly.purge('chart-town');
+                Plotly.purge('chart-scatter');
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No matching records found. Try modifying filters.</td></tr>';
+                return;
             }
 
-            setData(parsedData);
-            setDataSource('Original CSV (hdb_resale_full_2026.csv)');
-          } catch (err) {
-            console.warn("Auto-load gagal. Mengaktifkan fallback data simulasi demi kestabilan preview.", err);
-            const mock = generateMockData();
-            setData(mock);
-            setDataSource('Demo Data (Fallback Otomatis)');
-          } finally {
-            setLoading(false);
-          }
-        };
+            // Update KPIs
+            const prices = filteredData.map(d => parseFloat(d.resale_price));
+            const psms = filteredData.map(d => parseFloat(d.resale_price) / parseFloat(d.floor_area_sqm));
+            
+            document.getElementById('kpi-transactions').innerText = filteredData.length.toLocaleString();
+            document.getElementById('kpi-price').innerText = formatCurrency(getMedian(prices));
+            document.getElementById('kpi-psm').innerText = formatCurrency(getMedian(psms));
 
-        fetchDataset();
-      }, []);
+            renderCharts();
+            renderTable();
+        }
 
-      const towns = useMemo(() => ['All', ...new Set(data.map(d => d.town))].sort(), [data]);
-      const flatTypes = useMemo(() => ['All', ...new Set(data.map(d => d.flat_type))].sort(), [data]);
+        // --- Render Plotly interactive charts ---
+        function renderCharts() {
+            const chartConfig = { responsive: true, displayModeBar: false };
+            const fontConfig = { family: 'Inter, sans-serif', color: '#64748b' };
 
-      const filteredData = useMemo(() => {
-        return data.filter(d => {
-          const matchTown = selectedTown === 'All' || d.town === selectedTown;
-          const matchFlat = selectedFlatType === 'All' || d.flat_type === selectedFlatType;
-          return matchTown && matchFlat;
+            // 1. Trend Chart (Line)
+            const months = [...new Set(filteredData.map(d => d.month))].sort();
+            const trendData = months.map(m => {
+                const monthData = filteredData.filter(d => d.month === m);
+                return getMedian(monthData.map(d => parseFloat(d.resale_price)));
+            });
+
+            Plotly.newPlot('chart-trend', [{
+                x: months,
+                y: trendData,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#3b82f6', width: 3, shape: 'spline' },
+                marker: { size: 8, color: '#2563eb' }
+            }], {
+                margin: { t: 10, r: 10, l: 60, b: 40 },
+                xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                yaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent'
+            }, chartConfig);
+
+            // 2. Town Comparison (Bar)
+            const towns = [...activeTowns].sort();
+            const townData = towns.map(t => {
+                const tData = filteredData.filter(d => d.town === t);
+                return getMedian(tData.map(d => parseFloat(d.resale_price)));
+            });
+
+            Plotly.newPlot('chart-town', [{
+                y: towns,
+                x: townData,
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#10b981', borderRadius: 4 }
+            }], {
+                margin: { t: 10, r: 10, l: 120, b: 40 },
+                xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                yaxis: { tickfont: { ...fontConfig, size: 10 } },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent'
+            }, chartConfig);
+
+            // 3. Scatter Plot (Price vs Area)
+            const flatTypesArr = [...activeFlatTypes];
+            const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'];
+            
+            const scatterTraces = flatTypesArr.map((type, idx) => {
+                const typeData = filteredData.filter(d => d.flat_type === type);
+                return {
+                    x: typeData.map(d => parseFloat(d.floor_area_sqm)),
+                    y: typeData.map(d => parseFloat(d.resale_price)),
+                    mode: 'markers',
+                    type: 'scatter',
+                    name: type,
+                    text: typeData.map(d => `${d.town} - ${d.street_name || ''}`),
+                    marker: { size: 6, color: colors[idx % colors.length], opacity: 0.7 }
+                };
+            });
+
+            Plotly.newPlot('chart-scatter', scatterTraces, {
+                margin: { t: 10, r: 10, l: 60, b: 40 },
+                xaxis: { title: 'Floor Area (sqm)', titlefont: fontConfig, tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                yaxis: { title: 'Resale Price (S$)', titlefont: fontConfig, tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                legend: { font: fontConfig }
+            }, chartConfig);
+        }
+
+        // --- Render Table ---
+        function renderTable() {
+            const tableBody = document.getElementById('table-body');
+            const displayData = [...filteredData]
+                .sort((a, b) => b.month.localeCompare(a.month) || b.resale_price - a.resale_price)
+                .slice(0, 10);
+            
+            tableBody.innerHTML = displayData.map(d => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 text-slate-500">${d.month}</td>
+                    <td class="p-3 font-medium text-slate-800">${d.town}</td>
+                    <td class="p-3 text-slate-600">${d.flat_type}</td>
+                    <td class="p-3 text-slate-500">${d.street_name || '-'}</td>
+                    <td class="p-3 text-slate-600">${parseFloat(d.floor_area_sqm).toFixed(1)}</td>
+                    <td class="p-3 font-bold text-slate-800">${formatCurrency(d.resale_price)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- Dataset Handlers & CSV Parser (PapaParse helper) ---
+        function handleCSVString(csvString, sourceName) {
+            Papa.parse(csvString, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    // Filter row logic to handle empty items safely
+                    allData = results.data.filter(d => d.resale_price && d.town && d.flat_type);
+                    
+                    document.getElementById('dataContextLabel').innerText = `Showing Real Data (${sourceName})`;
+                    document.getElementById('dataContextLabel').className = "text-emerald-600 font-semibold mt-1";
+                    
+                    document.getElementById('uploadStatus').innerText = "Data loaded successfully!";
+                    document.getElementById('uploadStatus').className = "text-xs mt-2 text-emerald-600 font-medium";
+                    
+                    initializeFilters();
+                    applyFilters();
+                },
+                error: function(err) {
+                    console.error("CSV Parse Error:", err);
+                    triggerFallback("Parsing error inside uploaded file.");
+                }
+            });
+        }
+
+        function triggerFallback(reason) {
+            console.warn("Fallback triggered. Reason:", reason);
+            allData = generateMockData();
+            
+            document.getElementById('dataContextLabel').innerText = "Showing Sample Data (Auto Fallback)";
+            document.getElementById('dataContextLabel').className = "text-slate-500 mt-1";
+            
+            document.getElementById('uploadStatus').innerText = "Using simulated demo fallback data.";
+            document.getElementById('uploadStatus').className = "text-xs mt-2 text-amber-600 font-medium";
+            
+            initializeFilters();
+            applyFilters();
+        }
+
+        // --- Auto-loader on boot ---
+        async function loadHDBDataset() {
+            document.getElementById('uploadStatus').innerText = "Fetching hdb_resale_full_2026.csv...";
+            document.getElementById('uploadStatus').className = "text-xs mt-2 text-blue-600 font-medium";
+
+            try {
+                // Fetch relative to current directory
+                const response = await fetch('hdb_resale_full_2026.csv');
+                if (!response.ok) {
+                    throw new Error(`File access returned status: ${response.status}`);
+                }
+                const csvString = await response.text();
+                handleCSVString(csvString, 'hdb_resale_full_2026.csv');
+            } catch (err) {
+                // Catches offline locally, CORS blocks, or file missing issues
+                triggerFallback(err.message);
+            }
+        }
+
+        // --- Manual Upload File listener ---
+        document.getElementById('csvFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('uploadStatus').innerText = "Reading file content...";
+            document.getElementById('uploadStatus').className = "text-xs mt-2 text-blue-600 font-medium";
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                handleCSVString(evt.target.result, file.name);
+            };
+            reader.onerror = function() {
+                document.getElementById('uploadStatus').innerText = "Error reading directory file.";
+                document.getElementById('uploadStatus').className = "text-xs mt-2 text-red-600 font-medium";
+            };
+            reader.readAsText(file);
         });
-      }, [data, selectedTown, selectedFlatType]);
 
-      const kpis = useMemo(() => {
-        if (!filteredData.length) return null;
-        
-        const totalTransactions = filteredData.length;
-        const totalPrice = filteredData.reduce((sum, d) => sum + d.resale_price, 0);
-        const totalArea = filteredData.reduce((sum, d) => sum + d.floor_area_sqm, 0);
-        
-        const avgPrice = totalPrice / totalTransactions;
-        const avgPricePerSqm = totalPrice / totalArea;
-
-        return {
-          totalTransactions: new Intl.NumberFormat('en-SG').format(totalTransactions),
-          avgPrice: new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(avgPrice),
-          avgPricePerSqm: new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(avgPricePerSqm),
+        // Initialize App on Page load
+        window.onload = () => {
+            loadHDBDataset();
         };
-      }, [filteredData]);
-
-      const trendData = useMemo(() => {
-        const monthlyData = filteredData.reduce((acc, d) => {
-          if (!acc[d.month]) {
-            acc[d.month] = { month: d.month, total: 0, count: 0, volume: 0 };
-          }
-          acc[d.month].total += d.resale_price;
-          acc[d.month].count += 1;
-          acc[d.month].volume += 1;
-          return acc;
-        }, {});
-
-        return Object.values(monthlyData)
-          .map(item => ({
-            month: item.month,
-            'Avg Price': Math.round(item.total / item.count),
-            'Volume': item.volume
-          }))
-          .sort((a, b) => a.month.localeCompare(b.month));
-      }, [filteredData]);
-
-      const townData = useMemo(() => {
-        const townAgg = filteredData.reduce((acc, d) => {
-          if (!acc[d.town]) acc[d.town] = { town: d.town, total: 0, count: 0 };
-          acc[d.town].total += d.resale_price;
-          acc[d.town].count += 1;
-          return acc;
-        }, {});
-
-        return Object.values(townAgg)
-          .map(item => ({
-            town: item.town,
-            'Avg Price': Math.round(item.total / item.count),
-            'Transactions': item.count
-          }))
-          .sort((a, b) => b['Avg Price'] - a['Avg Price'])
-          .slice(0, 10);
-      }, [filteredData]);
-
-      const flatTypeData = useMemo(() => {
-        const typeAgg = filteredData.reduce((acc, d) => {
-          if (!acc[d.flat_type]) acc[d.flat_type] = 0;
-          acc[d.flat_type] += 1;
-          return acc;
-        }, {});
-
-        return Object.keys(typeAgg).map(key => ({
-          name: key,
-          value: typeAgg[key]
-        })).sort((a, b) => b.value - a.value);
-      }, [filteredData]);
-
-      if (loading) {
-        return (
-          <div class="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
-            <div class="max-w-md w-full text-center py-12 px-6 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col items-center justify-center">
-              <div class="w-12 h-12 rounded-full border-4 border-blue-600 border-t-transparent animate-spin mb-4"></div>
-              <h2 class="text-xl font-bold text-slate-800">Memuat Dataset HDB</h2>
-              <p class="text-sm text-slate-500 mt-2">
-                Membaca dan memproses berkas <code class="bg-slate-100 px-1 py-0.5 rounded text-blue-600 font-mono text-xs">hdb_resale_full_2026.csv</code> secara otomatis...
-              </p>
-            </div>
-          </div>
-        );
-      }
-
-      return (
-        <div class="min-h-screen bg-slate-50 p-4 md:p-8 font-sans">
-          <div class="max-w-7xl mx-auto space-y-6">
-            
-            {/* Header & Source Info Indicator */}
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200 gap-4">
-              <div>
-                <div class="flex items-center space-x-2">
-                  <BuildingIcon />
-                  <h1 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-                    Singapore HDB Market Insights
-                  </h1>
-                </div>
-                <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                  <p class="text-sm text-slate-500 font-medium">
-                    Menganalisis <strong class="text-slate-800">{filteredData.length.toLocaleString()}</strong> dari total <strong className="text-slate-800">{data.length.toLocaleString()}</strong> transaksi.
-                  </p>
-                  <span class={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                    dataSource.includes('Original') ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'
-                  }`}>
-                    Sumber: {dataSource}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Quick Filters */}
-              <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                {/* Town Filter */}
-                <div class="flex items-center bg-slate-100 hover:bg-slate-200/80 transition-colors rounded-lg px-3 py-1.5 border border-slate-200">
-                  <MapPinIcon />
-                  <div class="flex flex-col ml-1.5">
-                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Kawasan (Town)</span>
-                    <select 
-                      class="bg-transparent border-none focus:ring-0 text-sm font-semibold text-slate-800 outline-none w-full sm:w-36 cursor-pointer"
-                      value={selectedTown} 
-                      onChange={(e) => setSelectedTown(e.target.value)}
-                    >
-                      {towns.map(t => (
-                        <option key={t} value={t}>
-                          {t === 'All' ? 'Semua Kawasan' : t}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                
-                {/* Flat Type Filter */}
-                <div class="flex items-center bg-slate-100 hover:bg-slate-200/80 transition-colors rounded-lg px-3 py-1.5 border border-slate-200">
-                  <HomeIcon />
-                  <div class="flex flex-col ml-1.5">
-                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tipe Flat</span>
-                    <select 
-                      class="bg-transparent border-none focus:ring-0 text-sm font-semibold text-slate-800 outline-none w-full sm:w-36 cursor-pointer"
-                      value={selectedFlatType} 
-                      onChange={(e) => setSelectedFlatType(e.target.value)}
-                    >
-                      {flatTypes.map(t => (
-                        <option key={t} value={t}>
-                          {t === 'All' ? 'Semua Tipe' : t}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* KPI Metrics Widgets */}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <KPICard 
-                title="Total Volume Transaksi" 
-                value={kpis?.totalTransactions || "0"} 
-                icon={<TrendingUpIcon />} 
-                subtitle="Jumlah unit terjual sesuai filter"
-              />
-              <KPICard 
-                title="Rata-rata Harga Transaksi" 
-                value={kpis?.avgPrice || "$0"} 
-                icon={<DollarIcon />} 
-                subtitle="Nilai rata-rata per transaksi"
-              />
-              <KPICard 
-                title="Rata-rata Harga / Sqm" 
-                value={kpis?.avgPricePerSqm || "$0"} 
-                icon={<ActivityIcon />} 
-                subtitle="Rasio efisiensi harga lantai"
-              />
-            </div>
-
-            {/* Charts & Interactive Reports Section */}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Price & Sales Volume Monthly Trend */}
-              <Card className="col-span-1 lg:col-span-2">
-                <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <div>
-                    <h2 class="text-lg font-bold text-slate-800">Tren Harga & Valuasi HDB Bulanan</h2>
-                    <p class="text-xs md:text-sm text-slate-500">Pergerakan rata-rata harga jual unit HDB dari waktu ke waktu.</p>
-                  </div>
-                  <div class="flex items-center space-x-4 text-xs font-semibold">
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Rata-rata Harga (SGD)</span>
-                  </div>
-                </div>
-                
-                <div class="h-80 w-full">
-                  {trendData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={trendData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                        <XAxis 
-                          dataKey="month" 
-                          tick={{fill: '#64748b', fontSize: 11}} 
-                          tickLine={false} 
-                          axisLine={false} 
-                        />
-                        <YAxis 
-                          tickFormatter={formatCurrency} 
-                          tick={{fill: '#64748b', fontSize: 11}} 
-                          tickLine={false} 
-                          axisLine={false} 
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="Avg Price" 
-                          stroke="#3b82f6" 
-                          strokeWidth={3} 
-                          dot={{r: 5, fill: '#3b82f6', strokeWidth: 0}} 
-                          activeDot={{r: 7}} 
-                          name="Rata-rata Harga" 
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div class="h-full flex items-center justify-center text-slate-400 text-sm">Tidak ada data untuk ditampilkan</div>
-                  )}
-                </div>
-              </Card>
-
-              {/* Top 10 Most Expensive Towns */}
-              <Card>
-                <div class="mb-6">
-                  <h2 class="text-lg font-bold text-slate-800">10 Kawasan Rata-Rata Termahal</h2>
-                  <p class="text-xs md:text-sm text-slate-500">Perbandingan 10 kawasan dengan rata-rata harga tertinggi.</p>
-                </div>
-                
-                <div class="h-80 w-full">
-                  {townData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={townData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                        <XAxis type="number" tickFormatter={formatCurrency} tick={{fill: '#64748b', fontSize: 11}} />
-                        <YAxis 
-                          type="category" 
-                          dataKey="town" 
-                          tick={{fill: '#475569', fontSize: 10, fontWeight: 600}} 
-                          width={85} 
-                          axisLine={false} 
-                          tickLine={false} 
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Bar dataKey="Avg Price" fill="#10b981" radius={[0, 4, 4, 0]} barSize={16} name="Rata-rata Harga" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div class="h-full flex items-center justify-center text-slate-400 text-sm">Tidak ada data untuk ditampilkan</div>
-                  )}
-                </div>
-              </Card>
-
-              {/* Liquidity and Proportion of Flat Types */}
-              <Card>
-                <div class="mb-6">
-                  <h2 class="text-lg font-bold text-slate-800">Likuiditas Pasar Berdasarkan Tipe Unit</h2>
-                  <p class="text-xs md:text-sm text-slate-500">Kategori dan ukuran unit yang mendominasi transaksi penjualan.</p>
-                </div>
-                
-                <div class="h-80 w-full relative">
-                  {flatTypeData.length > 0 ? (
-                    <>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={flatTypeData}
-                            cx="50%"
-                            cy="45%"
-                            innerRadius={70}
-                            outerRadius={95}
-                            paddingAngle={4}
-                            dataKey="value"
-                          >
-                            {flatTypeData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            formatter={(value) => [`${value.toLocaleString('en-SG')} Transaksi`, 'Volume']}
-                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                          />
-                          <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{fontSize: '11px'}} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      
-                      {/* Inner Label inside Doughnut */}
-                      <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-12">
-                        <span class="text-2xl font-extrabold text-slate-800">
-                          {filteredData.length.toLocaleString()}
-                        </span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                          Unit Terjual
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <div class="h-full flex items-center justify-center text-slate-400 text-sm">Tidak ada data untuk ditampilkan</div>
-                  )}
-                </div>
-              </Card>
-
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    const container = document.getElementById('root');
-    const root = ReactDOM.createRoot(container);
-    root.render(<App />);
-  </script>
+    </script>
 </body>
 </html>
