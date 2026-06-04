@@ -80,7 +80,6 @@
                 <div id="uploadStatus" class="text-xs mt-1 text-slate-600 font-medium italic">Initializing dashboard...</div>
             </div>
 
-            <!-- STREAMING_CHUNK: Rendering date range filter controls... -->
             <!-- Timeline/Date Filter Range -->
             <div class="mb-6">
                 <label class="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Date Range</label>
@@ -100,11 +99,19 @@
                 </div>
             </div>
 
+            <!-- STREAMING_CHUNK: Adding control action links for town and flat filters... -->
             <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
             
             <!-- Town Filter -->
             <div class="mb-6">
-                <label class="block text-sm font-medium text-slate-700 mb-2">Town</label>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-sm font-medium text-slate-700">Town</label>
+                    <div class="space-x-1.5 text-xs">
+                        <button type="button" id="selectAllTowns" class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">Select All</button>
+                        <span class="text-slate-300">|</span>
+                        <button type="button" id="clearAllTowns" class="text-slate-500 hover:text-slate-700 font-semibold transition-colors">Clear</button>
+                    </div>
+                </div>
                 <div id="townFilterContainer" class="space-y-2 max-h-48 overflow-y-auto pr-2">
                     <!-- Checkboxes injected by JS -->
                 </div>
@@ -112,7 +119,14 @@
 
             <!-- Flat Type Filter -->
             <div class="mb-6">
-                <label class="block text-sm font-medium text-slate-700 mb-2">Flat Type</label>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-sm font-medium text-slate-700">Flat Type</label>
+                    <div class="space-x-1.5 text-xs">
+                        <button type="button" id="selectAllFlats" class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">Select All</button>
+                        <span class="text-slate-300">|</span>
+                        <button type="button" id="clearAllFlats" class="text-slate-500 hover:text-slate-700 font-semibold transition-colors">Clear</button>
+                    </div>
+                </div>
                 <div id="flatTypeFilterContainer" class="space-y-2">
                     <!-- Checkboxes injected by JS -->
                 </div>
@@ -223,7 +237,6 @@
         let activeTowns = new Set();
         let activeFlatTypes = new Set();
 
-        // --- STREAMING_CHUNK: Simulating multi-year mock data on fallback... ---
         // --- Mock Data Generator supporting cross-year ranges (2025 to 2026) ---
         function generateMockData() {
             const towns = ['ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST', 'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG', 'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'];
@@ -273,7 +286,6 @@
             return data;
         }
 
-        // --- STREAMING_CHUNK: Dynamic population of Range Dropdowns... ---
         // --- Populate dropdown selector values ---
         function populateDateRangeSelectors() {
             const uniqueMonths = [...new Set(allData.map(d => d.month))].sort();
@@ -308,6 +320,7 @@
             applyFilters();
         }
 
+        // --- STREAMING_CHUNK: Setting up the master Select All and Unselect All filter wiring... ---
         // --- Filtering interface initialization ---
         function initializeFilters() {
             const uniqueTowns = [...new Set(allData.map(d => d.town))].sort();
@@ -335,7 +348,7 @@
                 </label>
             `).join('');
 
-            // Clean previous listeners by replacement
+            // Clean previous checkbox change listeners
             document.querySelectorAll('.filter-checkbox').forEach(cb => {
                 cb.addEventListener('change', (e) => {
                     const val = e.target.value;
@@ -348,6 +361,30 @@
                     applyFilters();
                 });
             });
+
+            // Wire up Town Filter Shortcuts
+            document.getElementById('selectAllTowns').onclick = () => {
+                activeTowns = new Set(uniqueTowns);
+                document.querySelectorAll('#townFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = true);
+                applyFilters();
+            };
+            document.getElementById('clearAllTowns').onclick = () => {
+                activeTowns.clear();
+                document.querySelectorAll('#townFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = false);
+                applyFilters();
+            };
+
+            // Wire up Flat Filter Shortcuts
+            document.getElementById('selectAllFlats').onclick = () => {
+                activeFlatTypes = new Set(uniqueFlatTypes);
+                document.querySelectorAll('#flatTypeFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = true);
+                applyFilters();
+            };
+            document.getElementById('clearAllFlats').onclick = () => {
+                activeFlatTypes.clear();
+                document.querySelectorAll('#flatTypeFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = false);
+                applyFilters();
+            };
 
             populateDateRangeSelectors();
         }
@@ -401,7 +438,6 @@
             renderTable();
         }
 
-        // --- STREAMING_CHUNK: Plotting trend vectors, maps, and bar charts... ---
         // --- Render Plotly interactive charts ---
         function renderCharts() {
             const chartConfig = { responsive: true, displayModeBar: false };
@@ -538,7 +574,6 @@
             applyFilters();
         }
 
-        // --- STREAMING_CHUNK: Merging year datasets using parallel fetching... ---
         // --- Multi-Year Loader pipeline ---
         async function loadHDBDatasets() {
             document.getElementById('uploadStatus').innerText = "Fetching 2025 & 2026 datasets...";
