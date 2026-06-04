@@ -80,13 +80,24 @@
                 <div id="uploadStatus" class="text-xs mt-1 text-slate-600 font-medium italic">Initializing dashboard...</div>
             </div>
 
-            <!-- Timeline/Date Filter -->
+            <!-- STREAMING_CHUNK: Rendering date range filter controls... -->
+            <!-- Timeline/Date Filter Range -->
             <div class="mb-6">
-                <label class="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Timeline / Year</label>
-                <select id="yearSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                    <option value="2026" selected>Year 2026 (Latest)</option>
-                    <option value="2025">Year 2025</option>
-                </select>
+                <label class="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Date Range</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400">From</span>
+                        <select id="startMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400">To</span>
+                        <select id="endMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
@@ -211,24 +222,27 @@
         let filteredData = [];
         let activeTowns = new Set();
         let activeFlatTypes = new Set();
-        let currentYear = '2026'; // Default selected timeline
 
-        // --- Mock Data Generator supporting timeline years ---
-        function generateMockData(year) {
+        // --- STREAMING_CHUNK: Simulating multi-year mock data on fallback... ---
+        // --- Mock Data Generator supporting cross-year ranges (2025 to 2026) ---
+        function generateMockData() {
             const towns = ['ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST', 'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG', 'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'];
             const flatTypes = ['2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
-            const months = [`${year}-01`, `${year}-02`, `${year}-03`, `${year}-04`, `${year}-05`, `${year}-06`];
+            
+            // Generate full months array spanning both 2025 and 2026
+            const months = [];
+            for(let m = 1; m <= 12; m++) months.push(`2025-${String(m).padStart(2, '0')}`);
+            for(let m = 1; m <= 6; m++) months.push(`2026-${String(m).padStart(2, '0')}`);
             
             const data = [];
-            // Slightly lower valuation for 2025 to create realistic historic comparison
-            const marketTrendFactor = year === '2025' ? 0.94 : 1.0; 
-
-            for (let i = 0; i < 2000; i++) {
+            for (let i = 0; i < 3000; i++) {
+                const month = months[Math.floor(Math.random() * months.length)];
                 const town = towns[Math.floor(Math.random() * towns.length)];
                 const flatType = flatTypes[Math.floor(Math.random() * flatTypes.length)];
                 
                 // Base metrics
                 let baseArea = 0;
+                let marketTrendFactor = month.startsWith('2025') ? 0.94 : 1.0; 
                 let basePricePerSqm = (5000 + (Math.random() * 3000)) * marketTrendFactor; 
                 
                 // Adjust by location (Central/Queenstown is more expensive)
@@ -247,7 +261,7 @@
                 const price = Math.round(area * basePricePerSqm / 1000) * 1000; // Round to nearest 1000
 
                 data.push({
-                    month: months[Math.floor(Math.random() * months.length)],
+                    month: month,
                     town: town,
                     flat_type: flatType,
                     street_name: `${town} ST ${Math.floor(Math.random() * 90) + 10}`,
@@ -259,8 +273,42 @@
             return data;
         }
 
-        // --- STREAMING_CHUNK: Filtering interface initialization ---
-        // --- Initializing filter components ---
+        // --- STREAMING_CHUNK: Dynamic population of Range Dropdowns... ---
+        // --- Populate dropdown selector values ---
+        function populateDateRangeSelectors() {
+            const uniqueMonths = [...new Set(allData.map(d => d.month))].sort();
+            
+            const startSelector = document.getElementById('startMonthSelector');
+            const endSelector = document.getElementById('endMonthSelector');
+
+            // Populate Start Months
+            startSelector.innerHTML = uniqueMonths.map((m, idx) => `
+                <option value="${m}" ${idx === 0 ? 'selected' : ''}>${m}</option>
+            `).join('');
+
+            // Populate End Months
+            endSelector.innerHTML = uniqueMonths.map((m, idx) => `
+                <option value="${m}" ${idx === uniqueMonths.length - 1 ? 'selected' : ''}>${m}</option>
+            `).join('');
+
+            // Add Event Listeners for Date Selectors
+            startSelector.addEventListener('change', validateAndApplyFilters);
+            endSelector.addEventListener('change', validateAndApplyFilters);
+        }
+
+        // Adjusts input values automatically if start month exceeds end month
+        function validateAndApplyFilters() {
+            const startVal = document.getElementById('startMonthSelector').value;
+            const endVal = document.getElementById('endMonthSelector').value;
+
+            if (startVal > endVal) {
+                // If user selects an invalid range, push the end selector to match the start selector
+                document.getElementById('endMonthSelector').value = startVal;
+            }
+            applyFilters();
+        }
+
+        // --- Filtering interface initialization ---
         function initializeFilters() {
             const uniqueTowns = [...new Set(allData.map(d => d.town))].sort();
             const uniqueFlatTypes = [...new Set(allData.map(d => d.flat_type))].sort();
@@ -300,17 +348,23 @@
                     applyFilters();
                 });
             });
+
+            populateDateRangeSelectors();
         }
 
         function applyFilters() {
+            const startMonth = document.getElementById('startMonthSelector').value;
+            const endMonth = document.getElementById('endMonthSelector').value;
+
             filteredData = allData.filter(d => 
+                d.month >= startMonth &&
+                d.month <= endMonth &&
                 activeTowns.has(d.town) && 
                 activeFlatTypes.has(d.flat_type)
             );
             updateDashboard();
         }
 
-        // --- STREAMING_CHUNK: Formatting metrics output ---
         // --- Calculations and formatting ---
         function formatCurrency(num) {
             return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(num);
@@ -347,7 +401,7 @@
             renderTable();
         }
 
-        // --- STREAMING_CHUNK: Drawing graphics in Plotly ---
+        // --- STREAMING_CHUNK: Plotting trend vectors, maps, and bar charts... ---
         // --- Render Plotly interactive charts ---
         function renderCharts() {
             const chartConfig = { responsive: true, displayModeBar: false };
@@ -423,7 +477,6 @@
             }, chartConfig);
         }
 
-        // --- STREAMING_CHUNK: Processing list tabular rows ---
         // --- Render Table ---
         function renderTable() {
             const tableBody = document.getElementById('table-body');
@@ -443,15 +496,17 @@
             `).join('');
         }
 
-        // --- STREAMING_CHUNK: Setting up auto fetch and parser events ---
-        // --- Dataset Handlers & CSV Parser (PapaParse helper) ---
+        // --- Dataset Handlers & CSV Parser ---
         function handleCSVString(csvString, sourceName) {
             Papa.parse(csvString, {
                 header: true,
                 dynamicTyping: true,
                 skipEmptyLines: true,
                 complete: function(results) {
-                    allData = results.data.filter(d => d.resale_price && d.town && d.flat_type);
+                    const parsed = results.data.filter(d => d.resale_price && d.town && d.flat_type);
+                    
+                    // Merge uploads into existing pool
+                    allData = [...allData, ...parsed];
                     
                     document.getElementById('dataContextLabel').innerText = `Showing Real Data (${sourceName})`;
                     document.getElementById('dataContextLabel').className = "text-emerald-600 font-semibold mt-1";
@@ -464,52 +519,86 @@
                 },
                 error: function(err) {
                     console.error("CSV Parse Error:", err);
-                    triggerFallback("Parsing error inside file.", currentYear);
+                    triggerFallback("Parsing error inside file.");
                 }
             });
         }
 
-        function triggerFallback(reason, year) {
+        function triggerFallback(reason) {
             console.warn("Fallback triggered. Reason:", reason);
-            allData = generateMockData(year);
+            allData = generateMockData();
             
-            document.getElementById('dataContextLabel').innerText = `Showing Sample Data (${year} Fallback)`;
+            document.getElementById('dataContextLabel').innerText = `Showing Sample Data (2025 - 2026 Fallback)`;
             document.getElementById('dataContextLabel').className = "text-slate-500 mt-1";
             
-            document.getElementById('uploadStatus').innerText = `Using simulated ${year} fallback data.`;
+            document.getElementById('uploadStatus').innerText = "Using simulated cross-year fallback data.";
             document.getElementById('uploadStatus').className = "text-xs mt-2 text-amber-600 font-medium";
             
             initializeFilters();
             applyFilters();
         }
 
-        // --- Auto-loader on timeline trigger ---
-        async function loadHDBDataset(year) {
-            const csvFilename = `hdb_resale_full_${year}.csv`;
-            document.getElementById('uploadStatus').innerText = `Fetching ${csvFilename}...`;
+        // --- STREAMING_CHUNK: Merging year datasets using parallel fetching... ---
+        // --- Multi-Year Loader pipeline ---
+        async function loadHDBDatasets() {
+            document.getElementById('uploadStatus').innerText = "Fetching 2025 & 2026 datasets...";
             document.getElementById('uploadStatus').className = "text-xs mt-2 text-blue-600 font-medium";
 
             try {
-                // Fetch dynamic CSV timeline
-                const response = await fetch(csvFilename);
-                if (!response.ok) {
-                    throw new Error(`File access returned status: ${response.status}`);
+                // Fetch both datasets in parallel
+                const [resp2025, resp2026] = await Promise.all([
+                    fetch('hdb_resale_full_2025.csv'),
+                    fetch('hdb_resale_full_2026.csv')
+                ]);
+
+                if (!resp2025.ok || !resp2026.ok) {
+                    throw new Error("One or more timeline source CSVs were not accessible.");
                 }
-                const csvString = await response.text();
-                handleCSVString(csvString, csvFilename);
+
+                const [text2025, text2026] = await Promise.all([
+                    resp2025.text(),
+                    resp2026.text()
+                ]);
+
+                // Parse 2025
+                Papa.parse(text2025, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    complete: function(res2025) {
+                        const parsed2025 = res2025.data.filter(d => d.resale_price && d.town && d.flat_type);
+                        
+                        // Parse 2026 and merge
+                        Papa.parse(text2026, {
+                            header: true,
+                            dynamicTyping: true,
+                            skipEmptyLines: true,
+                            complete: function(res2026) {
+                                const parsed2026 = res2026.data.filter(d => d.resale_price && d.town && d.flat_type);
+                                
+                                // Merge both datasets
+                                allData = [...parsed2025, ...parsed2026];
+                                
+                                document.getElementById('dataContextLabel').innerText = "Showing Real Data (Years 2025 - 2026)";
+                                document.getElementById('dataContextLabel').className = "text-emerald-600 font-semibold mt-1";
+                                
+                                document.getElementById('uploadStatus').innerText = "Datasets loaded successfully!";
+                                document.getElementById('uploadStatus').className = "text-xs mt-2 text-emerald-600 font-medium";
+                                
+                                initializeFilters();
+                                applyFilters();
+                            }
+                        });
+                    }
+                });
+
             } catch (err) {
-                // CORS or network fallback
-                triggerFallback(err.message, year);
+                // CORS or offline local network fallback
+                triggerFallback(err.message);
             }
         }
 
         // --- Event Listeners ---
-        // Timeline switcher trigger
-        document.getElementById('yearSelector').addEventListener('change', function(e) {
-            currentYear = e.target.value;
-            loadHDBDataset(currentYear);
-        });
-
         // Manual upload listener
         document.getElementById('csvFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -520,6 +609,8 @@
 
             const reader = new FileReader();
             reader.onload = function(evt) {
+                // Wipe data and import uploaded file
+                allData = [];
                 handleCSVString(evt.target.result, file.name);
             };
             reader.onerror = function() {
@@ -531,7 +622,7 @@
 
         // Initial setup boot
         window.onload = () => {
-            loadHDBDataset(currentYear);
+            loadHDBDatasets();
         };
     </script>
 </body>
