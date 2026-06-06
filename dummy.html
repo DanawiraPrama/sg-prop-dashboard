@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -325,5 +324,24 @@
             }
         }
 
+        
         function resetForm() {
-            const formContainer = document.getElem
+            const formContainer = document.getElementById('predictor-form-container');
+            const resultContainer = document.getElementById('result-container');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorAlert = document.getElementById('error-alert');
+            
+            resultContainer.classList.add('hidden');
+            errorAlert.classList.add('hidden');
+            
+            formContainer.classList.remove('hidden');
+            formContainer.style.opacity = '1';
+            
+            submitBtn.disabled = false;
+            document.getElementById('btnSpinner').classList.add('hidden');
+            document.getElementById('btnIcon').classList.remove('hidden');
+            document.getElementById('btnText').innerText = 'Calculate Market Value';
+        }
+    </script>
+</body>
+</html>
