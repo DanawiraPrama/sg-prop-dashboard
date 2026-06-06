@@ -167,11 +167,20 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Flat Type</label>
                                 <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
+                                    <option value="1 ROOM">1 Room</option>
+                                    <option value="2 ROOM">2 Room</option>
                                     <option value="3 ROOM">3 Room</option>
                                     <option value="4 ROOM" selected>4 Room</option>
                                     <option value="5 ROOM">5 Room</option>
                                     <option value="EXECUTIVE">Executive</option>
+                                    <option value="MULTI-GENERATION">Multi-Generation</option>
                                 </select>
+                            </div>
+
+                            <!-- Area -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor Area (sqm)</label>
+                                <input type="number" id="area" value="90" min="20" max="250" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
                             </div>
 
                             <!-- Area -->
