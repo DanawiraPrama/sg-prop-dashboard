@@ -17,9 +17,9 @@
             scroll-behavior: smooth;
         }
         
+        /* Premium Hero Background with Parallax effect */
         .hero-bg {
-            /* Dummy Singapore HDB / Skyline Image from Unsplash */
-            background-image: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1542898710-8509a250329c?q=80&w=1920&auto=format&fit=crop');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -30,6 +30,23 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .agent-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
+        }
+
+        /* Hover effect for portfolio images */
+        .portfolio-img-container {
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+        .portfolio-img {
+            transition: transform 0.5s ease;
+        }
+        .portfolio-card:hover .portfolio-img {
+            transform: scale(1.05);
         }
 
         /* Loading spinner animation */
@@ -48,66 +65,74 @@
 
     <!-- Navigation -->
     <nav class="fixed w-full z-50 transition-all duration-300 glass-panel border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
-            <!-- Logo diperkecil sedikit di mobile biar gak nabrak -->
-            <div class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-1.5 md:gap-2">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
                 <i class="fa-solid fa-building-user"></i> Nexus<span class="text-slate-800">Advisory</span>
             </div>
-            <div class="hidden md:flex gap-8 font-medium text-sm text-slate-600">
-                <a href="#" class="hover:text-blue-600 transition-colors">Home</a>
-                <a href="#" class="hover:text-blue-600 transition-colors">The Agent</a>
-                <a href="#" class="hover:text-blue-600 transition-colors">Track Record</a>
+            <div class="hidden md:flex gap-8 font-semibold text-sm text-slate-600">
+                <a href="#home" class="hover:text-blue-600 transition-colors">Home</a>
+                <a href="#about" class="hover:text-blue-600 transition-colors">The Agent</a>
+                <a href="#portfolio" class="hover:text-blue-600 transition-colors">Track Record</a>
             </div>
-            <!-- Tombol disesuaikan padding dan sizenya untuk mobile -->
-            <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-semibold transition-colors shadow-lg whitespace-nowrap">
+            <a href="#contact" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
                 Consult Now
-            </button>
+            </a>
         </div>
     </nav>
 
     <!-- Hero Section with Native AI Predictor -->
-    <section class="hero-bg min-h-screen pt-28 pb-20 flex items-center relative">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
+    <section id="home" class="hero-bg min-h-screen pt-32 pb-20 flex items-center relative">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
             
             <!-- Left Column: Marketing Copy -->
-            <div class="text-white mt-10 lg:mt-0">
-                <div class="inline-block px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-semibold text-xs tracking-wider uppercase mb-6 backdrop-blur-sm">
-                    ✨ Powered by 2026 Market AI
+            <div class="text-white">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold text-xs tracking-wider uppercase mb-6 backdrop-blur-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    Live 2025-2026 Market AI
                 </div>
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
                     Maximize Your HDB's <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Selling Price</span>.
                 </h1>
-                <p class="text-base md:text-lg lg:text-xl text-slate-300 mb-8 leading-relaxed max-w-lg">
-                    Stop guessing. Our proprietary AI analyzes 35,400+ real transactions to give you a highly accurate, data-backed valuation in seconds.
+                <p class="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-lg font-light">
+                    Stop guessing. Our proprietary AI analyzes 35,400+ recent transactions to give you a highly accurate, data-backed valuation in seconds.
                 </p>
-                <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-slate-300 font-medium">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-teal-400"></i> Data-Driven Results
+                <div class="grid grid-cols-2 gap-4 text-sm text-slate-200 font-medium">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-bolt"></i></div>
+                        Instant Results
                     </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-bullseye text-teal-400"></i> 94% Accuracy
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-chart-pie"></i></div>
+                        94% Accuracy
                     </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-user-shield text-teal-400"></i> No Sign-up
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock"></i></div>
+                        100% Free
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"><i class="fa-solid fa-user-shield"></i></div>
+                        No Sign-up
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Native Predictor Form (Cara 2) -->
-            <div class="glass-panel p-6 md:p-10 rounded-3xl relative overflow-hidden">
-                
+            <!-- Right Column: Native Predictor Form -->
+            <div class="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden">
                 <!-- THE FORM -->
                 <div id="predictor-form-container">
-                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 mb-2">Get Your AI Valuation</h3>
-                    <p class="text-sm text-slate-500 mb-6 md:mb-8">Enter your property details below.</p>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-2">Get Your AI Valuation</h3>
+                    <p class="text-sm text-slate-500 mb-8 font-medium">Enter your property details below.</p>
 
                     <form id="aiPredictorForm" onsubmit="handlePrediction(event)">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                             
                             <!-- Location -->
                             <div class="col-span-1 md:col-span-2">
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Location (Town)</label>
-                                <select id="town" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3 md:p-3.5 transition-all outline-none">
+                                <select id="town" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
                                     <option value="" disabled selected>Select an HDB Town</option>
                                     <option value="ANG MO KIO">Ang Mo Kio</option>
                                     <option value="BEDOK">Bedok</option>
@@ -132,7 +157,7 @@
                                     <option value="SENGKANG">Sengkang</option>
                                     <option value="SERANGOON">Serangoon</option>
                                     <option value="TAMPINES">Tampines</option>
-                                    <option value="TOA PAYOH">Toa PayOH</option>
+                                    <option value="TOA PAYOH">Toa Payoh</option>
                                     <option value="WOODLANDS">Woodlands</option>
                                     <option value="YISHUN">Yishun</option>
                                 </select>
@@ -141,8 +166,7 @@
                             <!-- Flat Type -->
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Flat Type</label>
-                                <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3 md:p-3.5 transition-all outline-none">
-                                    <option value="" disabled>Select Type</option>
+                                <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
                                     <option value="1 ROOM">1 Room</option>
                                     <option value="2 ROOM">2 Room</option>
                                     <option value="3 ROOM">3 Room</option>
@@ -153,27 +177,33 @@
                                 </select>
                             </div>
 
-                            <!-- Area (Hanya Ada Satu Sekarang!) -->
+                            <!-- Area -->
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor Area (sqm)</label>
-                                <input type="number" id="area" value="90" min="30" max="300" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3 md:p-3.5 transition-all outline-none">
+                                <input type="number" id="area" value="90" min="20" max="250" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
+                            </div>
+
+                            <!-- Area -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor Area (sqm)</label>
+                                <input type="number" id="area" value="90" min="40" max="200" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
                             </div>
 
                             <!-- Storey Level -->
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Storey Level</label>
-                                <input type="number" id="storey" value="8" min="1" max="50" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3 md:p-3.5 transition-all outline-none">
+                                <input type="number" id="storey" value="8" min="1" max="50" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
                             </div>
 
                             <!-- Lease -->
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lease Left (Yrs)</label>
-                                <input type="number" id="lease" value="75" min="40" max="99" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3 md:p-3.5 transition-all outline-none">
+                                <input type="number" id="lease" value="75" min="40" max="99" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 transition-all outline-none">
                             </div>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" id="submitBtn" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm md:text-md px-5 py-3.5 md:py-4 text-center transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-3">
+                        <button type="submit" id="submitBtn" class="w-full mt-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl text-md px-5 py-4 text-center transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-3 transform hover:-translate-y-0.5">
                             <span id="btnSpinner" class="spinner hidden"></span>
                             <span id="btnText">Calculate Market Value</span>
                             <i id="btnIcon" class="fa-solid fa-arrow-right"></i>
@@ -182,34 +212,34 @@
                     
                     <!-- Alert Message Container -->
                     <div id="error-alert" class="hidden mt-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200" role="alert">
-                        <span class="font-bold">Connection Failed:</span> Unable to reach AI Server.
+                        <span class="font-bold">Koneksi API Gagal:</span> Server Hugging Face sedang offline atau URL salah.
                     </div>
                 </div>
 
                 <!-- THE RESULT PANEL (Hidden initially) -->
-                <div id="result-container" class="hidden text-center py-4 md:py-6">
-                    <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-emerald-100 text-emerald-500 mb-4 md:mb-6">
-                        <i class="fa-solid fa-check text-xl md:text-2xl"></i>
+                <div id="result-container" class="hidden text-center py-6">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-500 mb-6 shadow-inner">
+                        <i class="fa-solid fa-check text-2xl"></i>
                     </div>
-                    <h4 class="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Estimated Market Value</h4>
+                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Estimated Market Value</h4>
                     
-                    <!-- Dynamic Price Injected Here -->
-                    <div class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-2" id="displayPrice">S$ 0</div>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight" id="displayPrice">S$ 0</div>
                     
-                    <p class="text-xs md:text-sm text-slate-500 mb-6 md:mb-8">Based on real-time 35,400+ transactions from 2025 to June 2026.</p>
+                    <p class="text-sm text-slate-500 mb-8 font-medium">Based on 35,400+ transactions from 2025 to June 2026.</p>
                     
                     <!-- The CTA (Click-to-WhatsApp) -->
-                    <div class="bg-slate-50 p-5 md:p-6 rounded-2xl border border-slate-200 mb-6">
-                        <h5 class="font-bold text-slate-800 text-sm md:text-base mb-2">Ready to take the next step?</h5>
-                        <p class="text-xs text-slate-500 mb-4">Our senior agents can help you secure this price or even higher. Let's discuss your strategy.</p>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 mb-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10"></div>
+                        <h5 class="font-bold text-slate-800 mb-2">Ready to secure this price?</h5>
+                        <p class="text-xs text-slate-500 mb-5 leading-relaxed">Our top 1% agents have proven strategies to market your property and negotiate this value or higher. Let's talk strategy.</p>
                         
-                        <a href="https://wa.me/6281234567890?text=Hi%20Nexus%20Team!%20I%20just%20checked%20my%20HDB%20valuation%20on%20your%20website%20and%20I'd%20like%20to%20discuss%20my%20options." target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-sm px-5 py-3.5 transition-all shadow-lg shadow-[#25D366]/30">
-                            <i class="fa-brands fa-whatsapp text-lg"></i> Chat on WhatsApp
+                        <a href="https://wa.me/6281234567890?text=Hi%20Nexus%20Team!%20I%20just%20checked%20my%20HDB%20valuation%20on%20your%20website%20and%20I'd%20like%20to%20discuss%20my%20options." target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-sm px-5 py-4 transition-all shadow-lg shadow-[#25D366]/30 transform hover:-translate-y-0.5">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Discuss on WhatsApp
                         </a>
                     </div>
 
-                    <button onclick="resetForm()" class="text-xs md:text-sm text-blue-600 font-semibold hover:text-blue-800 transition-colors">
-                        <i class="fa-solid fa-rotate-left mr-1"></i> Calculate another property
+                    <button onclick="resetForm()" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Check another property
                     </button>
                 </div>
 
@@ -217,39 +247,134 @@
         </div>
     </section>
 
-    <!-- Value Prop Section -->
-    <section class="py-16 md:py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-10 md:gap-12 text-center">
-            <div>
-                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 md:mb-6">
-                    <i class="fa-solid fa-brain"></i>
+    <!-- The Agent Profile Section -->
+    <section id="about" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1 relative">
+                    <div class="absolute inset-0 bg-blue-600 rounded-3xl translate-x-4 translate-y-4 opacity-10"></div>
+                    <!-- Placeholder for Agent Photo -->
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" alt="Top Property Agent" class="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[600px]">
+                    
+                    <!-- Floating Badge -->
+                    <div class="absolute bottom-8 -right-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 z-20 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-500 flex justify-center items-center text-xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-bold uppercase">Award Winner</p>
+                            <p class="font-extrabold text-slate-800">Top 1% Achiever 2025</p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-3">Data-Driven Accuracy</h3>
-                <p class="text-slate-600 text-sm leading-relaxed">We don't guess. Our Random Forest AI model is trained on 35,400+ recent HDB transactions.</p>
-            </div>
-            <div>
-                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 md:mb-6">
-                    <i class="fa-solid fa-handshake"></i>
+
+                <div class="order-1 lg:order-2">
+                    <h4 class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-3">Meet Your Advisor</h4>
+                    <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Data-Driven Approach. <br>Human-Centric Service.</h2>
+                    <p class="text-slate-600 mb-6 leading-relaxed text-lg">
+                        Hi, I'm Jonathan Tan. With over 8 years of navigating the complex Singapore property market, I realized that buyers and sellers often lose money due to a lack of accurate data.
+                    </p>
+                    <p class="text-slate-600 mb-8 leading-relaxed">
+                        That's why I combine cutting-edge Machine Learning (like the calculator above) with aggressive negotiation tactics. My goal is simple: to sell your property at the absolute highest market valuation, in the shortest time possible.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-10">
+                        <div class="border-l-4 border-blue-600 pl-4">
+                            <h4 class="text-3xl font-extrabold text-slate-900">S$ 45M+</h4>
+                            <p class="text-sm font-semibold text-slate-500 mt-1">Properties Transacted</p>
+                        </div>
+                        <div class="border-l-4 border-blue-600 pl-4">
+                            <h4 class="text-3xl font-extrabold text-slate-900">14 Days</h4>
+                            <p class="text-sm font-semibold text-slate-500 mt-1">Avg. Time on Market</p>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-full transition-colors shadow-lg">
+                        Schedule a Coffee Chat <i class="fa-solid fa-arrow-right"></i>
+                    </a>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-3">Expert Negotiation</h3>
-                <p class="text-slate-600 text-sm leading-relaxed">Once you know the price, our top 1% agents help you negotiate the best possible deal in the market.</p>
-            </div>
-            <div>
-                <div class="w-14 h-14 md:w-16 md:h-16 mx-auto bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 md:mb-6">
-                    <i class="fa-solid fa-bolt"></i>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-3">Fast Transactions</h3>
-                <p class="text-slate-600 text-sm leading-relaxed">By pricing your home right from day one, we significantly reduce the time your property sits on the market.</p>
             </div>
         </div>
     </section>
 
+    <!-- Track Record / Portfolio Section -->
+    <section id="portfolio" class="py-24 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h4 class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-3">Proven Track Record</h4>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900">Recent Success Stories</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <div class="portfolio-img-container mb-4 h-56">
+                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop" alt="Bishan HDB" class="portfolio-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-2">
+                        <div class="inline-block px-3 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-bold mb-3 uppercase tracking-wider">Sold Over Valuation</div>
+                        <h3 class="font-bold text-xl text-slate-900 mb-1">Natura Loft @ Bishan</h3>
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 5-Room DBSS</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            <span class="text-slate-500 text-sm">Sold For:</span>
+                            <span class="font-extrabold text-blue-700 text-lg">S$ 1.25M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <div class="portfolio-img-container mb-4 h-56">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol HDB Interior" class="portfolio-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-2">
+                        <div class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs font-bold mb-3 uppercase tracking-wider">Record Time</div>
+                        <h3 class="font-bold text-xl text-slate-900 mb-1">Waterway Terraces</h3>
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 4-Room Premium</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            <span class="text-slate-500 text-sm">Sold In:</span>
+                            <span class="font-extrabold text-blue-700 text-lg">8 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <div class="portfolio-img-container mb-4 h-56">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop" alt="Clementi HDB" class="portfolio-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-2">
+                        <div class="inline-block px-3 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-bold mb-3 uppercase tracking-wider">Highest in Block</div>
+                        <h3 class="font-bold text-xl text-slate-900 mb-1">Clementi Cascadia</h3>
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 5-Room Standard</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            <span class="text-slate-500 text-sm">Sold For:</span>
+                            <span class="font-extrabold text-blue-700 text-lg">S$ 1.12M</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call To Action -->
+    <section id="contact" class="bg-blue-600 py-20 text-center px-6">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Let's Discuss Your Property Strategy</h2>
+        <p class="text-blue-100 mb-10 max-w-2xl mx-auto text-lg">Whether you are planning to sell in 2 months or 2 years, having a clear roadmap backed by data is crucial. Let's talk.</p>
+        <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-3 bg-white text-blue-600 font-bold px-8 py-4 rounded-full text-lg hover:bg-slate-50 transition-colors shadow-2xl">
+            <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i> WhatsApp Me Now
+        </a>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-slate-900 py-10 md:py-12 text-center text-slate-400 text-xs md:text-sm">
-        <p>&copy; 2026 Nexus HDB Advisory. Demo AI Integration.</p>
+    <footer class="bg-slate-900 py-12 text-center text-slate-400 text-sm">
+        <div class="text-2xl font-extrabold text-slate-700 tracking-tight mb-4 flex justify-center items-center gap-2">
+            <i class="fa-solid fa-building-user"></i> Nexus<span class="text-slate-600">Advisory</span>
+        </div>
+        <p>&copy; 2026 Nexus HDB Advisory. Demo AI Integration for Real Estate.</p>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC (The "Cara 2" API Real Fetch) -->
     <script>
         async function handlePrediction(event) {
             event.preventDefault();
@@ -265,7 +390,7 @@
             submitBtn.disabled = true;
             btnSpinner.classList.remove('hidden');
             btnIcon.classList.add('hidden');
-            btnText.innerText = 'Calculating...';
+            btnText.innerText = 'Analyzing 35,000+ data...';
             errorAlert.classList.add('hidden');
 
             const town = document.getElementById('town').value;
@@ -324,8 +449,8 @@
             }
         }
 
-        
         function resetForm() {
+            // Reset UI back to original state
             const formContainer = document.getElementById('predictor-form-container');
             const resultContainer = document.getElementById('result-container');
             const submitBtn = document.getElementById('submitBtn');
@@ -337,6 +462,7 @@
             formContainer.classList.remove('hidden');
             formContainer.style.opacity = '1';
             
+            // Reset Button
             submitBtn.disabled = false;
             document.getElementById('btnSpinner').classList.add('hidden');
             document.getElementById('btnIcon').classList.remove('hidden');
