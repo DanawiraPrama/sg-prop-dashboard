@@ -4,6 +4,7 @@ import plotly.express as px
 import pickle
 import datetime
 import os
+import numpy as np
 
 # --- Page Configuration ---
 st.set_page_config(page_title="HDB Insights Pro", page_icon="🏢", layout="wide")
@@ -12,13 +13,12 @@ st.set_page_config(page_title="HDB Insights Pro", page_icon="🏢", layout="wide
 @st.cache_data
 def load_data():
     try:
-        df25 = pd.read_csv('hdb_resale_full_2025.csv')
-        df26 = pd.read_csv('hdb_resale_full_2026.csv')
-        df = pd.concat([df25, df26], ignore_index=True)
+        # Langsung load 1 file master 10 tahun
+        df = pd.read_csv('hdb_resale_2017_2026_final (1).csv') 
         df['price_per_sqm'] = df['resale_price'] / df['floor_area_sqm']
         return df.sort_values('month')
     except Exception as e:
-        st.error(f"Missing data files. Please ensure the 2025 and 2026 CSV files are in the same folder.")
+        st.error(f"Error loading data: {e}")
         return pd.DataFrame()
 
 @st.cache_resource
@@ -147,13 +147,16 @@ elif page == "🔮 Price Predictor":
     st.markdown("---")
 
     if not assets:
-        st.error("⚠️ Model not found! Please run `python3 train.py` first to generate the `hdb_model.pkl` file.")
+        st.error("⚠️ Model not found! Please run the training script first to generate the `hdb_model.pkl` file.")
     else:
+        # Load the correct assets based on our new 10-year model
         model = assets["model"]
-        encoder = assets["encoder"]
+        le_town = assets["le_town"]
+        le_flat = assets["le_flat"]
         
-        town_options = sorted(list(encoder.categories_[0]))
-        flat_type_options = list(encoder.categories_[1])
+        # Get options directly from the encoders
+        town_options = sorted(list(le_town.classes_))
+        flat_type_options = list(le_flat.classes_)
 
         with st.form("predict_form"):
             col1, col2 = st.columns(2)
@@ -167,30 +170,24 @@ elif page == "🔮 Price Predictor":
                 storey = st.slider("Storey Level (Midpoint)", min_value=1, max_value=50, value=8)
                 lease_left = st.slider("Remaining Lease (Years)", min_value=40, max_value=99, value=75)
                 
-                # Hidden variables for model input (Current year/month)
-                current_month = datetime.datetime.now().month
-                current_year = datetime.datetime.now().year
-                
             submit = st.form_submit_button("Calculate Estimated Price", use_container_width=True)
             
         if submit:
-            # Package the input data exactly as the model expects it
-            input_df = pd.DataFrame([{
-                'town': town,
-                'flat_type': flat_type,
-                'floor_area_sqm': floor_area,
-                'mid_storey': storey,
-                'lease_years': lease_left,
-                'year': current_year,
-                'month_num': current_month
-            }])
-            
-            # Encode categorical text inputs to numbers
-            input_df[['town', 'flat_type']] = encoder.transform(input_df[['town', 'flat_type']])
-            
-            # Generate Prediction
-            predicted_price = model.predict(input_df)[0]
-            
-            st.success("### Estimated Market Value")
-            st.markdown(f"<h1 style='text-align: center; color: #10b981;'>S$ {predicted_price:,.0f}</h1>", unsafe_allow_html=True)
-            st.caption("*Disclaimer: This calculation is powered by a Random Forest Machine Learning model utilizing open public data. It is for informational reference only.*")
+            try:
+                # 1. Transform text inputs to numeric codes
+                t_code = le_town.transform([town])[0]
+                f_code = le_flat.transform([flat_type])[0]
+                
+                # 2. Package the input exactly as the Random Forest model was trained
+                # Order: ['town_code', 'flat_code', 'floor_area_sqm', 'remaining_lease', 'storey_num']
+                features = np.array([[t_code, f_code, floor_area, lease_left, storey]])
+                
+                # 3. Generate Prediction
+                predicted_price = model.predict(features)[0]
+                
+                st.success("### Estimated Market Value")
+                st.markdown(f"<h1 style='text-align: center; color: #10b981;'>S$ {predicted_price:,.0f}</h1>", unsafe_allow_html=True)
+                st.caption("*Disclaimer: This calculation is powered by a Random Forest Machine Learning model utilizing 10 years of open public data (2017-2026). It is for informational reference only.*")
+                
+            except Exception as e:
+                st.error(f"System Error: {e}")
