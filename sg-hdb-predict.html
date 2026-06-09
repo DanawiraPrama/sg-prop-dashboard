@@ -97,7 +97,7 @@
                     Maximize Your HDB's <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Selling Price</span>.
                 </h1>
                 <p class="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-lg font-light">
-                    Stop the <i>agar-agar</i> guessing. Our proprietary AI crunches over 232,000 real HDB resale transactions spanning 10 years to give you a highly accurate, data-backed valuation in seconds.
+                    Stop the <i>agar-agar</i> guessing. Our proprietary AI crunches over 232,000 real HDB resale transactions spanning 10 years to give you a highly accurate, data-backed valuation in seconds. Confirm plus chop.
                 </p>
                 <div class="grid grid-cols-2 gap-4 text-sm text-slate-200 font-medium">
                     <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-bolt"></i></div> Instant PDF Report</div>
@@ -136,7 +136,7 @@
                                         <option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option>
                                         <option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option>
                                         <option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option>
-                                        <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
+                                        <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong WEST</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
                                         <option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option>
                                         <option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option>
                                         <option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option>
@@ -165,28 +165,44 @@
                             </div>
                         </div>
 
-                        <!-- STEP 2: Macro Scenarios -->
+                        <!-- STEP 2: Macro Scenarios + QUICK PRESETS -->
                         <div id="step2" class="hidden">
+                            <!-- QUICK SCENARIO PRESETS -->
+                            <div class="mb-5 p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
+                                <label class="block text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-3">Quick Scenarios (Don't say bo jio!)</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" onclick="loadPreset('baseline')" class="px-2 py-2.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all shadow-sm">
+                                        Current Market
+                                    </button>
+                                    <button type="button" onclick="loadPreset('high_interest')" class="px-2 py-2.5 rounded-lg border border-red-200 bg-red-50 text-[11px] font-bold text-red-600 hover:bg-red-100 transition-all shadow-sm">
+                                        High Rates (Siong) 🔴
+                                    </button>
+                                    <button type="button" onclick="loadPreset('market_boom')" class="px-2 py-2.5 rounded-lg border border-emerald-200 bg-emerald-50 text-[11px] font-bold text-emerald-600 hover:bg-emerald-100 transition-all shadow-sm">
+                                        Bull Run (Huat!) 🟢
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SORA Interest (%)</label>
-                                    <input type="number" id="sora" value="3.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="number" id="sora" value="3.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">GDP Growth (%)</label>
-                                    <input type="number" id="gdp_growth" value="2.5" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="number" id="gdp_growth" value="2.5" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">CPI Inflation</label>
-                                    <input type="number" id="cpi_val" value="102.0" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="number" id="cpi_val" value="102.0" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">HDB Index Target</label>
-                                    <input type="number" id="hdb_idx" value="180.0" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="number" id="hdb_idx" value="180.0" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
                                 </div>
                                 <div class="col-span-1 md:col-span-2">
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gov Cooling Measures</label>
-                                    <select id="cooling_measure" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <select id="cooling_measure" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
                                         <option value="1">Active (Taxes/Restrictions applied)</option>
                                         <option value="0">Inactive</option>
                                     </select>
@@ -204,7 +220,7 @@
                             <div class="space-y-4 mb-5">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
-                                    <input type="text" id="lead_name" placeholder="John Doe" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="text" id="lead_name" placeholder="E.g. Tan Ah Kow" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">WhatsApp Number</label>
@@ -212,7 +228,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
-                                    <input type="email" id="lead_email" placeholder="john@email.com" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="email" id="lead_email" placeholder="ahkow@email.com" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
                                 </div>
                             </div>
                         </div>
@@ -302,7 +318,7 @@
                     </div>
 
                     <a href="#contact" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-full transition-colors shadow-lg">
-                        Let's Grab a Kopi <i class="fa-solid fa-arrow-right"></i>
+                        Let's Grab a Kopi C <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -335,7 +351,7 @@
 
                 <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
                     <div class="portfolio-img-container mb-4 h-56">
-                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol HDB" class="portfolio-img w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol HDB Interior" class="portfolio-img w-full h-full object-cover">
                     </div>
                     <div class="p-2">
                         <div class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs font-bold mb-3 uppercase tracking-wider">Record Time</div>
@@ -368,10 +384,10 @@
 
     <!-- Contact Section -->
     <section id="contact" class="bg-blue-600 py-20 text-center px-6">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Ready to upgrade or cash out?</h2>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Ready to upgrade or cash out? Don't wait liao!</h2>
         <p class="text-blue-100 mb-10 max-w-2xl mx-auto text-lg">Whether you are planning to sell after your MOP or right-sizing your home, having a clear roadmap backed by data is crucial. Let's chart your property journey.</p>
         <a href="https://wa.me/6581234567" target="_blank" class="inline-flex items-center gap-3 bg-white text-blue-600 font-bold px-8 py-4 rounded-full text-lg hover:bg-slate-50 transition-colors shadow-2xl">
-            <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i> WhatsApp Me For A Chat
+            <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i> WhatsApp Me (Don't Shy!)
         </a>
     </section>
 
@@ -411,7 +427,7 @@
         <div style="text-align: center; margin-top: 40px; border: 2px solid #2563eb; border-radius: 12px; padding: 30px; background: #eff6ff;">
             <p style="margin: 0; color: #1e40af; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Simulated Market Value</p>
             <h1 style="font-size: 48px; color: #1e3a8a; margin: 10px 0;" id="pdf_price">S$ 0</h1>
-            <p style="margin: 0; font-size: 12px; color: #2563eb;">Generated by XGBoost AI mapping 232,000+ data points.</p>
+            <p style="margin: 0; font-size: 12px; color: #2563eb;">Generated by XGBoost AI mapping 232,000+ data points. Confirm plus chop accurate.</p>
         </div>
         
         <div style="margin-top: 50px; font-size: 12px; color: #94a3b8; text-align: center;">
@@ -419,22 +435,44 @@
         </div>
     </div>
 
-    <!-- WIZARD & API LOGIC -->
+    <!-- WIZARD, PRESETS & API LOGIC -->
     <script>
         let currentStep = 1;
 
+        // --- PRESET LOGIC ---
+        function loadPreset(presetName) {
+            const sora = document.getElementById('sora');
+            const gdp_growth = document.getElementById('gdp_growth');
+            const cpi_val = document.getElementById('cpi_val');
+            const hdb_idx = document.getElementById('hdb_idx');
+            const cooling_measure = document.getElementById('cooling_measure');
+
+            // Tambahkan animasi flash kecil agar kelihatan saat angka berubah
+            const inputs = [sora, gdp_growth, cpi_val, hdb_idx, cooling_measure];
+            inputs.forEach(input => {
+                input.classList.add('ring-2', 'ring-accent-400');
+                setTimeout(() => input.classList.remove('ring-2', 'ring-accent-400'), 300);
+            });
+
+            if (presetName === 'baseline') {
+                sora.value = "3.5"; gdp_growth.value = "2.5"; cpi_val.value = "102.0"; hdb_idx.value = "180.0"; cooling_measure.value = "1";
+            } else if (presetName === 'high_interest') {
+                sora.value = "5.2"; gdp_growth.value = "0.5"; cpi_val.value = "110.5"; hdb_idx.value = "165.0"; cooling_measure.value = "1";
+            } else if (presetName === 'market_boom') {
+                sora.value = "1.8"; gdp_growth.value = "5.5"; cpi_val.value = "99.0"; hdb_idx.value = "210.0"; cooling_measure.value = "0";
+            }
+        }
+
+        // --- WIZARD LOGIC ---
         function updateWizardUI() {
-            // Toggle visibility of steps
             document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
             document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
             document.getElementById('step3').classList.toggle('hidden', currentStep !== 3);
             
-            // Toggle buttons
             document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
             document.getElementById('btnNext').classList.toggle('hidden', currentStep === 3);
             document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 3);
 
-            // Toggle step indicators & subtitles
             const subtitles = {1: "Step 1: Property Details", 2: "Step 2: Economic Outlook", 3: "Step 3: Get Your Report"};
             document.getElementById('step-subtitle').innerText = subtitles[currentStep];
 
@@ -446,7 +484,6 @@
         function prevStep() { if (currentStep > 1) { currentStep--; updateWizardUI(); } }
 
         function runPrediction() {
-            // Validation step 3
             const leadName = document.getElementById('lead_name').value;
             const leadPhone = document.getElementById('lead_phone').value;
             const leadEmail = document.getElementById('lead_email').value;
@@ -456,7 +493,6 @@
                 return;
             }
 
-            // Change button state
             document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing AI...';
             
             const payload = {
@@ -472,7 +508,6 @@
                 cooling_measure: parseInt(document.getElementById("cooling_measure").value)
             };
 
-            // Fetch from Hugging Face API
             fetch("https://danawiraprama-sg-hdb-prediction.hf.space/predict", {
                 method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
             })
@@ -480,16 +515,13 @@
             .then(data => {
                 let formattedPrice = new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(data.predicted_price);
                 
-                // Show Result Container
                 document.getElementById('predictor-form-container').classList.add('hidden');
                 document.getElementById('result-container').classList.remove('hidden');
                 document.getElementById('displayPrice').innerText = formattedPrice;
 
-                // Setup WhatsApp Link
                 const waText = encodeURIComponent(`Hi Jonathan! I'm ${leadName}. I just simulated my ${payload.flat_type} at ${payload.town} using your AI.\n\nAI Target Price: ${formattedPrice}.\nI'd like to discuss my options.`);
                 document.getElementById('whatsappBtn').href = `https://wa.me/6581234567?text=${waText}`;
 
-                // Generate PDF & Send Webhook (in background)
                 generatePDF(payload, formattedPrice, leadName);
                 sendLeadToWebhook(leadName, leadEmail, leadPhone, payload, formattedPrice);
             })
