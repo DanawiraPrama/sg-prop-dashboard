@@ -3,733 +3,556 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus HDB | Institutional AI Valuation & Agent Advisory</title>
+    <title>Nexus HDB Advisory | AI Valuation</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { 
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        display: ['"Space Grotesk"', 'sans-serif']
-                    },
-                    colors: {
-                        dark: {
-                            950: '#030712',
-                            900: '#090D1A',
-                            800: '#111827',
-                            700: '#1F2937'
-                        },
-                        accent: {
-                            400: '#34D399',
-                            500: '#10B981',
-                            600: '#059669',
-                            700: '#047857'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf for Auto-PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Modern Glassmorphic Backdrop blur */
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
         }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(16, 185, 129, 0.3);
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.1);
+        /* Premium Hero Background with Parallax effect */
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
-        /* Ambient Glow Behind Cards */
-        .glowing-orb {
-            filter: blur(140px);
-            pointer-events: none;
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
-
-        /* Step Indicator styling */
-        .step-dot.active {
-            background-color: #10B981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+        .agent-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
         }
 
-        /* Hover image transition for featured projects */
-        .project-img-container {
-            overflow: hidden;
-            border-radius: 1rem;
+        /* Hover effect for portfolio images */
+        .portfolio-img-container { overflow: hidden; border-radius: 1rem; }
+        .portfolio-img { transition: transform 0.5s ease; }
+        .portfolio-card:hover .portfolio-img { transform: scale(1.05); }
+
+        /* Loading spinner animation */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
         }
-        .project-img {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-card:hover .project-img {
-            transform: scale(1.08) rotate(1deg);
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Step Indicator */
+        .step-indicator { transition: all 0.3s ease; }
+        .step-active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .step-inactive { background-color: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
     </style>
 </head>
-<body class="font-sans antialiased bg-dark-950 text-slate-100 overflow-x-hidden selection:bg-accent-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 antialiased">
 
-    <!-- Ambient background light -->
-    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full glowing-orb"></div>
-    <div class="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full glowing-orb"></div>
-    <div class="absolute top-[70%] left-1/3 w-[500px] h-[500px] bg-accent-500/5 rounded-full glowing-orb"></div>
-
-    <!-- Nav Bar -->
-    <nav class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 border-b border-white/[0.05] bg-dark-950/85 backdrop-blur-md">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 transition-all duration-300 glass-panel border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                <i class="fa-solid fa-building-user text-accent-500"></i> Nexus<span class="text-slate-400 font-light text-xl">AI</span>
+            <div class="text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
+                <i class="fa-solid fa-building-user"></i> Nexus<span class="text-slate-800">Advisory</span>
             </div>
-            <div class="hidden md:flex gap-8 text-sm font-semibold text-slate-400">
-                <a href="#how-it-works" class="hover:text-white transition-colors">Framework</a>
-                <a href="#about" class="hover:text-white transition-colors">The Agent</a>
-                <a href="#records" class="hover:text-white transition-colors">Track Record</a>
+            <div class="hidden md:flex gap-8 font-semibold text-sm text-slate-600">
+                <a href="#home" class="hover:text-blue-600 transition-colors">Home</a>
+                <a href="#about" class="hover:text-blue-600 transition-colors">The Agent</a>
+                <a href="#portfolio" class="hover:text-blue-600 transition-colors">Track Record</a>
             </div>
-            <button onclick="openModal()" class="bg-white hover:bg-slate-100 text-dark-950 px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg hover:scale-105 active:scale-95">
-                Run Simulation
-            </button>
+            <a href="#contact" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                Consult Now
+            </a>
         </div>
     </nav>
 
-    <!-- === HERO SECTION === -->
-    <section class="min-h-screen pt-32 pb-20 flex flex-col justify-center relative px-6">
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-            <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-slate-300 font-bold text-xs tracking-wider uppercase mb-8 backdrop-blur-md">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-500"></span>
-                </span>
-                XGBoost Macro Simulation Engine
-            </div>
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen pt-32 pb-20 flex items-center relative">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
             
-            <!-- Headline -->
-            <h1 class="text-5xl md:text-7xl font-extrabold font-display leading-tight mb-8 tracking-tight">
-                Simulate Your Property's Value <br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-400 via-emerald-300 to-teal-400">Against Macro Shocks</span>.
-            </h1>
-            
-            <!-- Subtitle -->
-            <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-                Why guess based on yesterday's prices? Our institutional-grade machine learning model runs 232,000+ historical transactions against inflation, SORA rates, and economic scenarios to simulate your equity in seconds.
-            </p>
-            
-            <!-- CTA Button -->
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                <button onclick="openModal()" class="group relative w-full sm:w-auto inline-flex items-center justify-center px-10 py-5 font-bold text-white bg-accent-600 rounded-full transition-all duration-300 hover:bg-accent-500 hover:scale-105 hover:shadow-[0_0_50px_0_rgba(16,185,129,0.4)]">
-                    <span class="flex items-center gap-2 text-lg">
-                        Launch Equity Check <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            <!-- Marketing Copy -->
+            <div class="text-white">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold text-xs tracking-wider uppercase mb-6 backdrop-blur-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                     </span>
-                </button>
+                    10-Year HDB Market AI (2017-2026)
+                </div>
+                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                    Maximize Your HDB's <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Selling Price</span>.
+                </h1>
+                <p class="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-lg font-light">
+                    Stop the <i>agar-agar</i> guessing. Our proprietary AI crunches over 232,000 real HDB resale transactions spanning 10 years to give you a highly accurate, data-backed valuation in seconds.
+                </p>
+                <div class="grid grid-cols-2 gap-4 text-sm text-slate-200 font-medium">
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-bolt"></i></div> Instant PDF Report</div>
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-chart-pie"></i></div> Macro-Economic Engine</div>
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock"></i></div> Secure Data</div>
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"><i class="fa-solid fa-user-shield"></i></div> No Account Needed</div>
+                </div>
             </div>
-            
-            <!-- Trust indicators -->
-            <div class="mt-16 flex flex-wrap justify-center items-center gap-8 md:gap-16 text-xs font-bold tracking-wider text-slate-500 uppercase">
-                <div><i class="fa-solid fa-shield-halved mr-2 text-accent-500"></i> No signups required</div>
-                <div><i class="fa-solid fa-chart-line mr-2 text-accent-500"></i> 10-Year HDB Data Points</div>
-                <div><i class="fa-solid fa-server mr-2 text-accent-500"></i> Serverless API Fetch</div>
-            </div>
-        </div>
-    </section>
 
-    <!-- === HOW IT WORKS SECTION === -->
-    <section id="how-it-works" class="py-24 bg-dark-900/40 border-t border-white/[0.05] relative">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h4 class="text-accent-500 font-bold tracking-wider uppercase text-xs mb-3">Core Analytics</h4>
-                <h2 class="text-3xl md:text-4xl font-bold font-display">A Smarter Approach to Real Estate</h2>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="glass-card p-8 rounded-2xl">
-                    <div class="w-12 h-12 rounded-xl bg-accent-500/10 text-accent-500 flex items-center justify-center text-xl mb-6">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 font-display">1. Target Specs</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Input location, flat type, storey midpoint, and lease characteristics to establish a solid physical property baseline.</p>
-                </div>
-                <div class="glass-card p-8 rounded-2xl">
-                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl mb-6">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 font-display">2. Macro Simulation</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Adjust SORA interest rates, GDP trends, and CPI index levels to model different future market conditions.</p>
-                </div>
-                <div class="glass-card p-8 rounded-2xl">
-                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mb-6">
-                        <i class="fa-solid fa-microchip"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 font-display">3. XGBoost Output</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">The AI maps physical characteristics against economic scenarios, outputting a precise, data-backed value estimate instantly.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- === AGENT PROFILE SECTION === -->
-    <section id="about" class="py-24 bg-dark-950 relative border-t border-white/[0.05]">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid lg:grid-cols-12 gap-16 items-center">
-                
-                <!-- Left Column: Image Card with Glowing Border -->
-                <div class="lg:col-span-5 relative">
-                    <div class="absolute -inset-1.5 bg-gradient-to-r from-accent-500 to-blue-500 rounded-3xl blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                    <div class="relative bg-dark-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                        <!-- Agent Image with premium dark filter overlay -->
-                        <div class="relative h-[480px]">
-                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" alt="Top Property Agent" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent"></div>
+            <!-- NATIVE INLINE MULTI-STEP PREDICTOR -->
+            <div class="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden">
+                <div id="predictor-form-container">
+                    
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-800 mb-1">AI Valuation Engine</h3>
+                            <p class="text-sm text-slate-500 font-medium" id="step-subtitle">Step 1: Property Details</p>
                         </div>
+                        <!-- Step Dots -->
+                        <div class="flex gap-2 pb-1">
+                            <div id="dot1" class="w-3 h-3 rounded-full step-active border"></div>
+                            <div id="dot2" class="w-3 h-3 rounded-full step-inactive border"></div>
+                            <div id="dot3" class="w-3 h-3 rounded-full step-inactive border"></div>
+                        </div>
+                    </div>
+
+                    <form id="aiPredictorForm" onsubmit="event.preventDefault();">
                         
-                        <!-- Floating Achievement Badges -->
-                        <div class="absolute bottom-6 left-6 right-6 p-6 rounded-2xl bg-dark-900/90 border border-white/[0.08] backdrop-blur-md">
-                            <p class="text-xs text-accent-400 font-bold uppercase tracking-widest mb-1">Active Ground Agent</p>
-                            <h4 class="text-xl font-extrabold text-white font-display">Jonathan Tan</h4>
-                            <p class="text-xs text-slate-400 mt-1">Senior Property Strategist • CEA: R012345Z</p>
+                        <!-- STEP 1: Specs -->
+                        <div id="step1">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Location (Town)</label>
+                                    <select id="town" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                        <option value="ANG MO KIO">Ang Mo Kio</option><option value="BEDOK">Bedok</option><option value="BISHAN">Bishan</option>
+                                        <option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option>
+                                        <option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option>
+                                        <option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option>
+                                        <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
+                                        <option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option>
+                                        <option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option>
+                                        <option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option>
+                                        <option value="WOODLANDS">Woodlands</option><option value="YISHUN">Yishun</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Flat Type</label>
+                                    <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                        <option value="1 ROOM">1 Room</option><option value="2 ROOM">2 Room</option><option value="3 ROOM">3 Room</option>
+                                        <option value="4 ROOM" selected>4 Room</option><option value="5 ROOM">5 Room</option><option value="EXECUTIVE">Executive</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor Area (sqm)</label>
+                                    <input type="number" id="area" value="90" min="20" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Storey Level</label>
+                                    <input type="number" id="storey" value="8" min="1" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lease Left (Yrs)</label>
+                                    <input type="number" id="lease" value="75" min="40" max="99" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                            </div>
                         </div>
-                    </div>
+
+                        <!-- STEP 2: Macro Scenarios -->
+                        <div id="step2" class="hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SORA Interest (%)</label>
+                                    <input type="number" id="sora" value="3.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">GDP Growth (%)</label>
+                                    <input type="number" id="gdp_growth" value="2.5" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">CPI Inflation</label>
+                                    <input type="number" id="cpi_val" value="102.0" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">HDB Index Target</label>
+                                    <input type="number" id="hdb_idx" value="180.0" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gov Cooling Measures</label>
+                                    <select id="cooling_measure" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                        <option value="1">Active (Taxes/Restrictions applied)</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Lead Capture -->
+                        <div id="step3" class="hidden">
+                            <div class="mb-5 text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                <i class="fa-solid fa-file-pdf text-3xl text-blue-500 mb-2"></i>
+                                <h4 class="text-sm font-bold text-slate-800">Where should we send your report?</h4>
+                                <p class="text-xs text-slate-500 mt-1">Enter your details to instantly download the PDF valuation.</p>
+                            </div>
+                            <div class="space-y-4 mb-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                                    <input type="text" id="lead_name" placeholder="John Doe" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">WhatsApp Number</label>
+                                    <input type="tel" id="lead_phone" placeholder="+65 8123 4567" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                                    <input type="email" id="lead_email" placeholder="john@email.com" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex gap-3 mt-6">
+                            <button type="button" id="btnPrev" onclick="prevStep()" class="hidden w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm py-4 transition-colors">
+                                Back
+                            </button>
+                            <button type="button" id="btnNext" onclick="nextStep()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm py-4 transition-all shadow-lg flex justify-center items-center gap-2">
+                                Next Step <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button type="button" id="submitBtn" onclick="runPrediction()" class="hidden w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl text-sm py-4 transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-unlock"></i> Unlock Valuation & PDF
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- Right Column: Biography & Stats -->
-                <div class="lg:col-span-7 space-y-8">
-                    <div>
-                        <h4 class="text-accent-400 font-bold tracking-wider uppercase text-xs mb-3">Your Property Advisor</h4>
-                        <h2 class="text-4xl md:text-5xl font-extrabold font-display leading-tight">
-                            Data-First Advisory.<br>No Guesswork.
-                        </h2>
+                <!-- RESULT PANEL -->
+                <div id="result-container" class="hidden text-center py-6">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-500 mb-4 shadow-inner">
+                        <i class="fa-solid fa-check text-2xl"></i>
                     </div>
+                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Simulated Market Value</h4>
                     
-                    <p class="text-slate-400 leading-relaxed text-base md:text-lg">
-                        Hi, I'm Jonathan Tan. I specialize in the Singapore public housing landscape. Over my 8 years on the ground, I've seen too many HDB owners undersell their flats or completely miss potential Cash-Over-Valuation (COV) simply because they relied on "feel" or basic, delayed portal listings.
-                    </p>
-                    <p class="text-slate-400 leading-relaxed text-base">
-                        That's why our advisory merges <strong>institutional machine learning (XGBoost)</strong> with aggressive, localized negotiation tactics. We construct precise asset progression strategies so you can exit at the peak and transition safely. Let's work together to unlock your home's hidden equity.
-                    </p>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight" id="displayPrice">S$ 0</div>
+                    <p class="text-xs text-blue-600 font-semibold mb-6"><i class="fa-solid fa-download"></i> Your PDF report is downloading...</p>
                     
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 pt-6 border-t border-white/[0.08]">
-                        <div>
-                            <h4 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 font-display">S$ 45M+</h4>
-                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-2">Transacted Volume</p>
-                        </div>
-                        <div>
-                            <h4 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-accent-400 to-emerald-300 font-display">14 Days</h4>
-                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-2">Avg. Days On Market</p>
-                        </div>
-                        <div class="col-span-2 md:col-span-1">
-                            <h4 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 font-display">180+</h4>
-                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-2">Families Served</p>
-                        </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 mb-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10"></div>
+                        <h5 class="font-bold text-slate-800 mb-2">Ready to secure this price?</h5>
+                        <p class="text-xs text-slate-500 mb-5 leading-relaxed">I have the track record to market your flat and negotiate this exact value or higher. Let's talk strategy.</p>
+                        
+                        <a id="whatsappBtn" href="#" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-sm px-5 py-4 transition-all shadow-lg shadow-[#25D366]/30 transform hover:-translate-y-0.5">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Discuss on WhatsApp
+                        </a>
                     </div>
+
+                    <button onclick="resetForm()" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Check another property
+                    </button>
                 </div>
 
             </div>
         </div>
     </section>
 
-    <!-- === FEATURED PROJECTS / RECORD SALES === -->
-    <section id="records" class="py-24 bg-dark-900/30 border-t border-white/[0.05] relative">
+    <!-- The Agent Profile Section -->
+    <section id="about" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1 relative">
+                    <div class="absolute inset-0 bg-blue-600 rounded-3xl translate-x-4 translate-y-4 opacity-10"></div>
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" alt="Top Property Agent" class="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[600px]">
+                    
+                    <div class="absolute bottom-8 -right-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 z-20 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-500 flex justify-center items-center text-xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-bold uppercase">Award Winner</p>
+                            <p class="font-extrabold text-slate-800">Top 1% Achiever 2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2">
+                    <h4 class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-3">Your Property Partner</h4>
+                    <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Data-Driven Approach. <br>Results-Oriented.</h2>
+                    <p class="text-slate-600 mb-6 leading-relaxed text-lg">
+                        Hi, I'm Jonathan Tan. Navigating the SG property market can be a headache. Over my 8 years on the ground, I've seen too many owners sell their flats below market value or miss out on potential COV (Cash Over Valuation) just because they relied on "feel".
+                    </p>
+                    <p class="text-slate-600 mb-8 leading-relaxed">
+                        That's why I combine our AI's cutting-edge Machine Learning with aggressive negotiation tactics. My goal is simple: to sell your flat at the absolute highest market valuation, <i>chop chop</i>.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-10">
+                        <div class="border-l-4 border-blue-600 pl-4">
+                            <h4 class="text-3xl font-extrabold text-slate-900">S$ 45M+</h4>
+                            <p class="text-sm font-semibold text-slate-500 mt-1">Properties Transacted</p>
+                        </div>
+                        <div class="border-l-4 border-blue-600 pl-4">
+                            <h4 class="text-3xl font-extrabold text-slate-900">14 Days</h4>
+                            <p class="text-sm font-semibold text-slate-500 mt-1">Avg. Time on Market</p>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-full transition-colors shadow-lg">
+                        Let's Grab a Kopi <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Track Record / Portfolio Section -->
+    <section id="portfolio" class="py-24 bg-slate-50 border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
-                <h4 class="text-accent-500 font-bold tracking-wider uppercase text-xs mb-3">Proven Record</h4>
-                <h2 class="text-3xl md:text-4xl font-bold font-display">Recent Benchmark Sales</h2>
-                <p class="text-slate-400 text-sm mt-3 max-w-lg mx-auto">Take a look at how we utilize deep data science to land record-shattering resale deals for HDB owners across the island.</p>
+                <h4 class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-3">Proven Track Record</h4>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900">Recent Benchmark Sales</h2>
             </div>
 
-            <!-- Projects Grid -->
             <div class="grid md:grid-cols-3 gap-8">
-                
-                <!-- Project 1 -->
-                <div class="glass-card p-5 rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <div class="project-img-container mb-5 h-56 relative">
-                            <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop" alt="Bishan HDB" class="project-img w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
-                            <span class="absolute top-4 left-4 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-md">Record Value</span>
-                        </div>
-                        <h3 class="font-bold text-xl text-white font-display mb-1">Natura Loft @ Bishan</h3>
-                        <p class="text-xs text-slate-400 mb-4 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-accent-500"></i> 5-Room DBSS • High Floor</p>
-                        <p class="text-sm text-slate-400 leading-relaxed">Leveraged spatial pricing models to demonstrate premium value, securing buyers looking for a landed alternative.</p>
+                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <div class="portfolio-img-container mb-4 h-56">
+                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop" alt="Bishan HDB" class="portfolio-img w-full h-full object-cover">
                     </div>
-                    <div class="flex justify-between items-center pt-5 mt-6 border-t border-white/[0.05]">
-                        <span class="text-slate-500 text-xs uppercase tracking-wider font-semibold">Price Closed:</span>
-                        <span class="font-bold text-accent-400 text-lg">S$ 1.25M</span>
+                    <div class="p-2">
+                        <div class="inline-block px-3 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-bold mb-3 uppercase tracking-wider">Sold Over Valuation</div>
+                        <h3 class="font-bold text-xl text-slate-900 mb-1">Natura Loft @ Bishan</h3>
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 5-Room DBSS</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            <span class="text-slate-500 text-sm">Sold For:</span>
+                            <span class="font-extrabold text-blue-700 text-lg">S$ 1.25M</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Project 2 -->
-                <div class="glass-card p-5 rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <div class="project-img-container mb-5 h-56 relative">
-                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol HDB" class="project-img w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
-                            <span class="absolute top-4 left-4 bg-accent-500/15 border border-accent-500/30 text-accent-400 text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-md">Velocity Exit</span>
-                        </div>
-                        <h3 class="font-bold text-xl text-white font-display mb-1">Waterway Terraces</h3>
-                        <p class="text-xs text-slate-400 mb-4 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-accent-500"></i> 4-Room Premium • Punggol</p>
-                        <p class="text-sm text-slate-400 leading-relaxed">Executed a targeted social marketing campaign pinpointing young families transitioning from smaller rental units.</p>
+                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <div class="portfolio-img-container mb-4 h-56">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol HDB" class="portfolio-img w-full h-full object-cover">
                     </div>
-                    <div class="flex justify-between items-center pt-5 mt-6 border-t border-white/[0.05]">
-                        <span class="text-slate-500 text-xs uppercase tracking-wider font-semibold">Sold In:</span>
-                        <span class="font-bold text-accent-400 text-lg">8 Days</span>
+                    <div class="p-2">
+                        <div class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs font-bold mb-3 uppercase tracking-wider">Record Time</div>
+                        <h3 class="font-bold text-xl text-slate-900 mb-1">Waterway Terraces</h3>
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 4-Room Premium</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            <span class="text-slate-500 text-sm">Sold In:</span>
+                            <span class="font-extrabold text-blue-700 text-lg">8 Days</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Project 3 -->
-                <div class="glass-card p-5 rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <div class="project-img-container mb-5 h-56 relative">
-                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop" alt="Clementi HDB" class="project-img w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
-                            <span class="absolute top-4 left-4 bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-md">Premium COV</span>
-                        </div>
-                        <h3 class="font-bold text-xl text-white font-display mb-1">Clementi Cascadia</h3>
-                        <p class="text-xs text-slate-400 mb-4 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-accent-500"></i> 5-Room Standard • West Coast</p>
-                        <p class="text-sm text-slate-400 leading-relaxed">Showcased remaining lease premium projections to prove investment safety, locking the highest block-record value.</p>
+                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+                    <div class="portfolio-img-container mb-4 h-56">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop" alt="Clementi HDB" class="portfolio-img w-full h-full object-cover">
                     </div>
-                    <div class="flex justify-between items-center pt-5 mt-6 border-t border-white/[0.05]">
-                        <span class="text-slate-500 text-xs uppercase tracking-wider font-semibold">Price Closed:</span>
-                        <span class="font-bold text-accent-400 text-lg">S$ 1.12M</span>
+                    <div class="p-2">
+                        <div class="inline-block px-3 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-bold mb-3 uppercase tracking-wider">Highest in Block</div>
+                        <h3 class="font-bold text-xl text-slate-900 mb-1">Clementi Cascadia</h3>
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 5-Room Standard</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                            <span class="text-slate-500 text-sm">Sold For:</span>
+                            <span class="font-extrabold text-blue-700 text-lg">S$ 1.12M</span>
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
 
-    <!-- === INTERACTIVE MODAL (POPUP WIZARD) === -->
-    <div id="predictionModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 overflow-y-auto">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-dark-950/80 backdrop-blur-md" onclick="closeModal()"></div>
+    <!-- Contact Section -->
+    <section id="contact" class="bg-blue-600 py-20 text-center px-6">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Ready to upgrade or cash out?</h2>
+        <p class="text-blue-100 mb-10 max-w-2xl mx-auto text-lg">Whether you are planning to sell after your MOP or right-sizing your home, having a clear roadmap backed by data is crucial. Let's chart your property journey.</p>
+        <a href="https://wa.me/6581234567" target="_blank" class="inline-flex items-center gap-3 bg-white text-blue-600 font-bold px-8 py-4 rounded-full text-lg hover:bg-slate-50 transition-colors shadow-2xl">
+            <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i> WhatsApp Me For A Chat
+        </a>
+    </section>
+
+    <footer class="bg-slate-900 py-12 text-center text-slate-400 text-sm">
+        <div class="text-2xl font-extrabold text-slate-700 tracking-tight mb-4 flex justify-center items-center gap-2">
+            <i class="fa-solid fa-building-user"></i> Nexus<span class="text-slate-600">Advisory</span>
+        </div>
+        <p>&copy; 2026 Nexus HDB Advisory. Data-Driven Real Estate Solutions.</p>
+    </footer>
+
+    <!-- HIDDEN PDF TEMPLATE -->
+    <div id="pdfTemplate" style="display: none; background: white; padding: 40px; color: #1e293b; width: 800px; font-family: 'Helvetica', sans-serif;">
+        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="margin: 0; color: #0f172a; font-size: 28px;">NEXUS ADVISORY</h1>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase;">Confidential Equity Report</p>
+                <p style="margin: 0; font-size: 14px; font-weight: bold; color: #2563eb;" id="pdf_date"></p>
+            </div>
+        </div>
         
-        <!-- Modal Panel -->
-        <div class="glass-panel relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl modal-enter z-10">
-            <!-- Modal Header -->
-            <div class="p-6 border-b border-white/[0.08] flex justify-between items-center bg-dark-900/50">
-                <div class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"></span>
-                    <h3 class="font-bold text-lg font-display tracking-wide">Property Simulation Engine</h3>
-                </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors rounded-full w-8 h-8 flex items-center justify-center bg-white/5">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+        <h2 style="font-size: 20px; margin-bottom: 10px;">Valuation Analysis for <span id="pdf_name" style="color:#2563eb;"></span></h2>
+        
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+            <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-top:0;">Physical Specifications</h3>
+            <p style="margin: 5px 0;"><strong>Location:</strong> <span id="pdf_town"></span></p>
+            <p style="margin: 5px 0;"><strong>Flat Type & Area:</strong> <span id="pdf_type"></span> (<span id="pdf_area"></span> sqm)</p>
+            <p style="margin: 5px 0;"><strong>Storey Midpoint:</strong> Level <span id="pdf_storey"></span></p>
+            <p style="margin: 5px 0;"><strong>Remaining Lease:</strong> <span id="pdf_lease"></span> Years</p>
+        </div>
 
-            <!-- Steps Progress Bar -->
-            <div class="flex justify-between items-center px-8 py-4 bg-white/[0.02] border-b border-white/[0.05]">
-                <div class="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
-                    <span id="step1Dot" class="w-6 h-6 rounded-full flex items-center justify-center text-xs bg-accent-500 text-dark-950 font-bold active step-dot">1</span>
-                    <span id="step1Text" class="text-white">Property Specs</span>
-                </div>
-                <div class="flex-1 h-[1px] bg-white/10 mx-4"></div>
-                <div class="flex items-center gap-3 text-xs font-bold tracking-wider uppercase">
-                    <span id="step2Dot" class="w-6 h-6 rounded-full flex items-center justify-center text-xs bg-slate-800 text-slate-400 font-bold step-dot">2</span>
-                    <span id="step2Text" class="text-slate-500">Economic Outlook</span>
-                </div>
-            </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+            <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-top:0;">Macro-Economic Variables</h3>
+            <p style="margin: 5px 0;"><strong>SORA Interest Rate:</strong> <span id="pdf_sora"></span>% | <strong>GDP Growth:</strong> <span id="pdf_gdp"></span>%</p>
+            <p style="margin: 5px 0;"><strong>CPI Index:</strong> <span id="pdf_cpi"></span> | <strong>HDB Index:</strong> <span id="pdf_hdbidx"></span></p>
+        </div>
 
-            <!-- MODAL CONTENT / WIZARD STEPS -->
-            <div class="p-8 max-h-[70vh] overflow-y-auto">
-                <form id="aiPredictorForm" onsubmit="event.preventDefault();">
-                    
-                    <!-- === STEP 1: Property Specifications === -->
-                    <div id="wizardStep1" class="space-y-6">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Location (Town)</label>
-                            <select id="town" required class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500 transition-all appearance-none cursor-pointer">
-                                <option value="ANG MO KIO">Ang Mo Kio</option>
-                                <option value="BEDOK">Bedok</option>
-                                <option value="BISHAN">Bishan</option>
-                                <option value="BUKIT BATOK">Bukit Batok</option>
-                                <option value="BUKIT MERAH">Bukit Merah</option>
-                                <option value="BUKIT PANJANG">Bukit Panjang</option>
-                                <option value="BUKIT TIMAH">Bukit Timah</option>
-                                <option value="CENTRAL AREA">Central Area</option>
-                                <option value="CHOA CHU KANG">Choa Chu Kang</option>
-                                <option value="CLEMENTI">Clementi</option>
-                                <option value="GEYLANG">Geylang</option>
-                                <option value="HOUGANG">Hougang</option>
-                                <option value="JURONG EAST">Jurong East</option>
-                                <option value="JURONG WEST">Jurong West</option>
-                                <option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
-                                <option value="MARINE PARADE">Marine Parade</option>
-                                <option value="PASIR RIS">Pasir Ris</option>
-                                <option value="PUNGGOL">Punggol</option>
-                                <option value="QUEENSTOWN">Queenstown</option>
-                                <option value="SEMBAWANG">Sembawang</option>
-                                <option value="SENGKANG">Sengkang</option>
-                                <option value="SERANGOON">Serangoon</option>
-                                <option value="TAMPINES">Tampines</option>
-                                <option value="TOA PAYOH">Toa Payoh</option>
-                                <option value="WOODLANDS">Woodlands</option>
-                                <option value="YISHUN">Yishun</option>
-                            </select>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Flat Type</label>
-                                <select id="flat_type" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500 transition-all appearance-none cursor-pointer">
-                                    <option value="1 ROOM">1 Room</option>
-                                    <option value="2 ROOM">2 Room</option>
-                                    <option value="3 ROOM">3 Room</option>
-                                    <option value="4 ROOM" selected>4 Room</option>
-                                    <option value="5 ROOM">5 Room</option>
-                                    <option value="EXECUTIVE">Executive</option>
-                                    <option value="MULTI-GENERATION">Multi-Generation</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Area (sqm)</label>
-                                <input type="number" id="floor_area" value="90" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Storey Level (Midpoint)</label>
-                                <input type="number" id="storey" value="8" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lease Left (Yrs)</label>
-                                <input type="number" id="lease_left" value="75" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- === STEP 2: Macro-Economic Simulator === -->
-                    <div id="wizardStep2" class="space-y-6 hidden">
-                        <!-- Quick Scenario Presets -->
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Quick Scenario Presets</label>
-                            <div class="grid grid-cols-3 gap-2">
-                                <button type="button" onclick="loadPreset('baseline')" class="px-3 py-2.5 rounded-lg border border-white/5 bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">
-                                    Baseline (Current)
-                                </button>
-                                <button type="button" onclick="loadPreset('high_interest')" class="px-3 py-2.5 rounded-lg border border-red-500/20 bg-red-500/5 text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all">
-                                    High Rates 🔴
-                                </button>
-                                <button type="button" onclick="loadPreset('market_boom')" class="px-3 py-2.5 rounded-lg border-emerald-500/20 bg-emerald-500/5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 transition-all">
-                                    Bull Run 🟢
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">SORA Interest Rate (%)</label>
-                                <input type="number" id="sora" value="3.5" step="0.1" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">GDP Growth Rate (%)</label>
-                                <input type="number" id="gdp_growth" value="2.5" step="0.5" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">CPI Inflation (Index)</label>
-                                <input type="number" id="cpi_val" value="102.0" step="0.5" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">HDB Resale Index</label>
-                                <input type="number" id="hdb_idx" value="180.0" step="1" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 transition-all">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Cooling Measure Status</label>
-                            <select id="cooling_measure" class="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-semibold text-white outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500 transition-all appearance-none cursor-pointer">
-                                <option value="1">Active (Taxes applied to curb market)</option>
-                                <option value="0">Inactive (No strict restrictions)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- === RESULT VIEW === -->
-                    <div id="wizardResult" class="space-y-6 hidden text-center py-6">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-500/10 text-accent-400 mb-2 border border-accent-500/20">
-                            <i class="fa-solid fa-square-poll-vertical text-2xl"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Simulated Equity Value</h4>
-                            <div class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-accent-400 to-emerald-400 tracking-tight" id="displayPrice">S$ 0</div>
-                        </div>
-                        
-                        <!-- Mini Parameter Specs Checklist -->
-                        <div class="bg-white/5 border border-white/[0.05] rounded-xl p-4 text-left text-xs text-slate-400 space-y-1">
-                            <div class="flex justify-between"><span>Property:</span> <strong class="text-slate-200" id="res_property">-</strong></div>
-                            <div class="flex justify-between"><span>Location:</span> <strong class="text-slate-200" id="res_location">-</strong></div>
-                            <div class="flex justify-between"><span>SORA / GDP Growth:</span> <strong class="text-slate-200" id="res_macro">-</strong></div>
-                        </div>
-
-                        <!-- WhatsApp Action Box -->
-                        <div class="bg-gradient-to-br from-accent-600/10 to-transparent border border-accent-500/20 rounded-xl p-5 text-left relative overflow-hidden">
-                            <h5 class="font-bold text-slate-200 mb-1 flex items-center gap-2">
-                                <i class="fa-brands fa-whatsapp text-accent-400"></i> Unlock Maximum Capital
-                            </h5>
-                            <p class="text-xs text-slate-400 leading-relaxed mb-4">Our advisory team leverages this data to construct custom, tax-efficient sale-purchase timelines that beat baseline market indexes.</p>
-                            <a id="whatsappBtn" href="#" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg hover:scale-[1.02]">
-                                Request Strategy Roadmap
-                            </a>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="p-6 border-t border-white/[0.08] bg-dark-900/50 flex justify-between gap-4">
-                <button id="prevBtn" onclick="prevStep()" class="hidden px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-bold transition-all">
-                    Back
-                </button>
-                <div class="flex-1"></div>
-                <button id="nextBtn" onclick="nextStep()" class="px-6 py-3 bg-white text-dark-950 hover:bg-slate-100 rounded-xl text-sm font-bold transition-all shadow-lg">
-                    Next Step <i class="fa-solid fa-arrow-right ml-1"></i>
-                </button>
-                <button id="submitBtn" onclick="runPrediction()" class="hidden px-6 py-3 bg-accent-600 hover:bg-accent-500 rounded-xl text-sm font-bold text-white transition-all shadow-lg">
-                    Run Simulation
-                </button>
-                <button id="resetBtn" onclick="resetWizard()" class="hidden px-6 py-3 border border-white/10 hover:bg-white/5 rounded-xl text-sm font-bold transition-all">
-                    Reset
-                </button>
-            </div>
+        <div style="text-align: center; margin-top: 40px; border: 2px solid #2563eb; border-radius: 12px; padding: 30px; background: #eff6ff;">
+            <p style="margin: 0; color: #1e40af; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Simulated Market Value</p>
+            <h1 style="font-size: 48px; color: #1e3a8a; margin: 10px 0;" id="pdf_price">S$ 0</h1>
+            <p style="margin: 0; font-size: 12px; color: #2563eb;">Generated by XGBoost AI mapping 232,000+ data points.</p>
+        </div>
+        
+        <div style="margin-top: 50px; font-size: 12px; color: #94a3b8; text-align: center;">
+            <p>This is an algorithmic projection, not a formal bank valuation. <br>To secure this price in the open market, contact Jonathan Tan at Nexus Advisory.</p>
         </div>
     </div>
 
-    <!-- === FOOTER === -->
-    <footer class="bg-dark-950 py-12 text-center text-slate-500 text-xs border-t border-white/[0.05]">
-        <p>&copy; 2026 Nexus AI Advisory. Premium Institutional Data-science Platform.</p>
-    </footer>
-
-    <!-- JAVASCRIPT: Logic Wizard Modal, API Engine, Presets, dan WhatsApp Generator -->
+    <!-- WIZARD & API LOGIC -->
     <script>
-        const modal = document.getElementById('predictionModal');
-        const wizardStep1 = document.getElementById('wizardStep1');
-        const wizardStep2 = document.getElementById('wizardStep2');
-        const wizardResult = document.getElementById('wizardResult');
-        
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        const resetBtn = document.getElementById('resetBtn');
-
-        const step1Dot = document.getElementById('step1Dot');
-        const step2Dot = document.getElementById('step2Dot');
-        const step1Text = document.getElementById('step1Text');
-        const step2Text = document.getElementById('step2Text');
-
         let currentStep = 1;
 
-        // Buka Popup Modal
-        function openModal() {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-            resetWizard();
+        function updateWizardUI() {
+            // Toggle visibility of steps
+            document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
+            document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
+            document.getElementById('step3').classList.toggle('hidden', currentStep !== 3);
+            
+            // Toggle buttons
+            document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
+            document.getElementById('btnNext').classList.toggle('hidden', currentStep === 3);
+            document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 3);
+
+            // Toggle step indicators & subtitles
+            const subtitles = {1: "Step 1: Property Details", 2: "Step 2: Economic Outlook", 3: "Step 3: Get Your Report"};
+            document.getElementById('step-subtitle').innerText = subtitles[currentStep];
+
+            document.getElementById('dot2').className = currentStep >= 2 ? "w-3 h-3 rounded-full step-active border" : "w-3 h-3 rounded-full step-inactive border";
+            document.getElementById('dot3').className = currentStep >= 3 ? "w-3 h-3 rounded-full step-active border" : "w-3 h-3 rounded-full step-inactive border";
         }
 
-        // Tutup Popup Modal
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }
+        function nextStep() { if (currentStep < 3) { currentStep++; updateWizardUI(); } }
+        function prevStep() { if (currentStep > 1) { currentStep--; updateWizardUI(); } }
 
-        // Setup Preset untuk Macro Economics
-        function loadPreset(presetName) {
-            const sora = document.getElementById('sora');
-            const gdp_growth = document.getElementById('gdp_growth');
-            const cpi_val = document.getElementById('cpi_val');
-            const hdb_idx = document.getElementById('hdb_idx');
-            const cooling_measure = document.getElementById('cooling_measure');
-
-            if (presetName === 'baseline') {
-                sora.value = "3.5";
-                gdp_growth.value = "2.5";
-                cpi_val.value = "102.0";
-                hdb_idx.value = "180.0";
-                cooling_measure.value = "1";
-            } else if (presetName === 'high_interest') {
-                sora.value = "5.2"; // Suku bunga melonjak parah
-                gdp_growth.value = "0.5"; // Ekonomi melempem
-                cpi_val.value = "110.5"; // Inflasi membara
-                hdb_idx.value = "165.0"; // Index pasar amblas
-                cooling_measure.value = "1";
-            } else if (presetName === 'market_boom') {
-                sora.value = "1.8"; // Bunga murah/pemangkasan rate
-                gdp_growth.value = "5.5"; // Ekonomi meroket
-                cpi_val.value = "99.0"; // Inflasi terkontrol
-                hdb_idx.value = "210.0"; // Index melonjak tinggi
-                cooling_measure.value = "0"; // Aturan dilonggarkan
-            }
-        }
-
-        // Navigasi Wizard
-        function nextStep() {
-            if (currentStep === 1) {
-                wizardStep1.classList.add('hidden');
-                wizardStep2.classList.remove('hidden');
-                
-                prevBtn.classList.remove('hidden');
-                nextBtn.classList.add('hidden');
-                submitBtn.classList.remove('hidden');
-
-                step2Dot.classList.add('active', 'bg-accent-500', 'text-dark-950');
-                step2Dot.classList.remove('bg-slate-800', 'text-slate-400');
-                step2Text.classList.replace('text-slate-500', 'text-white');
-
-                currentStep = 2;
-            }
-        }
-
-        // Navigasi Balik Wizard
-        function prevStep() {
-            if (currentStep === 2) {
-                wizardStep2.classList.add('hidden');
-                wizardStep1.classList.remove('hidden');
-
-                prevBtn.classList.add('hidden');
-                nextBtn.classList.remove('hidden');
-                submitBtn.classList.add('hidden');
-
-                step2Dot.classList.remove('active', 'bg-accent-500', 'text-dark-950');
-                step2Dot.classList.add('bg-slate-800', 'text-slate-400');
-                step2Text.classList.replace('text-white', 'text-slate-500');
-
-                currentStep = 1;
-            }
-        }
-
-        // Reset Wizard Modal
-        function resetWizard() {
-            currentStep = 1;
-            wizardStep1.classList.remove('hidden');
-            wizardStep2.classList.add('hidden');
-            wizardResult.classList.add('hidden');
-
-            prevBtn.classList.add('hidden');
-            nextBtn.classList.remove('hidden');
-            submitBtn.classList.add('hidden');
-            resetBtn.classList.add('hidden');
-
-            step2Dot.classList.remove('active', 'bg-accent-500', 'text-dark-950');
-            step2Dot.classList.add('bg-slate-800', 'text-slate-400');
-            step2Text.classList.replace('text-white', 'text-slate-500');
-        }
-
-        // Eksekusi Prediksi AI 10 Fitur
         function runPrediction() {
-            // Sembunyikan form dan ganti tombol
-            wizardStep2.classList.add('hidden');
-            wizardResult.classList.remove('hidden');
-            prevBtn.classList.add('hidden');
-            submitBtn.classList.add('hidden');
-            resetBtn.classList.remove('hidden');
+            // Validation step 3
+            const leadName = document.getElementById('lead_name').value;
+            const leadPhone = document.getElementById('lead_phone').value;
+            const leadEmail = document.getElementById('lead_email').value;
 
-            const displayPrice = document.getElementById('displayPrice');
-            displayPrice.innerHTML = '<span class="text-xl text-accent-500 animate-pulse"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Computing Scenarios...</span>';
+            if(!leadName || !leadPhone || !leadEmail) {
+                alert("Please complete your contact details to unlock the report.");
+                return;
+            }
 
-            // Ambil seluruh data dari 10 input yang ada di Form
-            const town = document.getElementById("town").value;
-            const flat_type = document.getElementById("flat_type").value;
-            const floor_area = parseFloat(document.getElementById("floor_area").value);
-            const storey = parseFloat(document.getElementById("storey").value);
-            const lease_left = parseFloat(document.getElementById("lease_left").value);
-            const sora = parseFloat(document.getElementById("sora").value);
-            const gdp_growth = parseFloat(document.getElementById("gdp_growth").value);
-            const cpi_val = parseFloat(document.getElementById("cpi_val").value);
-            const hdb_idx = document.getElementById("hdb_idx").value;
-            const cooling_measure = parseInt(document.getElementById("cooling_measure").value);
-
-            // Payload data SAMA PERSIS dengan 10 Fitur Model XGBoost Baru kita
-            const requestData = {
-                town: town,
-                flat_type: flat_type,
-                floor_area: floor_area,
-                lease_left: lease_left,
-                storey: storey,
-                cpi_val: cpi_val,
-                sora: sora,
-                hdb_idx: parseFloat(hdb_idx),
-                gdp_growth: gdp_growth,
-                cooling_measure: cooling_measure
+            // Change button state
+            document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing AI...';
+            
+            const payload = {
+                town: document.getElementById("town").value,
+                flat_type: document.getElementById("flat_type").value,
+                floor_area: parseFloat(document.getElementById("area").value),
+                storey: parseFloat(document.getElementById("storey").value),
+                lease_left: parseFloat(document.getElementById("lease").value),
+                sora: parseFloat(document.getElementById("sora").value),
+                gdp_growth: parseFloat(document.getElementById("gdp_growth").value),
+                cpi_val: parseFloat(document.getElementById("cpi_val").value),
+                hdb_idx: parseFloat(document.getElementById("hdb_idx").value),
+                cooling_measure: parseInt(document.getElementById("cooling_measure").value)
             };
 
-            // URL API SERVER HUGGING FACE LOE
-            const apiUrl = "https://danawiraprama-sg-hdb-prediction.hf.space/predict";
-
-            fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestData)
+            // Fetch from Hugging Face API
+            fetch("https://danawiraprama-sg-hdb-prediction.hf.space/predict", {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
             })
-            .then(response => {
-                if (!response.ok) throw new Error("API Connection Failed");
-                return response.json();
-            })
+            .then(res => res.json())
             .then(data => {
-                // Formatting SGD (misal S$ 421,000)
-                let finalPrice = data.predicted_price;
-                let formattedPrice = new Intl.NumberFormat('en-SG', { 
-                    style: 'currency', 
-                    currency: 'SGD',
-                    maximumFractionDigits: 0
-                }).format(finalPrice);
+                let formattedPrice = new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(data.predicted_price);
+                
+                // Show Result Container
+                document.getElementById('predictor-form-container').classList.add('hidden');
+                document.getElementById('result-container').classList.remove('hidden');
+                document.getElementById('displayPrice').innerText = formattedPrice;
 
-                displayPrice.innerText = formattedPrice;
-
-                // Isi detail parameter di ringkasan
-                document.getElementById('res_property').innerText = `${flat_type} (${floor_area} sqm) | Storey ${storey}`;
-                document.getElementById('res_location').innerText = `${town} (Lease left: ${lease_left} yrs)`;
-                document.getElementById('res_macro').innerText = `SORA: ${sora}% | GDP Growth: ${gdp_growth}%`;
-
-                // Update Link WhatsApp khusus dengan format pesan otomatis super cerdas!
-                const waText = encodeURIComponent(
-                    `Hi Jonathan! I just simulated my HDB using your AI Valuation Engine.\n\n` +
-                    `🏡 Property Specs:\n` +
-                    `- Town: ${town}\n` +
-                    `- Type: ${flat_type}\n` +
-                    `- Storey Midpoint: ${storey}\n` +
-                    `- Lease: ${lease_left} Years Left\n\n` +
-                    `📈 Macro Scenario:\n` +
-                    `- SORA Interest Rate: ${sora}%\n` +
-                    `- Index Target: ${hdb_idx}\n\n` +
-                    `🔮 AI Simulated Value: ${formattedPrice}\n\n` +
-                    `I'd like to consult on the best strategy for my flat.`
-                );
-                // Update nomor WA di sini sesuai kebutuhan loe
+                // Setup WhatsApp Link
+                const waText = encodeURIComponent(`Hi Jonathan! I'm ${leadName}. I just simulated my ${payload.flat_type} at ${payload.town} using your AI.\n\nAI Target Price: ${formattedPrice}.\nI'd like to discuss my options.`);
                 document.getElementById('whatsappBtn').href = `https://wa.me/6581234567?text=${waText}`;
+
+                // Generate PDF & Send Webhook (in background)
+                generatePDF(payload, formattedPrice, leadName);
+                sendLeadToWebhook(leadName, leadEmail, leadPhone, payload, formattedPrice);
             })
-            .catch(error => {
-                console.error("API Error:", error);
-                displayPrice.innerHTML = '<span class="text-red-500 text-xl">Simulation Error ❌</span>';
-                document.getElementById('res_property').innerText = 'Connection Failed';
-                document.getElementById('res_location').innerText = 'Please ensure API Server is online.';
-                document.getElementById('res_macro').innerText = 'Check Hugging Face Space Status.';
+            .catch(err => {
+                alert("API Connection Error. Please ensure the Hugging Face server is running.");
+                document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-unlock"></i> Unlock Valuation & PDF';
             });
+        }
+
+        function resetForm() {
+            currentStep = 1;
+            updateWizardUI();
+            document.getElementById('result-container').classList.add('hidden');
+            document.getElementById('predictor-form-container').classList.remove('hidden');
+            document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-unlock"></i> Unlock Valuation & PDF';
+        }
+
+        function generatePDF(payload, price, leadName) {
+            document.getElementById('pdf_date').innerText = new Date().toLocaleDateString('en-SG');
+            document.getElementById('pdf_name').innerText = leadName;
+            document.getElementById('pdf_town').innerText = payload.town;
+            document.getElementById('pdf_type').innerText = payload.flat_type;
+            document.getElementById('pdf_area').innerText = payload.floor_area;
+            document.getElementById('pdf_storey').innerText = payload.storey;
+            document.getElementById('pdf_lease').innerText = payload.lease_left;
+            
+            document.getElementById('pdf_sora').innerText = payload.sora;
+            document.getElementById('pdf_gdp').innerText = payload.gdp_growth;
+            document.getElementById('pdf_cpi').innerText = payload.cpi_val;
+            document.getElementById('pdf_hdbidx').innerText = payload.hdb_idx;
+            document.getElementById('pdf_price').innerText = price;
+
+            const element = document.getElementById('pdfTemplate');
+            element.style.display = 'block';
+
+            const opt = {
+                margin: 0,
+                filename: `Nexus_Valuation_${leadName.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none';
+            });
+        }
+
+        function sendLeadToWebhook(name, email, phone, payload, price) {
+            const webhookUrl = "https://hook.make.com/xxxxxxxxxxxxxxxxxxxxxxx"; 
+
+            const dataToSend = {
+                lead_name: name, lead_email: email, lead_phone: phone,
+                property_town: payload.town, predicted_price: price, timestamp: new Date().toISOString()
+            };
+
+            if (webhookUrl.includes("xxxxxxxxxxxxxxxxxxxxxxx")) {
+                console.log("Mock Mode: Webhook not set. Data:", dataToSend);
+                return;
+            }
+
+            fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSend) })
+            .catch(err => console.error("Webhook failed:", err));
         }
     </script>
 </body>
