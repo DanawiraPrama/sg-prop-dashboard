@@ -3,77 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HDB Price Predictor (Lead Gen Demo)</title>
+    <title>AI HDB Valuation Pro</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding-top: 50px; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        .btn-hitung { background: #10b981; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s; }
-        .btn-hitung:hover { background: #059669; }
-        .harga-result { margin-top: 25px; font-size: 28px; font-weight: 800; color: #1e293b; }
-        .loading { font-size: 16px; color: #64748b; font-style: italic; }
+        /* === DESAIN PREMIUM === */
+        :root {
+            --primary: #1e293b;
+            --secondary: #10b981;
+            --bg: #f1f5f9;
+            --text: #334155;
+            --border: #cbd5e1;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 800px; }
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h1 { color: var(--primary); margin: 0 0 10px; font-size: 28px; }
+        .header p { color: #64748b; margin: 0; }
+        
+        .section-title { font-size: 18px; font-weight: 700; color: var(--primary); margin: 30px 0 15px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #475569; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; box-sizing: border-box; transition: 0.2s; }
+        input:focus, select:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        
+        .btn-submit { background: var(--secondary); color: white; border: none; padding: 16px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); }
+        .btn-submit:hover { background: #059669; transform: translateY(-2px); }
+        
+        /* Box Hasil yang elegan */
+        .result-box { background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 30px; text-align: center; margin-top: 30px; display: none; }
+        .result-box.error { background: #fef2f2; border-color: #fca5a5; }
+        .result-title { font-size: 16px; color: #166534; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .result-value { font-size: 42px; font-weight: 800; color: #15803d; margin: 0; }
+        .result-caption { font-size: 13px; color: #166534; margin-top: 10px; opacity: 0.8; }
+        
+        /* Mobile responsif */
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Cek Valuasi Properti Anda</h2>
-    <p style="color: #64748b; font-size: 14px;">Simulasi untuk: <strong>4-ROOM HDB di ANG MO KIO</strong></p>
-    
-    <button class="btn-hitung" onclick="getAIPrediction()">Hitung Harga Jual Sekarang</button>
-    
-    <div id="hasilHarga" class="harga-result">S$ 0</div>
+<div class="container">
+    <div class="header">
+        <h1>🏢 AI Property Valuation Engine</h1>
+        <p>Forecast your HDB property value based on physical specs & macro-economic conditions.</p>
+    </div>
+
+    <div class="section-title">🏠 1. Property Specifications</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Location (Town)</label>
+            <select id="town">
+                <option value="ANG MO KIO">ANG MO KIO</option><option value="BEDOK">BEDOK</option>
+                <option value="BISHAN">BISHAN</option><option value="BUKIT BATOK">BUKIT BATOK</option>
+                <option value="BUKIT MERAH">BUKIT MERAH</option><option value="BUKIT PANJANG">BUKIT PANJANG</option>
+                <option value="BUKIT TIMAH">BUKIT TIMAH</option><option value="CENTRAL AREA">CENTRAL AREA</option>
+                <option value="CHOA CHU KANG">CHOA CHU KANG</option><option value="CLEMENTI">CLEMENTI</option>
+                <option value="GEYLANG">GEYLANG</option><option value="HOUGANG">HOUGANG</option>
+                <option value="JURONG EAST">JURONG EAST</option><option value="JURONG WEST">JURONG WEST</option>
+                <option value="KALLANG/WHAMPOA">KALLANG/WHAMPOA</option><option value="MARINE PARADE">MARINE PARADE</option>
+                <option value="PASIR RIS">PASIR RIS</option><option value="PUNGGOL">PUNGGOL</option>
+                <option value="QUEENSTOWN">QUEENSTOWN</option><option value="SEMBAWANG">SEMBAWANG</option>
+                <option value="SENGKANG">SENGKANG</option><option value="SERANGOON">SERANGOON</option>
+                <option value="TAMPINES">TAMPINES</option><option value="TOA PAYOH">TOA PAYOH</option>
+                <option value="WOODLANDS">WOODLANDS</option><option value="YISHUN">YISHUN</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Flat Type</label>
+            <select id="flat_type">
+                <option value="1 ROOM">1 ROOM</option><option value="2 ROOM">2 ROOM</option>
+                <option value="3 ROOM">3 ROOM</option><option value="4 ROOM" selected>4 ROOM</option>
+                <option value="5 ROOM">5 ROOM</option><option value="EXECUTIVE">EXECUTIVE</option>
+                <option value="MULTI-GENERATION">MULTI-GENERATION</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Floor Area (sqm)</label>
+            <input type="number" id="floor_area" value="90" min="30" max="250">
+        </div>
+        <div class="form-group">
+            <label>Storey Level (Midpoint)</label>
+            <input type="number" id="storey" value="8" min="1" max="50">
+        </div>
+        <div class="form-group">
+            <label>Remaining Lease (Years)</label>
+            <input type="number" id="lease_left" value="75" min="40" max="99">
+        </div>
+    </div>
+
+    <div class="section-title">📈 2. Macro-Economic Conditions</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>SORA Interest Rate (%)</label>
+            <input type="number" id="sora" value="3.5" step="0.1">
+        </div>
+        <div class="form-group">
+            <label>GDP Growth YoY (%)</label>
+            <input type="number" id="gdp_growth" value="2.5" step="0.5">
+        </div>
+        <div class="form-group">
+            <label>CPI Inflation (Index)</label>
+            <input type="number" id="cpi_val" value="102.0" step="0.5">
+        </div>
+        <div class="form-group">
+            <label>HDB Price Index</label>
+            <input type="number" id="hdb_idx" value="180.0" step="1">
+        </div>
+        <div class="form-group">
+            <label>Cooling Measure</label>
+            <select id="cooling_measure">
+                <option value="1">Active (Tax Applied)</option>
+                <option value="0">Inactive</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="calculatePrice()" id="submitBtn">Generate Market Value</button>
+
+    <div id="resultBox" class="result-box">
+        <div class="result-title" id="resultTitle">Estimated Future Value</div>
+        <h2 class="result-value" id="resultValue">Loading...</h2>
+        <div class="result-caption">*Powered by XGBoost Machine Learning</div>
+    </div>
 </div>
 
 <script>
-    function getAIPrediction() {
-        // ✅ URL API yang sudah fix dan mengarah langsung ke server Hugging Face loe
-        const apiUrl = "https://danawiraprama-sg-hdb-prediction.hf.space/predict"; 
+    function calculatePrice() {
+        const btn = document.getElementById("submitBtn");
+        const resultBox = document.getElementById("resultBox");
+        const resultValue = document.getElementById("resultValue");
+        const resultTitle = document.getElementById("resultTitle");
 
-        // Data simulasi untuk di-tes
+        // Ganti tampilan tombol saat loading
+        btn.innerText = "Calculating... ⏳";
+        btn.disabled = true;
+        
+        resultBox.style.display = "block";
+        resultBox.className = "result-box";
+        resultValue.style.color = "#15803d";
+        resultTitle.innerText = "Estimated Future Value";
+        resultValue.innerText = "Processing...";
+
+        // Ambil data dari form yang diisi user
         const requestData = {
-            town: "ANG MO KIO",
-            flat_type: "4 ROOM",
-            floor_area: 90.0,
-            lease_left: 75.0,
-            storey: 8.0,
-            cpi_val: 102.0,
-            sora: 3.5,
-            hdb_idx: 180.0,
-            gdp_growth: 2.5,
-            cooling_measure: 1
+            town: document.getElementById("town").value,
+            flat_type: document.getElementById("flat_type").value,
+            floor_area: parseFloat(document.getElementById("floor_area").value),
+            storey: parseFloat(document.getElementById("storey").value),
+            lease_left: parseFloat(document.getElementById("lease_left").value),
+            sora: parseFloat(document.getElementById("sora").value),
+            gdp_growth: parseFloat(document.getElementById("gdp_growth").value),
+            cpi_val: parseFloat(document.getElementById("cpi_val").value),
+            hdb_idx: parseFloat(document.getElementById("hdb_idx").value),
+            cooling_measure: parseInt(document.getElementById("cooling_measure").value)
         };
 
-        const hasilElemen = document.getElementById("hasilHarga");
-        hasilElemen.innerHTML = '<span class="loading">Memanggil AI... ⏳</span>';
+        // URL API Hugging Face loe
+        const apiUrl = "https://danawiraprama-sg-hdb-prediction.hf.space/predict";
 
-        // Proses nembak ke API
         fetch(apiUrl, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestData)
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error("Waduh, server nolak!");
-            }
+            if (!response.ok) throw new Error("Server Error");
             return response.json();
         })
         .then(data => {
-            // Mengubah angka biasa jadi format uang rapi (S$ 450,000)
+            // Format jadi mata uang Dollar SG
             let formattedPrice = new Intl.NumberFormat('en-SG', { 
                 style: 'currency', 
                 currency: 'SGD',
                 maximumFractionDigits: 0
             }).format(data.predicted_price);
             
-            hasilElemen.innerText = formattedPrice;
-            console.log("Sukses! Valuasi:", data.predicted_price);
+            resultValue.innerText = formattedPrice;
+            btn.innerText = "Generate Market Value";
+            btn.disabled = false;
         })
         .catch(error => {
             console.error("Error:", error);
-            hasilElemen.innerHTML = '<span style="color: red;">Koneksi Gagal ❌</span>';
+            resultBox.className = "result-box error";
+            resultTitle.innerText = "Connection Failed";
+            resultValue.innerText = "Error ❌";
+            resultValue.style.color = "#b91c1c";
+            btn.innerText = "Try Again";
+            btn.disabled = false;
         });
     }
 </script>
