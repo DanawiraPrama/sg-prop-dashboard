@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDB Price Predictor (Lead Gen Demo)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding-top: 50px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .btn-hitung { background: #10b981; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s; }
+        .btn-hitung:hover { background: #059669; }
+        .harga-result { margin-top: 25px; font-size: 28px; font-weight: 800; color: #1e293b; }
+        .loading { font-size: 16px; color: #64748b; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Cek Valuasi Properti Anda</h2>
+    <p style="color: #64748b; font-size: 14px;">Simulasi untuk: <strong>4-ROOM HDB di ANG MO KIO</strong></p>
+    
+    <button class="btn-hitung" onclick="getAIPrediction()">Hitung Harga Jual Sekarang</button>
+    
+    <div id="hasilHarga" class="harga-result">S$ 0</div>
+</div>
+
+<script>
+    function getAIPrediction() {
+        // ✅ URL API yang sudah fix dan mengarah langsung ke server Hugging Face loe
+        const apiUrl = "https://danawiraprama-sg-hdb-prediction.hf.space/predict"; 
+
+        // Data simulasi untuk di-tes
+        const requestData = {
+            town: "ANG MO KIO",
+            flat_type: "4 ROOM",
+            floor_area: 90.0,
+            lease_left: 75.0,
+            storey: 8.0,
+            cpi_val: 102.0,
+            sora: 3.5,
+            hdb_idx: 180.0,
+            gdp_growth: 2.5,
+            cooling_measure: 1
+        };
+
+        const hasilElemen = document.getElementById("hasilHarga");
+        hasilElemen.innerHTML = '<span class="loading">Memanggil AI... ⏳</span>';
+
+        // Proses nembak ke API
+        fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Waduh, server nolak!");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Mengubah angka biasa jadi format uang rapi (S$ 450,000)
+            let formattedPrice = new Intl.NumberFormat('en-SG', { 
+                style: 'currency', 
+                currency: 'SGD',
+                maximumFractionDigits: 0
+            }).format(data.predicted_price);
+            
+            hasilElemen.innerText = formattedPrice;
+            console.log("Sukses! Valuasi:", data.predicted_price);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            hasilElemen.innerHTML = '<span style="color: red;">Koneksi Gagal ❌</span>';
+        });
+    }
+</script>
+
+</body>
+</html>
