@@ -642,43 +642,83 @@
 
         // --- 4. BRANDED PDF EXPORT ---
         function downloadBrandedPDF() {
-            if (!lastPayload) return;
-            const profile = loadAgentProfile();
+    if (!lastPayload) return;
+    const profile = loadAgentProfile();
 
-            document.getElementById('pdf_date').innerText = new Date().toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' });
-            document.getElementById('pdf_agent_name').innerText = profile.name;
-            document.getElementById('pdf_agent_agency').innerText = `${profile.agency} | CEA: ${profile.cea}`;
-            document.getElementById('pdf_agent_phone').innerText = `+${profile.phone}`;
+    // 1. Format Dates & Ref ID
+    const today = new Date();
+    const dateFormatted = today.toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' });
+    const randomRef = Math.floor(1000 + Math.random() * 9000);
+    const refCode = `NX-${today.getFullYear()}-${randomRef}`;
 
-            document.getElementById('pdf_town').innerText = lastPayload.town;
-            document.getElementById('pdf_type').innerText = lastPayload.flat_type;
-            document.getElementById('pdf_area').innerText = lastPayload.floor_area;
-            document.getElementById('pdf_storey').innerText = lastPayload.storey;
-            document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
-            document.getElementById('pdf_price').innerText = lastFormattedPrice;
-            document.getElementById('pdf_range').innerText = lastFormattedRange;
+    // 2. Metrics calculation
+    const SQM_TO_SQFT = 10.7639;
+    const areaSqm = parseFloat(lastPayload.floor_area) || 90;
+    const areaSqft = Math.round(areaSqm * SQM_TO_SQFT);
+    
+    // Clean price number from string (e.g., "S$ 520,000" -> 520000)
+    const rawPriceNum = parseInt(lastFormattedPrice.replace(/[^0-9]/g, ''), 10) || 0;
+    const psfVal = areaSqft > 0 ? Math.round(rawPriceNum / areaSqft) : 0;
 
-            const element = document.getElementById('pdfTemplate');
-            element.style.display = 'block';
+    // 3. Populate PDF Fields
+    document.getElementById('pdf_date').innerText = dateFormatted;
+    document.getElementById('pdf_ref_id').innerText = refCode;
+    
+    // Agent
+    document.getElementById('pdf_agent_name').innerText = profile.name;
+    document.getElementById('pdf_agent_agency').innerText = profile.agency;
+    document.getElementById('pdf_agent_cea').innerText = profile.cea;
+    document.getElementById('pdf_agent_phone').innerText = `+${profile.phone}`;
 
-            const opt = {
-                margin: 0,
-                filename: `Valuation_Dossier_${lastPayload.town.replace(/\s+/g, '_')}_${profile.name.replace(/\s+/g, '_')}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
+    // Property
+    document.getElementById('pdf_town').innerText = lastPayload.town;
+    document.getElementById('pdf_type').innerText = lastPayload.flat_type;
+    document.getElementById('pdf_area').innerText = areaSqm;
+    document.getElementById('pdf_area_sqft').innerText = areaSqft.toLocaleString();
+    document.getElementById('pdf_storey').innerText = lastPayload.storey;
+    document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.style.display = 'none';
-            });
-        }
+    // Macro
+    document.getElementById('pdf_sora').innerText = parseFloat(lastPayload.sora).toFixed(2);
+    document.getElementById('pdf_gdp').innerText = parseFloat(lastPayload.gdp_growth).toFixed(1);
+    document.getElementById('pdf_cpi').innerText = parseFloat(lastPayload.cpi_val).toFixed(1);
+    document.getElementById('pdf_hdbidx').innerText = parseFloat(lastPayload.hdb_idx).toFixed(1);
+    document.getElementById('pdf_cooling').innerText = lastPayload.cooling_measure === 1 ? "Active (LTV / Wait-out)" : "Relaxed / Inactive";
 
-        // Initialize on boot
-        window.onload = () => {
-            loadAgentProfile();
-            checkLicenseState();
-        };
+    // Pricing & PSF
+    document.getElementById('pdf_price').innerText = lastFormattedPrice;
+    document.getElementById('pdf_range').innerText = lastFormattedRange;
+    document.getElementById('pdf_psf').innerText = `Implied PSF: S$ ${psfVal.toLocaleString()} psf`;
+
+    // Dynamic Positioning Script
+    const positioningElement = document.getElementById('pdf_positioning_text');
+    if (lastPayload.sora > 4.0) {
+        positioningElement.innerHTML = `<strong>Elevated Rate Environment (SORA ${lastPayload.sora}%):</strong> Buyer purchasing power is throttled by TDSR/MSR. Sellers should benchmark near the median to avoid prolonged marketing cycles. Buyers should negotiate aggressively on older units.`;
+    } else if (lastPayload.hdb_idx > 195) {
+        positioningElement.innerHTML = `<strong>Bullish Index Run (Index ${lastPayload.hdb_idx}):</strong> Resale volume velocity is accelerating. Sellers hold leverage to test peak valuations with prospective Cash-Over-Valuation (COV).`;
+    } else {
+        positioningElement.innerHTML = `<strong>Balanced Market Condition:</strong> Units on floors ≥ level ${lastPayload.storey} with healthy remaining lease (${lastPayload.lease_left} yrs) maintain strong secondary market liquidity. Anchor negotiations firmly around S$ ${psfVal} psf.`;
+    }
+
+    // 4. Render with html2pdf
+    const element = document.getElementById('pdfTemplate');
+    element.style.display = 'block';
+
+    const cleanTown = lastPayload.town.replace(/\s+/g, '_');
+    const cleanAgent = profile.name.replace(/\s+/g, '_');
+
+    const opt = {
+        margin: [10, 10, 10, 10], // tight 10mm margins
+        filename: `Nexus_Equity_Dossier_${cleanTown}_${cleanAgent}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.style.display = 'none';
+    });
+}
     </script>
 </body>
 </html>
