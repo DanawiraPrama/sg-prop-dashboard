@@ -2,7 +2,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus HDB Advisory | AI Valuation</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,241 +17,254 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        /* Premium Hero Background with Parallax effect */
         .hero-bg {
-            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.96)), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
         }
 
         .glass-panel {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
         }
 
-        .agent-card {
-            background: linear-gradient(145deg, #ffffff, #f8fafc);
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
+        /* Prevent auto-zoom on iOS inputs while keeping readability */
+        input, select {
+            font-size: 16px !important;
+        }
+        @media (min-width: 768px) {
+            input, select {
+                font-size: 0.875rem !important; /* 14px text-sm */
+            }
         }
 
-        /* Hover effect for portfolio images */
-        .portfolio-img-container { overflow: hidden; border-radius: 1rem; }
-        .portfolio-img { transition: transform 0.5s ease; }
-        .portfolio-card:hover .portfolio-img { transform: scale(1.05); }
-
-        /* Loading spinner animation */
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Step Indicator */
-        .step-indicator { transition: all 0.3s ease; }
         .step-active { background-color: #2563eb; color: white; border-color: #2563eb; }
         .step-inactive { background-color: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 transition-all duration-300 glass-panel border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
-                <i class="fa-solid fa-building-user"></i> Nexus<span class="text-slate-800">Advisory</span>
-            </div>
+    <!-- Navigation Header -->
+    <nav class="fixed w-full z-50 glass-panel border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-3.5 flex justify-between items-center">
+            <a href="#" class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
+                <i class="fa-solid fa-building-user text-blue-600"></i> Nexus<span class="text-slate-800">Advisory</span>
+            </a>
+            
             <div class="hidden md:flex gap-8 font-semibold text-sm text-slate-600">
                 <a href="#home" class="hover:text-blue-600 transition-colors">Home</a>
                 <a href="#about" class="hover:text-blue-600 transition-colors">The Agent</a>
                 <a href="#portfolio" class="hover:text-blue-600 transition-colors">Track Record</a>
+                <a href="index.html" class="hover:text-blue-600 transition-colors flex items-center gap-1.5 text-blue-700 font-bold">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
             </div>
-            <a href="#contact" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                Consult Now
-            </a>
+
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="md:hidden bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-lg transition-colors">
+                    <i class="fa-solid fa-chart-line mr-1"></i> Data
+                </a>
+                <a href="#contact" class="bg-slate-900 hover:bg-slate-800 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all shadow hover:-translate-y-0.5">
+                    Contact
+                </a>
+            </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero-bg min-h-screen pt-32 pb-20 flex items-center relative">
-        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+    <!-- Hero Section & Valuation Engine -->
+    <section id="home" class="hero-bg min-h-screen pt-24 md:pt-36 pb-16 flex items-center relative">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 w-full">
             
             <!-- Marketing Copy -->
-            <div class="text-white">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold text-xs tracking-wider uppercase mb-6 backdrop-blur-sm">
+            <div class="text-white lg:col-span-5 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold text-[11px] md:text-xs tracking-wider uppercase mb-4 backdrop-blur-sm">
                     <span class="relative flex h-2 w-2">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                     </span>
                     10-Year HDB Market AI (2017-2026)
                 </div>
-                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-                    Maximize Your HDB's <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Selling Price</span>.
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold leading-tight mb-4 tracking-tight">
+                    Instant HDB <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">AI Valuation</span>.
                 </h1>
-                <p class="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-lg font-light">
-                    Stop the <i>agar-agar</i> guessing. Our proprietary AI crunches over 232,000 real HDB resale transactions spanning 10 years to give you a highly accurate, data-backed valuation in seconds. Confirm plus chop.
+                <p class="text-sm md:text-lg text-slate-300 mb-6 leading-relaxed max-w-lg mx-auto lg:mx-0 font-light">
+                    Real valuation grounded on 232,000+ authentic transactions. Calibrated against mortgage rates, inflation, and market indices.
                 </p>
-                <div class="grid grid-cols-2 gap-4 text-sm text-slate-200 font-medium">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-bolt"></i></div> Instant Results</div>
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-chart-pie"></i></div> Macro-Economic Engine</div>
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock"></i></div> 100% Free</div>
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"><i class="fa-solid fa-user-shield"></i></div> No Sign-up Needed</div>
+
+                <!-- Value Badges -->
+                <div class="grid grid-cols-2 gap-2.5 md:gap-4 text-xs text-slate-200 font-medium max-w-md mx-auto lg:mx-0">
+                    <div class="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+                        <i class="fa-solid fa-bolt text-blue-400"></i> Instant Benchmark
+                    </div>
+                    <div class="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+                        <i class="fa-solid fa-chart-pie text-emerald-400"></i> Macro Simulation
+                    </div>
+                    <div class="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+                        <i class="fa-solid fa-file-pdf text-purple-400"></i> Auto PDF Export
+                    </div>
+                    <div class="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+                        <i class="fa-solid fa-lock text-amber-400"></i> No Sign-Up Needed
+                    </div>
                 </div>
             </div>
 
-            <!-- NATIVE INLINE 2-STEP PREDICTOR (NO LEAD GATE) -->
-            <div class="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden">
+            <!-- VALUATION CARD (Mobile-Optimized Container) -->
+            <div class="glass-panel p-5 sm:p-7 md:p-9 rounded-2xl md:rounded-3xl lg:col-span-7 relative w-full">
+                
                 <div id="predictor-form-container">
-                    
-                    <div class="flex justify-between items-end mb-6">
+                    <!-- Step Progress Header -->
+                    <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
                         <div>
-                            <h3 class="text-2xl font-bold text-slate-800 mb-1">AI Valuation Engine</h3>
-                            <p class="text-sm text-slate-500 font-medium" id="step-subtitle">Step 1: Property Details</p>
+                            <span class="text-[10px] uppercase font-extrabold tracking-wider text-blue-600" id="step-badge">Step 1 of 2</span>
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight" id="step-subtitle">Property Physical Details</h3>
                         </div>
-                        <!-- Step Dots (2 Steps Only) -->
-                        <div class="flex gap-2 pb-1">
-                            <div id="dot1" class="w-3 h-3 rounded-full step-active border"></div>
-                            <div id="dot2" class="w-3 h-3 rounded-full step-inactive border"></div>
+                        <div class="flex gap-1.5">
+                            <div id="dot1" class="w-2.5 h-2.5 rounded-full step-active border transition-all"></div>
+                            <div id="dot2" class="w-2.5 h-2.5 rounded-full step-inactive border transition-all"></div>
                         </div>
                     </div>
 
                     <form id="aiPredictorForm" onsubmit="event.preventDefault();">
                         
-                        <!-- STEP 1: Specs -->
-                        <div id="step1">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                                <div class="col-span-1 md:col-span-2">
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Location (Town)</label>
-                                    <select id="town" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
-                                        <option value="ANG MO KIO">Ang Mo Kio</option><option value="BEDOK">Bedok</option><option value="BISHAN">Bishan</option>
-                                        <option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option>
-                                        <option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option>
-                                        <option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option>
-                                        <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
-                                        <option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option>
-                                        <option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option>
-                                        <option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option>
-                                        <option value="WOODLANDS">Woodlands</option><option value="YISHUN">Yishun</option>
-                                    </select>
-                                </div>
+                        <!-- STEP 1: Physical Attributes -->
+                        <div id="step1" class="space-y-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Town / Estate</label>
+                                <select id="town" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3 transition-colors">
+                                    <option value="ANG MO KIO">Ang Mo Kio</option><option value="BEDOK">Bedok</option><option value="BISHAN">Bishan</option>
+                                    <option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option>
+                                    <option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option>
+                                    <option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option>
+                                    <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
+                                    <option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option>
+                                    <option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option>
+                                    <option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option>
+                                    <option value="WOODLANDS">Woodlands</option><option value="YISHUN">Yishun</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Flat Type</label>
-                                    <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Flat Type</label>
+                                    <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3 transition-colors">
                                         <option value="1 ROOM">1 Room</option><option value="2 ROOM">2 Room</option><option value="3 ROOM">3 Room</option>
                                         <option value="4 ROOM" selected>4 Room</option><option value="5 ROOM">5 Room</option><option value="EXECUTIVE">Executive</option>
-                                        <option value="MULTI-GENERATION">Multi-Generation</option>
+                                        <option value="MULTI-GENERATION">Multi-Gen</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor Area (sqm)</label>
-                                    <input type="number" id="area" value="90" min="20" max="250" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Area (sqm)</label>
+                                    <input type="number" id="area" value="90" min="20" max="250" inputmode="numeric" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Storey Level</label>
+                                    <input type="number" id="storey" value="8" min="1" max="50" inputmode="numeric" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Storey Level</label>
-                                    <input type="number" id="storey" value="8" min="1" max="50" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lease Left (Yrs)</label>
-                                    <input type="number" id="lease" value="75" min="40" max="99" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Lease Left (Yrs)</label>
+                                    <input type="number" id="lease" value="75" min="39" max="99" inputmode="numeric" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- STEP 2: Macro Scenarios + QUICK PRESETS -->
-                        <div id="step2" class="hidden">
-                            <!-- QUICK SCENARIO PRESETS -->
-                            <div class="mb-5 p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-                                <label class="block text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-3">Quick Scenarios (Don't say bo jio!)</label>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <button type="button" onclick="loadPreset('baseline')" class="px-2 py-2.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all shadow-sm">
-                                        Current Market
+                        <!-- STEP 2: Macro Scenarios -->
+                        <div id="step2" class="hidden space-y-4">
+                            <!-- Quick Preset Buttons (Stack on mobile, row on tablet/desktop) -->
+                            <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl">
+                                <span class="block text-[10px] font-bold text-blue-900 uppercase tracking-wider mb-2">Select Scenario Preset</span>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button type="button" onclick="loadPreset('baseline')" class="px-2 py-2 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-700 hover:bg-slate-50 active:scale-95 transition-all text-center">
+                                        Current
                                     </button>
-                                    <button type="button" onclick="loadPreset('high_interest')" class="px-2 py-2.5 rounded-lg border border-red-200 bg-red-50 text-[11px] font-bold text-red-600 hover:bg-red-100 transition-all shadow-sm">
-                                        High Rates (Siong) 🔴
+                                    <button type="button" onclick="loadPreset('high_interest')" class="px-2 py-2 rounded-lg border border-red-200 bg-red-50 text-[11px] font-bold text-red-700 hover:bg-red-100 active:scale-95 transition-all text-center">
+                                        High Rates 🔴
                                     </button>
-                                    <button type="button" onclick="loadPreset('market_boom')" class="px-2 py-2.5 rounded-lg border border-emerald-200 bg-emerald-50 text-[11px] font-bold text-emerald-600 hover:bg-emerald-100 transition-all shadow-sm">
-                                        Bull Run (Huat!) 🟢
+                                    <button type="button" onclick="loadPreset('market_boom')" class="px-2 py-2 rounded-lg border border-emerald-200 bg-emerald-50 text-[11px] font-bold text-emerald-700 hover:bg-emerald-100 active:scale-95 transition-all text-center">
+                                        Bull Run 🟢
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SORA Interest (%)</label>
-                                    <input type="number" id="sora" value="3.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">GDP Growth (%)</label>
-                                    <input type="number" id="gdp_growth" value="2.5" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">SORA Rate (%)</label>
+                                    <input type="number" id="sora" value="3.5" step="0.1" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">CPI Inflation</label>
-                                    <input type="number" id="cpi_val" value="102.0" step="0.5" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">GDP Growth (%)</label>
+                                    <input type="number" id="gdp_growth" value="2.5" step="0.5" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">HDB Index Target</label>
-                                    <input type="number" id="hdb_idx" value="180.0" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">CPI Inflation</label>
+                                    <input type="number" id="cpi_val" value="102.0" step="0.5" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
                                 </div>
-                                <div class="col-span-1 md:col-span-2">
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Gov Cooling Measures</label>
-                                    <select id="cooling_measure" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-all">
-                                        <option value="1">Active (Taxes/Restrictions applied)</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">HDB Index Target</label>
+                                    <input type="number" id="hdb_idx" value="180.0" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
                                 </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Gov Cooling Measures</label>
+                                <select id="cooling_measure" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
+                                    <option value="1">Active (Taxes/Restrictions applied)</option>
+                                    <option value="0">Inactive</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- Navigation Buttons -->
-                        <div class="flex gap-3 mt-6">
-                            <button type="button" id="btnPrev" onclick="prevStep()" class="hidden w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm py-4 transition-colors">
+                        <!-- Action Navigation Buttons -->
+                        <div class="flex gap-2.5 pt-4 mt-2">
+                            <button type="button" id="btnPrev" onclick="prevStep()" class="hidden w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs md:text-sm py-3.5 transition-colors">
                                 Back
                             </button>
-                            <button type="button" id="btnNext" onclick="nextStep()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm py-4 transition-all shadow-lg flex justify-center items-center gap-2">
-                                Next Step <i class="fa-solid fa-arrow-right"></i>
+                            <button type="button" id="btnNext" onclick="nextStep()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs md:text-sm py-3.5 transition-all shadow-md flex justify-center items-center gap-2">
+                                Next Step <i class="fa-solid fa-arrow-right text-xs"></i>
                             </button>
-                            <button type="button" id="submitBtn" onclick="runPrediction()" class="hidden w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl text-sm py-4 transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2">
+                            <button type="button" id="submitBtn" onclick="runPrediction()" class="hidden w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs md:text-sm py-3.5 transition-all shadow-lg shadow-blue-500/25 flex justify-center items-center gap-2">
                                 <i class="fa-solid fa-bolt"></i> Calculate Market Value
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- RESULT PANEL -->
-                <div id="result-container" class="hidden text-center py-6">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-500 mb-4 shadow-inner">
-                        <i class="fa-solid fa-check text-2xl"></i>
+                <!-- VALUATION RESULT PANEL -->
+                <div id="result-container" class="hidden text-center py-4">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-3 shadow-sm">
+                        <i class="fa-solid fa-check text-xl"></i>
                     </div>
-                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Simulated Market Value</h4>
                     
-                    <div class="text-5xl font-extrabold text-slate-900 mb-1 tracking-tight" id="displayPrice">S$ 0</div>
-                    <p class="text-xs font-semibold text-slate-500 mb-6" id="displayRange">Range: S$ 0 — S$ 0</p>
+                    <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Simulated Valuation</p>
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-1 tracking-tight" id="displayPrice">S$ 0</div>
+                    <p class="text-xs font-semibold text-blue-700 mb-5" id="displayRange">Estimated Range: S$ 0 — S$ 0</p>
                     
-                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 mb-6 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10"></div>
-                        <h5 class="font-bold text-slate-800 mb-2">Ready to secure this price?</h5>
-                        <p class="text-xs text-slate-500 mb-5 leading-relaxed">I have the track record to market your flat and negotiate this exact value or higher. Let's talk strategy.</p>
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-md mb-5 text-left relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-50 rounded-full -z-0"></div>
+                        <h5 class="text-xs md:text-sm font-bold text-slate-800 mb-1 relative z-10">Target Strategy</h5>
+                        <p class="text-[11px] md:text-xs text-slate-500 leading-relaxed mb-4 relative z-10">
+                            Algorithmic projection mapped across historical submarket transaction boundaries.
+                        </p>
                         
-                        <div class="space-y-3">
-                            <a id="whatsappBtn" href="#" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-sm px-5 py-3.5 transition-all shadow-lg shadow-[#25D366]/30 transform hover:-translate-y-0.5">
-                                <i class="fa-brands fa-whatsapp text-lg"></i> Discuss on WhatsApp
+                        <div class="flex flex-col sm:flex-row gap-2 relative z-10">
+                            <a id="whatsappBtn" href="#" target="_blank" class="flex-1 inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-xs py-3 transition-colors shadow">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Me
                             </a>
-                            <button type="button" onclick="downloadCurrentPDF()" class="w-full inline-flex justify-center items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs px-5 py-3 transition-all">
-                                <i class="fa-solid fa-file-pdf text-red-500"></i> Download PDF Report
+                            <button type="button" onclick="downloadCurrentPDF()" class="inline-flex justify-center items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs py-3 px-4 transition-colors">
+                                <i class="fa-solid fa-file-pdf text-red-500"></i> PDF Report
                             </button>
                         </div>
                     </div>
 
-                    <button onclick="resetForm()" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors">
-                        <i class="fa-solid fa-rotate-left mr-1"></i> Check another property
+                    <button onclick="resetForm()" class="text-xs text-blue-600 font-bold hover:text-blue-800 transition-colors inline-flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Calculate Another Property
                     </button>
                 </div>
 
@@ -260,170 +273,136 @@
     </section>
 
     <!-- The Agent Profile Section -->
-    <section id="about" class="py-24 bg-white relative">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="order-2 lg:order-1 relative">
-                    <div class="absolute inset-0 bg-blue-600 rounded-3xl translate-x-4 translate-y-4 opacity-10"></div>
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" alt="Top Property Agent" class="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[600px]">
-                    
-                    <div class="absolute bottom-8 -right-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 z-20 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-500 flex justify-center items-center text-xl">
+    <section id="about" class="py-16 md:py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 md:px-8">
+            <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                <div class="relative order-2 lg:order-1">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" alt="Property Partner" class="rounded-2xl md:rounded-3xl shadow-xl w-full object-cover h-[380px] md:h-[500px]">
+                    <div class="absolute bottom-4 right-4 bg-white p-3.5 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex justify-center items-center text-lg">
                             <i class="fa-solid fa-trophy"></i>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-500 font-bold uppercase">Award Winner</p>
-                            <p class="font-extrabold text-slate-800">Top 1% Achiever 2025</p>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase">Award Winner</p>
+                            <p class="text-xs md:text-sm font-extrabold text-slate-800">Top 1% Achiever 2025</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="order-1 lg:order-2">
-                    <h4 class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-3">Your Property Partner</h4>
-                    <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Data-Driven Approach. <br>Results-Oriented.</h2>
-                    <p class="text-slate-600 mb-6 leading-relaxed text-lg">
-                        Hi, I'm Jonathan Tan. Navigating the SG property market can be a headache. Over my 8 years on the ground, I've seen too many owners sell their flats below market value or miss out on potential COV (Cash Over Valuation) just because they relied on "feel".
-                    </p>
-                    <p class="text-slate-600 mb-8 leading-relaxed">
-                        That's why I combine our AI's cutting-edge Machine Learning with aggressive negotiation tactics. My goal is simple: to sell your flat at the absolute highest market valuation, <i>chop chop</i>.
+                    <span class="text-blue-600 font-bold tracking-wider uppercase text-xs mb-2 block">Your Advisory Partner</span>
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Data-Driven Positioning. Results-Oriented.</h2>
+                    <p class="text-sm md:text-base text-slate-600 mb-6 leading-relaxed">
+                        Navigating resale equity requires numbers, not sentiment. We pair machine learning benchmarks with targeted negotiation strategies to protect your cash proceeds.
                     </p>
                     
-                    <div class="grid grid-cols-2 gap-6 mb-10">
-                        <div class="border-l-4 border-blue-600 pl-4">
-                            <h4 class="text-3xl font-extrabold text-slate-900">S$ 45M+</h4>
-                            <p class="text-sm font-semibold text-slate-500 mt-1">Properties Transacted</p>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="border-l-4 border-blue-600 pl-3">
+                            <h4 class="text-2xl font-extrabold text-slate-900">S$ 45M+</h4>
+                            <p class="text-xs text-slate-500">Transacted Value</p>
                         </div>
-                        <div class="border-l-4 border-blue-600 pl-4">
-                            <h4 class="text-3xl font-extrabold text-slate-900">14 Days</h4>
-                            <p class="text-sm font-semibold text-slate-500 mt-1">Avg. Time on Market</p>
+                        <div class="border-l-4 border-blue-600 pl-3">
+                            <h4 class="text-2xl font-extrabold text-slate-900">14 Days</h4>
+                            <p class="text-xs text-slate-500">Average Velocity</p>
                         </div>
                     </div>
 
-                    <a href="#contact" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-full transition-colors shadow-lg">
-                        Let's Grab a Kopi C <i class="fa-solid fa-arrow-right"></i>
+                    <a href="#contact" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-blue-600 text-white font-bold px-6 py-3 rounded-full text-xs md:text-sm transition-colors shadow">
+                        Let's Discuss Strategy <i class="fa-solid fa-arrow-right text-xs"></i>
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Track Record / Portfolio Section -->
-    <section id="portfolio" class="py-24 bg-slate-50 border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h4 class="text-blue-600 font-bold tracking-wider uppercase text-sm mb-3">Proven Track Record</h4>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900">Recent Benchmark Sales</h2>
+    <!-- Track Record Portfolio Section -->
+    <section id="portfolio" class="py-16 md:py-24 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-8">
+            <div class="text-center mb-10 md:mb-16">
+                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs mb-2 block">Track Record</span>
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Recent Benchmark Sales</h2>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                    <div class="portfolio-img-container mb-4 h-56">
-                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop" alt="Bishan HDB" class="portfolio-img w-full h-full object-cover">
-                    </div>
-                    <div class="p-2">
-                        <div class="inline-block px-3 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-bold mb-3 uppercase tracking-wider">Sold Over Valuation</div>
-                        <h3 class="font-bold text-xl text-slate-900 mb-1">Natura Loft @ Bishan</h3>
-                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 5-Room DBSS</p>
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <span class="text-slate-500 text-sm">Sold For:</span>
-                            <span class="font-extrabold text-blue-700 text-lg">S$ 1.25M</span>
-                        </div>
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5">
+                    <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop" alt="Bishan" class="w-full h-44 object-cover rounded-xl mb-3">
+                    <span class="inline-block px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase mb-2">Above Valuation</span>
+                    <h3 class="font-bold text-base text-slate-900">Natura Loft @ Bishan</h3>
+                    <p class="text-xs text-slate-500 mb-3">5-Room DBSS</p>
+                    <div class="flex justify-between items-center pt-2.5 border-t border-slate-100 text-xs">
+                        <span class="text-slate-500">Sold:</span>
+                        <span class="font-extrabold text-blue-700 text-sm">S$ 1.25M</span>
                     </div>
                 </div>
 
-                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                    <div class="portfolio-img-container mb-4 h-56">
-                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol HDB Interior" class="portfolio-img w-full h-full object-cover">
-                    </div>
-                    <div class="p-2">
-                        <div class="inline-block px-3 py-1 rounded bg-blue-100 text-blue-700 text-xs font-bold mb-3 uppercase tracking-wider">Record Time</div>
-                        <h3 class="font-bold text-xl text-slate-900 mb-1">Waterway Terraces</h3>
-                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 4-Room Premium</p>
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <span class="text-slate-500 text-sm">Sold In:</span>
-                            <span class="font-extrabold text-blue-700 text-lg">8 Days</span>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=800&auto=format&fit=crop" alt="Punggol" class="w-full h-44 object-cover rounded-xl mb-3">
+                    <span class="inline-block px-2.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold uppercase mb-2">Record Speed</span>
+                    <h3 class="font-bold text-base text-slate-900">Waterway Terraces</h3>
+                    <p class="text-xs text-slate-500 mb-3">4-Room Premium</p>
+                    <div class="flex justify-between items-center pt-2.5 border-t border-slate-100 text-xs">
+                        <span class="text-slate-500">Timeline:</span>
+                        <span class="font-extrabold text-blue-700 text-sm">8 Days</span>
                     </div>
                 </div>
 
-                <div class="portfolio-card bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                    <div class="portfolio-img-container mb-4 h-56">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop" alt="Clementi HDB" class="portfolio-img w-full h-full object-cover">
-                    </div>
-                    <div class="p-2">
-                        <div class="inline-block px-3 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-bold mb-3 uppercase tracking-wider">Highest in Block</div>
-                        <h3 class="font-bold text-xl text-slate-900 mb-1">Clementi Cascadia</h3>
-                        <p class="text-sm text-slate-500 mb-4 font-medium"><i class="fa-solid fa-location-dot mr-1"></i> 5-Room Standard</p>
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <span class="text-slate-500 text-sm">Sold For:</span>
-                            <span class="font-extrabold text-blue-700 text-lg">S$ 1.12M</span>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5 sm:col-span-2 md:col-span-1">
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop" alt="Clementi" class="w-full h-44 object-cover rounded-xl mb-3">
+                    <span class="inline-block px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase mb-2">Block Peak</span>
+                    <h3 class="font-bold text-base text-slate-900">Clementi Cascadia</h3>
+                    <p class="text-xs text-slate-500 mb-3">5-Room Standard</p>
+                    <div class="flex justify-between items-center pt-2.5 border-t border-slate-100 text-xs">
+                        <span class="text-slate-500">Sold:</span>
+                        <span class="font-extrabold text-blue-700 text-sm">S$ 1.12M</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="bg-blue-600 py-20 text-center px-6">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Ready to upgrade or cash out? Don't wait liao!</h2>
-        <p class="text-blue-100 mb-10 max-w-2xl mx-auto text-lg">Whether you are planning to sell after your MOP or right-sizing your home, having a clear roadmap backed by data is crucial. Let's chart your property journey.</p>
-        <a href="https://wa.me/6581234567" target="_blank" class="inline-flex items-center gap-3 bg-white text-blue-600 font-bold px-8 py-4 rounded-full text-lg hover:bg-slate-50 transition-colors shadow-2xl">
-            <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i> WhatsApp Me (Don't Shy!)
+    <!-- Contact Banner Section -->
+    <section id="contact" class="bg-blue-600 py-14 md:py-20 text-center px-4">
+        <h2 class="text-2xl md:text-4xl font-extrabold text-white mb-3 tracking-tight">Need a Bespoke Market Roadmap?</h2>
+        <p class="text-xs md:text-base text-blue-100 mb-8 max-w-xl mx-auto">
+            Whether preparing for MOP expiry or portfolio right-sizing, let's look at the underlying equity figures.
+        </p>
+        <a href="https://wa.me/6581234567" target="_blank" class="inline-flex items-center gap-2 bg-white text-blue-700 font-extrabold px-6 py-3.5 rounded-full text-xs md:text-sm hover:bg-slate-100 transition-colors shadow-lg">
+            <i class="fa-brands fa-whatsapp text-lg text-[#25D366]"></i> WhatsApp Consultation
         </a>
     </section>
 
-    <footer class="bg-slate-900 py-12 text-center text-slate-400 text-sm">
-        <div class="text-2xl font-extrabold text-slate-700 tracking-tight mb-4 flex justify-center items-center gap-2">
-            <i class="fa-solid fa-building-user"></i> Nexus<span class="text-slate-600">Advisory</span>
-        </div>
-        <p>&copy; 2026 Nexus HDB Advisory. Data-Driven Real Estate Solutions.</p>
+    <!-- Footer -->
+    <footer class="bg-slate-900 py-8 text-center text-slate-400 text-xs">
+        <p>&copy; 2026 Nexus HDB Advisory. Institutional-Grade Real Estate Modeling.</p>
     </footer>
 
-    <!-- HIDDEN PDF TEMPLATE -->
+    <!-- Hidden Template for PDF Export -->
     <div id="pdfTemplate" style="display: none; background: white; padding: 40px; color: #1e293b; width: 800px; font-family: 'Helvetica', sans-serif;">
-        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-            <h1 style="margin: 0; color: #0f172a; font-size: 28px;">NEXUS ADVISORY</h1>
+        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="margin: 0; color: #0f172a; font-size: 24px;">NEXUS ADVISORY</h1>
             <div style="text-align: right;">
-                <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase;">Confidential Equity Report</p>
-                <p style="margin: 0; font-size: 14px; font-weight: bold; color: #2563eb;" id="pdf_date"></p>
+                <p style="margin: 0; font-size: 11px; color: #64748b; text-transform: uppercase;">Valuation Benchmark</p>
+                <p style="margin: 0; font-size: 13px; font-weight: bold; color: #2563eb;" id="pdf_date"></p>
             </div>
         </div>
-        
-        <h2 style="font-size: 20px; margin-bottom: 10px;">Valuation Analysis for <span id="pdf_name" style="color:#2563eb;">Valued Client</span></h2>
-        
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-            <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-top:0;">Physical Specifications</h3>
-            <p style="margin: 5px 0;"><strong>Location:</strong> <span id="pdf_town"></span></p>
-            <p style="margin: 5px 0;"><strong>Flat Type & Area:</strong> <span id="pdf_type"></span> (<span id="pdf_area"></span> sqm)</p>
-            <p style="margin: 5px 0;"><strong>Storey Midpoint:</strong> Level <span id="pdf_storey"></span></p>
-            <p style="margin: 5px 0;"><strong>Remaining Lease:</strong> <span id="pdf_lease"></span> Years</p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
+            <p style="margin: 4px 0;"><strong>Town:</strong> <span id="pdf_town"></span></p>
+            <p style="margin: 4px 0;"><strong>Flat Type & Area:</strong> <span id="pdf_type"></span> (<span id="pdf_area"></span> sqm)</p>
+            <p style="margin: 4px 0;"><strong>Storey & Lease:</strong> Level <span id="pdf_storey"></span> | <span id="pdf_lease"></span> Yrs Remaining</p>
         </div>
-
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-            <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-top:0;">Macro-Economic Variables</h3>
-            <p style="margin: 5px 0;"><strong>SORA Interest Rate:</strong> <span id="pdf_sora"></span>% | <strong>GDP Growth:</strong> <span id="pdf_gdp"></span>%</p>
-            <p style="margin: 5px 0;"><strong>CPI Index:</strong> <span id="pdf_cpi"></span> | <strong>HDB Index:</strong> <span id="pdf_hdbidx"></span></p>
-        </div>
-
-        <div style="text-align: center; margin-top: 40px; border: 2px solid #2563eb; border-radius: 12px; padding: 30px; background: #eff6ff;">
-            <p style="margin: 0; color: #1e40af; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Simulated Market Value</p>
-            <h1 style="font-size: 48px; color: #1e3a8a; margin: 10px 0;" id="pdf_price">S$ 0</h1>
-            <p style="margin: 0; font-size: 12px; color: #2563eb;">Generated by XGBoost AI mapping 232,000+ data points. Confirm plus chop accurate.</p>
-        </div>
-        
-        <div style="margin-top: 50px; font-size: 12px; color: #94a3b8; text-align: center;">
-            <p>This is an algorithmic projection, not a formal bank valuation. <br>To secure this price in the open market, contact Jonathan Tan at Nexus Advisory.</p>
+        <div style="text-align: center; border: 2px solid #2563eb; border-radius: 10px; padding: 25px; background: #eff6ff;">
+            <p style="margin: 0; color: #1e40af; font-weight: bold; text-transform: uppercase;">Algorithmic Valuation</p>
+            <h1 style="font-size: 40px; color: #1e3a8a; margin: 8px 0;" id="pdf_price">S$ 0</h1>
+            <p style="margin: 0; font-size: 11px; color: #2563eb;">Machine-learning regression trained over 232,000 transaction records.</p>
         </div>
     </div>
 
-    <!-- WIZARD, PRESETS & API LOGIC -->
+    <!-- Scripts: Wizard, Presets & API -->
     <script>
         let currentStep = 1;
         let lastPayload = null;
         let lastFormattedPrice = "S$ 0";
 
-        // --- PRESET LOGIC ---
         function loadPreset(presetName) {
             const sora = document.getElementById('sora');
             const gdp_growth = document.getElementById('gdp_growth');
@@ -446,7 +425,6 @@
             }
         }
 
-        // --- 2-STEP WIZARD LOGIC ---
         function updateWizardUI() {
             document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
             document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
@@ -455,10 +433,10 @@
             document.getElementById('btnNext').classList.toggle('hidden', currentStep === 2);
             document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 2);
 
-            const subtitles = {1: "Step 1: Property Details", 2: "Step 2: Economic Outlook"};
-            document.getElementById('step-subtitle').innerText = subtitles[currentStep];
+            document.getElementById('step-badge').innerText = `Step ${currentStep} of 2`;
+            document.getElementById('step-subtitle').innerText = currentStep === 1 ? "Property Physical Details" : "Macro Economic Outlook";
 
-            document.getElementById('dot2').className = currentStep >= 2 ? "w-3 h-3 rounded-full step-active border" : "w-3 h-3 rounded-full step-inactive border";
+            document.getElementById('dot2').className = currentStep >= 2 ? "w-2.5 h-2.5 rounded-full step-active border" : "w-2.5 h-2.5 rounded-full step-inactive border";
         }
 
         function nextStep() { if (currentStep < 2) { currentStep++; updateWizardUI(); } }
@@ -470,7 +448,7 @@
 
         function runPrediction() {
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing AI...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Calculating...';
             submitBtn.disabled = true;
             
             const payload = {
@@ -508,14 +486,14 @@
                 document.getElementById('displayPrice').innerText = lastFormattedPrice;
                 document.getElementById('displayRange').innerText = `Estimated Range: ${formatSGD(lowEst)} — ${formatSGD(highEst)}`;
 
-                const waText = encodeURIComponent(`Hi Jonathan! I just simulated my ${payload.flat_type} at ${payload.town} using your AI.\n\nAI Target Price: ${lastFormattedPrice}.\nI'd like to discuss my options.`);
+                const waText = encodeURIComponent(`Hi! I just simulated my ${payload.flat_type} at ${payload.town} using Nexus AI.\nTarget Valuation: ${lastFormattedPrice}.\nLet's connect regarding market options.`);
                 document.getElementById('whatsappBtn').href = `https://wa.me/6581234567?text=${waText}`;
 
                 submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Calculate Market Value';
                 submitBtn.disabled = false;
             })
             .catch(err => {
-                alert("API Connection Error. Please ensure the Hugging Face server is running.");
+                alert("API Connection Error. Please verify the Hugging Face space status.");
                 submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Calculate Market Value';
                 submitBtn.disabled = false;
             });
@@ -532,17 +510,11 @@
             if (!lastPayload) return;
 
             document.getElementById('pdf_date').innerText = new Date().toLocaleDateString('en-SG');
-            document.getElementById('pdf_name').innerText = "Valued Client";
             document.getElementById('pdf_town').innerText = lastPayload.town;
             document.getElementById('pdf_type').innerText = lastPayload.flat_type;
             document.getElementById('pdf_area').innerText = lastPayload.floor_area;
             document.getElementById('pdf_storey').innerText = lastPayload.storey;
             document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
-            
-            document.getElementById('pdf_sora').innerText = lastPayload.sora;
-            document.getElementById('pdf_gdp').innerText = lastPayload.gdp_growth;
-            document.getElementById('pdf_cpi').innerText = lastPayload.cpi_val;
-            document.getElementById('pdf_hdbidx').innerText = lastPayload.hdb_idx;
             document.getElementById('pdf_price').innerText = lastFormattedPrice;
 
             const element = document.getElementById('pdfTemplate');
