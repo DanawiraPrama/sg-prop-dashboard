@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Singapore HDB Resale Dashboard</title>
+    <title>Singapore HDB Resale Dashboard | Nexus Advisory</title>
     
     <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,21 +26,10 @@
             color: #0f172a;
         }
         
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
@@ -50,10 +39,7 @@
             border-radius: 12px;
         }
         
-        .chart-container {
-            height: 350px;
-            width: 100%;
-        }
+        .chart-container { height: 350px; width: 100%; }
     </style>
 </head>
 <body class="antialiased flex h-screen overflow-hidden">
@@ -64,57 +50,54 @@
             <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                 <i class="fa-solid fa-city text-blue-600"></i> HDB Insights
             </h1>
-            <p class="text-sm text-slate-500 mt-1">Property Analysis</p>
+            <p class="text-sm text-slate-500 mt-1">Analytics Dashboard</p>
         </div>
         
         <div class="p-6 flex-1 overflow-y-auto">
-            <!-- Data Loader Status & Manual Uploader -->
+            <!-- Dataset Source & Navigation to AI Predictor -->
             <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h3 class="text-sm font-semibold text-blue-800 mb-2">Dataset Source</h3>
-                <p class="text-xs text-blue-600 mb-3">System loads corresponding local files first automatically. Custom overrides allowed.</p>
-                
+                <h3 class="text-sm font-semibold text-blue-800 mb-2">Nexus Ecosystem</h3>
+                <p class="text-xs text-blue-600 mb-3">Switch instantly to the predictive AI valuation model.</p>
+                <a href="sg-hdb-predict.html" class="block text-center w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all shadow-sm mb-3">
+                    <i class="fa-solid fa-bolt mr-1"></i> Open AI Predictor
+                </a>
                 <input type="file" id="csvFileInput" accept=".csv" class="hidden">
-                <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded transition-colors shadow-sm mb-2">
+                <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium py-2 px-4 rounded transition-colors shadow-sm mb-1">
                     <i class="fa-solid fa-upload mr-2"></i> Upload Custom CSV
                 </button>
-                <div id="uploadStatus" class="text-xs mt-1 text-slate-600 font-medium italic">Initializing dashboard...</div>
+                <div id="uploadStatus" class="text-[11px] mt-1 text-slate-600 font-medium italic">Initializing dataset...</div>
             </div>
 
             <!-- Timeline/Date Filter Range -->
             <div class="mb-6">
-                <label class="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">Date Range</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Date Range</label>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <span class="text-[10px] uppercase font-bold text-slate-400">From</span>
                         <select id="startMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                            <!-- Populated dynamically -->
                         </select>
                     </div>
                     <div>
                         <span class="text-[10px] uppercase font-bold text-slate-400">To</span>
                         <select id="endMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                            <!-- Populated dynamically -->
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- STREAMING_CHUNK: Adding control action links for town and flat filters... -->
-            <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
+            <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
             
             <!-- Town Filter -->
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-sm font-medium text-slate-700">Town</label>
                     <div class="space-x-1.5 text-xs">
-                        <button type="button" id="selectAllTowns" class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">Select All</button>
+                        <button type="button" id="selectAllTowns" class="text-blue-600 hover:text-blue-800 font-semibold">Select All</button>
                         <span class="text-slate-300">|</span>
-                        <button type="button" id="clearAllTowns" class="text-slate-500 hover:text-slate-700 font-semibold transition-colors">Clear</button>
+                        <button type="button" id="clearAllTowns" class="text-slate-500 hover:text-slate-700 font-semibold">Clear</button>
                     </div>
                 </div>
-                <div id="townFilterContainer" class="space-y-2 max-h-48 overflow-y-auto pr-2">
-                    <!-- Checkboxes injected by JS -->
-                </div>
+                <div id="townFilterContainer" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
             </div>
 
             <!-- Flat Type Filter -->
@@ -122,33 +105,30 @@
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-sm font-medium text-slate-700">Flat Type</label>
                     <div class="space-x-1.5 text-xs">
-                        <button type="button" id="selectAllFlats" class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">Select All</button>
+                        <button type="button" id="selectAllFlats" class="text-blue-600 hover:text-blue-800 font-semibold">Select All</button>
                         <span class="text-slate-300">|</span>
-                        <button type="button" id="clearAllFlats" class="text-slate-500 hover:text-slate-700 font-semibold transition-colors">Clear</button>
+                        <button type="button" id="clearAllFlats" class="text-slate-500 hover:text-slate-700 font-semibold">Clear</button>
                     </div>
                 </div>
-                <div id="flatTypeFilterContainer" class="space-y-2">
-                    <!-- Checkboxes injected by JS -->
-                </div>
+                <div id="flatTypeFilterContainer" class="space-y-2"></div>
             </div>
         </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-        
-        <!-- Mobile Header (Visible only on small screens) -->
-        <header class="md:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center">
-            <h1 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-city text-blue-600"></i> HDB Insights</h1>
-            <button class="text-slate-500"><i class="fa-solid fa-bars text-xl"></i></button>
+        <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center">
+            <h1 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-city text-blue-600"></i> HDB Analytics Dashboard</h1>
+            <a href="sg-hdb-predict.html" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition-all">
+                <i class="fa-solid fa-bolt mr-1"></i> AI Valuation Engine
+            </a>
         </header>
 
         <div class="flex-1 overflow-y-auto p-4 md:p-8">
             <div class="max-w-7xl mx-auto">
-                
                 <div class="flex justify-between items-end mb-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
+                        <h2 class="text-2xl font-bold text-slate-800">Market Overview</h2>
                         <p class="text-slate-500 mt-1" id="dataContextLabel">Loading dataset...</p>
                     </div>
                 </div>
@@ -156,9 +136,7 @@
                 <!-- KPIs -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-blue-500">
-                        <div class="p-3 bg-blue-100 rounded-full text-blue-600">
-                            <i class="fa-solid fa-exchange-alt text-xl"></i>
-                        </div>
+                        <div class="p-3 bg-blue-100 rounded-full text-blue-600"><i class="fa-solid fa-exchange-alt text-xl"></i></div>
                         <div>
                             <p class="text-sm font-medium text-slate-500">Total Transactions</p>
                             <h3 class="text-2xl font-bold text-slate-800" id="kpi-transactions">-</h3>
@@ -166,9 +144,7 @@
                     </div>
                     
                     <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-emerald-500">
-                        <div class="p-3 bg-emerald-100 rounded-full text-emerald-600">
-                            <i class="fa-solid fa-dollar-sign text-xl"></i>
-                        </div>
+                        <div class="p-3 bg-emerald-100 rounded-full text-emerald-600"><i class="fa-solid fa-dollar-sign text-xl"></i></div>
                         <div>
                             <p class="text-sm font-medium text-slate-500">Median Resale Price</p>
                             <h3 class="text-2xl font-bold text-slate-800" id="kpi-price">-</h3>
@@ -176,9 +152,7 @@
                     </div>
                     
                     <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-purple-500">
-                        <div class="p-3 bg-purple-100 rounded-full text-purple-600">
-                            <i class="fa-solid fa-ruler-combined text-xl"></i>
-                        </div>
+                        <div class="p-3 bg-purple-100 rounded-full text-purple-600"><i class="fa-solid fa-ruler-combined text-xl"></i></div>
                         <div>
                             <p class="text-sm font-medium text-slate-500">Median Price / Sqm</p>
                             <h3 class="text-2xl font-bold text-slate-800" id="kpi-psm">-</h3>
@@ -192,7 +166,6 @@
                         <h3 class="text-lg font-semibold text-slate-800 mb-4">Price Trend by Month</h3>
                         <div id="chart-trend" class="chart-container"></div>
                     </div>
-                    
                     <div class="glass-card p-6">
                         <h3 class="text-lg font-semibold text-slate-800 mb-4">Median Price Comparison by Town</h3>
                         <div id="chart-town" class="chart-container"></div>
@@ -219,119 +192,28 @@
                                     <th class="p-3 rounded-tr-lg font-medium">Price (S$)</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-body" class="divide-y divide-slate-100">
-                                <!-- Populated by JS -->
-                            </tbody>
+                            <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
 
     <script>
-        // --- State Management ---
         let allData = [];
         let filteredData = [];
         let activeTowns = new Set();
         let activeFlatTypes = new Set();
 
-        // --- Mock Data Generator supporting cross-year ranges (2025 to 2026) ---
-        function generateMockData() {
-            const towns = ['ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST', 'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG', 'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'];
-            const flatTypes = ['2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
-            
-            // Generate full months array spanning both 2025 and 2026
-            const months = [];
-            for(let m = 1; m <= 12; m++) months.push(`2025-${String(m).padStart(2, '0')}`);
-            for(let m = 1; m <= 6; m++) months.push(`2026-${String(m).padStart(2, '0')}`);
-            
-            const data = [];
-            for (let i = 0; i < 3000; i++) {
-                const month = months[Math.floor(Math.random() * months.length)];
-                const town = towns[Math.floor(Math.random() * towns.length)];
-                const flatType = flatTypes[Math.floor(Math.random() * flatTypes.length)];
-                
-                // Base metrics
-                let baseArea = 0;
-                let marketTrendFactor = month.startsWith('2025') ? 0.94 : 1.0; 
-                let basePricePerSqm = (5000 + (Math.random() * 3000)) * marketTrendFactor; 
-                
-                // Adjust by location (Central/Queenstown is more expensive)
-                if (['CENTRAL AREA', 'QUEENSTOWN', 'BISHAN', 'BUKIT MERAH'].includes(town)) basePricePerSqm *= 1.4;
-                if (['WOODLANDS', 'CHOA CHU KANG', 'YISHUN'].includes(town)) basePricePerSqm *= 0.85;
-
-                switch(flatType) {
-                    case '2 ROOM': baseArea = 45; break;
-                    case '3 ROOM': baseArea = 65; break;
-                    case '4 ROOM': baseArea = 90; break;
-                    case '5 ROOM': baseArea = 110; break;
-                    case 'EXECUTIVE': baseArea = 140; break;
-                }
-                
-                const area = baseArea + (Math.random() * 10 - 5);
-                const price = Math.round(area * basePricePerSqm / 1000) * 1000; // Round to nearest 1000
-
-                data.push({
-                    month: month,
-                    town: town,
-                    flat_type: flatType,
-                    street_name: `${town} ST ${Math.floor(Math.random() * 90) + 10}`,
-                    floor_area_sqm: area.toFixed(1),
-                    resale_price: price,
-                    price_per_sqm: price / area
-                });
-            }
-            return data;
-        }
-
-        // --- Populate dropdown selector values ---
-        function populateDateRangeSelectors() {
-            const uniqueMonths = [...new Set(allData.map(d => d.month))].sort();
-            
-            const startSelector = document.getElementById('startMonthSelector');
-            const endSelector = document.getElementById('endMonthSelector');
-
-            // Populate Start Months
-            startSelector.innerHTML = uniqueMonths.map((m, idx) => `
-                <option value="${m}" ${idx === 0 ? 'selected' : ''}>${m}</option>
-            `).join('');
-
-            // Populate End Months
-            endSelector.innerHTML = uniqueMonths.map((m, idx) => `
-                <option value="${m}" ${idx === uniqueMonths.length - 1 ? 'selected' : ''}>${m}</option>
-            `).join('');
-
-            // Add Event Listeners for Date Selectors
-            startSelector.addEventListener('change', validateAndApplyFilters);
-            endSelector.addEventListener('change', validateAndApplyFilters);
-        }
-
-        // Adjusts input values automatically if start month exceeds end month
-        function validateAndApplyFilters() {
-            const startVal = document.getElementById('startMonthSelector').value;
-            const endVal = document.getElementById('endMonthSelector').value;
-
-            if (startVal > endVal) {
-                // If user selects an invalid range, push the end selector to match the start selector
-                document.getElementById('endMonthSelector').value = startVal;
-            }
-            applyFilters();
-        }
-
-        // --- STREAMING_CHUNK: Setting up the master Select All and Unselect All filter wiring... ---
-        // --- Filtering interface initialization ---
         function initializeFilters() {
             const uniqueTowns = [...new Set(allData.map(d => d.town))].sort();
             const uniqueFlatTypes = [...new Set(allData.map(d => d.flat_type))].sort();
 
-            // Default check first 6 towns to avoid visual clutter, check all flats
-            activeTowns = new Set(uniqueTowns.slice(0, 6));
+            activeTowns = new Set(uniqueTowns.slice(0, 8));
             activeFlatTypes = new Set(uniqueFlatTypes);
 
-            const townContainer = document.getElementById('townFilterContainer');
-            townContainer.innerHTML = uniqueTowns.map(town => `
+            document.getElementById('townFilterContainer').innerHTML = uniqueTowns.map(town => `
                 <label class="flex items-center space-x-2 text-sm text-slate-600 cursor-pointer">
                     <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 filter-checkbox" 
                            data-type="town" value="${town}" ${activeTowns.has(town) ? 'checked' : ''}>
@@ -339,8 +221,7 @@
                 </label>
             `).join('');
 
-            const flatContainer = document.getElementById('flatTypeFilterContainer');
-            flatContainer.innerHTML = uniqueFlatTypes.map(flat => `
+            document.getElementById('flatTypeFilterContainer').innerHTML = uniqueFlatTypes.map(flat => `
                 <label class="flex items-center space-x-2 text-sm text-slate-600 cursor-pointer">
                     <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 filter-checkbox" 
                            data-type="flat" value="${flat}" checked>
@@ -348,45 +229,50 @@
                 </label>
             `).join('');
 
-            // Clean previous checkbox change listeners
             document.querySelectorAll('.filter-checkbox').forEach(cb => {
                 cb.addEventListener('change', (e) => {
                     const val = e.target.value;
                     const isTown = e.target.dataset.type === 'town';
                     const targetSet = isTown ? activeTowns : activeFlatTypes;
-
                     if (e.target.checked) targetSet.add(val);
                     else targetSet.delete(val);
-
                     applyFilters();
                 });
             });
 
-            // Wire up Town Filter Shortcuts
             document.getElementById('selectAllTowns').onclick = () => {
                 activeTowns = new Set(uniqueTowns);
-                document.querySelectorAll('#townFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = true);
+                document.querySelectorAll('#townFilterContainer input').forEach(cb => cb.checked = true);
                 applyFilters();
             };
             document.getElementById('clearAllTowns').onclick = () => {
                 activeTowns.clear();
-                document.querySelectorAll('#townFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#townFilterContainer input').forEach(cb => cb.checked = false);
                 applyFilters();
             };
-
-            // Wire up Flat Filter Shortcuts
             document.getElementById('selectAllFlats').onclick = () => {
                 activeFlatTypes = new Set(uniqueFlatTypes);
-                document.querySelectorAll('#flatTypeFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = true);
+                document.querySelectorAll('#flatTypeFilterContainer input').forEach(cb => cb.checked = true);
                 applyFilters();
             };
             document.getElementById('clearAllFlats').onclick = () => {
                 activeFlatTypes.clear();
-                document.querySelectorAll('#flatTypeFilterContainer input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#flatTypeFilterContainer input').forEach(cb => cb.checked = false);
                 applyFilters();
             };
 
             populateDateRangeSelectors();
+        }
+
+        function populateDateRangeSelectors() {
+            const uniqueMonths = [...new Set(allData.map(d => d.month))].sort();
+            const startSelector = document.getElementById('startMonthSelector');
+            const endSelector = document.getElementById('endMonthSelector');
+
+            startSelector.innerHTML = uniqueMonths.map((m, idx) => `<option value="${m}" ${idx === 0 ? 'selected' : ''}>${m}</option>`).join('');
+            endSelector.innerHTML = uniqueMonths.map((m, idx) => `<option value="${m}" ${idx === uniqueMonths.length - 1 ? 'selected' : ''}>${m}</option>`).join('');
+
+            startSelector.onchange = endSelector.onchange = applyFilters;
         }
 
         function applyFilters() {
@@ -394,15 +280,12 @@
             const endMonth = document.getElementById('endMonthSelector').value;
 
             filteredData = allData.filter(d => 
-                d.month >= startMonth &&
-                d.month <= endMonth &&
-                activeTowns.has(d.town) && 
-                activeFlatTypes.has(d.flat_type)
+                d.month >= startMonth && d.month <= endMonth &&
+                activeTowns.has(d.town) && activeFlatTypes.has(d.flat_type)
             );
             updateDashboard();
         }
 
-        // --- Calculations and formatting ---
         function formatCurrency(num) {
             return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(num);
         }
@@ -419,14 +302,11 @@
                 document.getElementById('kpi-transactions').innerText = '0';
                 document.getElementById('kpi-price').innerText = '-';
                 document.getElementById('kpi-psm').innerText = '-';
-                Plotly.purge('chart-trend');
-                Plotly.purge('chart-town');
-                Plotly.purge('chart-scatter');
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No matching records found. Try modifying filters.</td></tr>';
+                Plotly.purge('chart-trend'); Plotly.purge('chart-town'); Plotly.purge('chart-scatter');
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No records found.</td></tr>';
                 return;
             }
 
-            // Update KPIs
             const prices = filteredData.map(d => parseFloat(d.resale_price));
             const psms = filteredData.map(d => parseFloat(d.resale_price) / parseFloat(d.floor_area_sqm));
             
@@ -438,55 +318,25 @@
             renderTable();
         }
 
-        // --- Render Plotly interactive charts ---
         function renderCharts() {
             const chartConfig = { responsive: true, displayModeBar: false };
             const fontConfig = { family: 'Inter, sans-serif', color: '#64748b' };
 
-            // 1. Trend Chart (Line)
             const months = [...new Set(filteredData.map(d => d.month))].sort();
-            const trendData = months.map(m => {
-                const monthData = filteredData.filter(d => d.month === m);
-                return getMedian(monthData.map(d => parseFloat(d.resale_price)));
-            });
+            const trendData = months.map(m => getMedian(filteredData.filter(d => d.month === m).map(d => d.resale_price)));
 
             Plotly.newPlot('chart-trend', [{
-                x: months,
-                y: trendData,
-                type: 'scatter',
-                mode: 'lines+markers',
-                line: { color: '#3b82f6', width: 3, shape: 'spline' },
-                marker: { size: 8, color: '#2563eb' }
-            }], {
-                margin: { t: 10, r: 10, l: 60, b: 40 },
-                xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
-                yaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
-                paper_bgcolor: 'transparent',
-                plot_bgcolor: 'transparent'
-            }, chartConfig);
+                x: months, y: trendData, type: 'scatter', mode: 'lines+markers',
+                line: { color: '#3b82f6', width: 3, shape: 'spline' }, marker: { size: 6, color: '#2563eb' }
+            }], { margin: { t: 10, r: 10, l: 60, b: 40 }, xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' }, yaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' }, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent' }, chartConfig);
 
-            // 2. Town Comparison (Bar)
             const towns = [...activeTowns].sort();
-            const townData = towns.map(t => {
-                const tData = filteredData.filter(d => d.town === t);
-                return getMedian(tData.map(d => parseFloat(d.resale_price)));
-            });
+            const townData = towns.map(t => getMedian(filteredData.filter(d => d.town === t).map(d => d.resale_price)));
 
             Plotly.newPlot('chart-town', [{
-                y: towns,
-                x: townData,
-                type: 'bar',
-                orientation: 'h',
-                marker: { color: '#10b981', borderRadius: 4 }
-            }], {
-                margin: { t: 10, r: 10, l: 120, b: 40 },
-                xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
-                yaxis: { tickfont: { ...fontConfig, size: 10 } },
-                paper_bgcolor: 'transparent',
-                plot_bgcolor: 'transparent'
-            }, chartConfig);
+                y: towns, x: townData, type: 'bar', orientation: 'h', marker: { color: '#10b981' }
+            }], { margin: { t: 10, r: 10, l: 120, b: 40 }, xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' }, yaxis: { tickfont: { ...fontConfig, size: 10 } }, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent' }, chartConfig);
 
-            // 3. Scatter Plot (Price vs Area)
             const flatTypesArr = [...activeFlatTypes];
             const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'];
             
@@ -495,9 +345,7 @@
                 return {
                     x: typeData.map(d => parseFloat(d.floor_area_sqm)),
                     y: typeData.map(d => parseFloat(d.resale_price)),
-                    mode: 'markers',
-                    type: 'scatter',
-                    name: type,
+                    mode: 'markers', type: 'scatter', name: type,
                     text: typeData.map(d => `${d.town} - ${d.street_name || ''}`),
                     marker: { size: 6, color: colors[idx % colors.length], opacity: 0.7 }
                 };
@@ -507,18 +355,13 @@
                 margin: { t: 10, r: 10, l: 60, b: 40 },
                 xaxis: { title: 'Floor Area (sqm)', titlefont: fontConfig, tickfont: fontConfig, gridcolor: '#f1f5f9' },
                 yaxis: { title: 'Resale Price (S$)', titlefont: fontConfig, tickfont: fontConfig, gridcolor: '#f1f5f9' },
-                paper_bgcolor: 'transparent',
-                plot_bgcolor: 'transparent',
-                legend: { font: fontConfig }
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', legend: { font: fontConfig }
             }, chartConfig);
         }
 
-        // --- Render Table ---
         function renderTable() {
             const tableBody = document.getElementById('table-body');
-            const displayData = [...filteredData]
-                .sort((a, b) => b.month.localeCompare(a.month) || b.resale_price - a.resale_price)
-                .slice(0, 10);
+            const displayData = [...filteredData].sort((a, b) => b.month.localeCompare(a.month) || b.resale_price - a.resale_price).slice(0, 10);
             
             tableBody.innerHTML = displayData.map(d => `
                 <tr class="hover:bg-slate-50 transition-colors">
@@ -532,133 +375,49 @@
             `).join('');
         }
 
-        // --- Dataset Handlers & CSV Parser ---
         function handleCSVString(csvString, sourceName) {
             Papa.parse(csvString, {
-                header: true,
-                dynamicTyping: true,
-                skipEmptyLines: true,
+                header: true, dynamicTyping: true, skipEmptyLines: true,
                 complete: function(results) {
-                    const parsed = results.data.filter(d => d.resale_price && d.town && d.flat_type);
-                    
-                    // Merge uploads into existing pool
-                    allData = [...allData, ...parsed];
-                    
+                    allData = results.data.filter(d => d.resale_price && d.town && d.flat_type);
                     document.getElementById('dataContextLabel').innerText = `Showing Real Data (${sourceName})`;
                     document.getElementById('dataContextLabel').className = "text-emerald-600 font-semibold mt-1";
-                    
-                    document.getElementById('uploadStatus').innerText = "Data loaded successfully!";
+                    document.getElementById('uploadStatus').innerText = "Dataset loaded successfully!";
                     document.getElementById('uploadStatus').className = "text-xs mt-2 text-emerald-600 font-medium";
-                    
                     initializeFilters();
                     applyFilters();
-                },
-                error: function(err) {
-                    console.error("CSV Parse Error:", err);
-                    triggerFallback("Parsing error inside file.");
                 }
             });
         }
 
-        function triggerFallback(reason) {
-            console.warn("Fallback triggered. Reason:", reason);
-            allData = generateMockData();
-            
-            document.getElementById('dataContextLabel').innerText = `Showing Sample Data (2025 - 2026 Fallback)`;
-            document.getElementById('dataContextLabel').className = "text-slate-500 mt-1";
-            
-            document.getElementById('uploadStatus').innerText = "Using simulated cross-year fallback data.";
-            document.getElementById('uploadStatus').className = "text-xs mt-2 text-amber-600 font-medium";
-            
-            initializeFilters();
-            applyFilters();
-        }
-
-        // --- Multi-Year Loader pipeline ---
+        // --- Load Master CSV from Repository ---
         async function loadHDBDatasets() {
-            document.getElementById('uploadStatus').innerText = "Fetching 2025 & 2026 datasets...";
-            document.getElementById('uploadStatus').className = "text-xs mt-2 text-blue-600 font-medium";
-
+            document.getElementById('uploadStatus').innerText = "Loading master dataset...";
             try {
-                // Fetch both datasets in parallel
-                const [resp2025, resp2026] = await Promise.all([
-                    fetch('hdb_resale_full_2025.csv'),
-                    fetch('hdb_resale_full_2026.csv')
-                ]);
-
-                if (!resp2025.ok || !resp2026.ok) {
-                    throw new Error("One or more timeline source CSVs were not accessible.");
-                }
-
-                const [text2025, text2026] = await Promise.all([
-                    resp2025.text(),
-                    resp2026.text()
-                ]);
-
-                // Parse 2025
-                Papa.parse(text2025, {
-                    header: true,
-                    dynamicTyping: true,
-                    skipEmptyLines: true,
-                    complete: function(res2025) {
-                        const parsed2025 = res2025.data.filter(d => d.resale_price && d.town && d.flat_type);
-                        
-                        // Parse 2026 and merge
-                        Papa.parse(text2026, {
-                            header: true,
-                            dynamicTyping: true,
-                            skipEmptyLines: true,
-                            complete: function(res2026) {
-                                const parsed2026 = res2026.data.filter(d => d.resale_price && d.town && d.flat_type);
-                                
-                                // Merge both datasets
-                                allData = [...parsed2025, ...parsed2026];
-                                
-                                document.getElementById('dataContextLabel').innerText = "Showing Real Data (Years 2025 - 2026)";
-                                document.getElementById('dataContextLabel').className = "text-emerald-600 font-semibold mt-1";
-                                
-                                document.getElementById('uploadStatus').innerText = "Datasets loaded successfully!";
-                                document.getElementById('uploadStatus').className = "text-xs mt-2 text-emerald-600 font-medium";
-                                
-                                initializeFilters();
-                                applyFilters();
-                            }
-                        });
-                    }
-                });
-
+                const response = await fetch('hdb_resale_2017_2026_final (1).csv');
+                if (!response.ok) throw new Error("File not found");
+                const text = await response.text();
+                handleCSVString(text, "HDB Master 2017-2026");
             } catch (err) {
-                // CORS or offline local network fallback
-                triggerFallback(err.message);
+                // Fallback to sample generator if offline / CORS restricted
+                console.warn("Using mock fallback due to:", err.message);
+                allData = generateMockData();
+                document.getElementById('dataContextLabel').innerText = "Showing Sample Analytics (Fallback Mode)";
+                document.getElementById('uploadStatus').innerText = "Using simulated fallback data.";
+                initializeFilters();
+                applyFilters();
             }
         }
 
-        // --- Event Listeners ---
-        // Manual upload listener
         document.getElementById('csvFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
-            document.getElementById('uploadStatus').innerText = "Reading file content...";
-            document.getElementById('uploadStatus').className = "text-xs mt-2 text-blue-600 font-medium";
-
             const reader = new FileReader();
-            reader.onload = function(evt) {
-                // Wipe data and import uploaded file
-                allData = [];
-                handleCSVString(evt.target.result, file.name);
-            };
-            reader.onerror = function() {
-                document.getElementById('uploadStatus').innerText = "Error reading uploaded file.";
-                document.getElementById('uploadStatus').className = "text-xs mt-2 text-red-600 font-medium";
-            };
+            reader.onload = function(evt) { handleCSVString(evt.target.result, file.name); };
             reader.readAsText(file);
         });
 
-        // Initial setup boot
-        window.onload = () => {
-            loadHDBDatasets();
-        };
+        window.onload = loadHDBDatasets;
     </script>
 </body>
 </html>
