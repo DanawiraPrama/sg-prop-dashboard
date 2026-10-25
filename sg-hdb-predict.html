@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- html2pdf for Auto-PDF Generation -->
+    <!-- html2pdf for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
@@ -100,14 +100,14 @@
                     Stop the <i>agar-agar</i> guessing. Our proprietary AI crunches over 232,000 real HDB resale transactions spanning 10 years to give you a highly accurate, data-backed valuation in seconds. Confirm plus chop.
                 </p>
                 <div class="grid grid-cols-2 gap-4 text-sm text-slate-200 font-medium">
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-bolt"></i></div> Instant PDF Report</div>
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-bolt"></i></div> Instant Results</div>
                     <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-chart-pie"></i></div> Macro-Economic Engine</div>
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock"></i></div> Secure Data</div>
-                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"><i class="fa-solid fa-user-shield"></i></div> No Account Needed</div>
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock"></i></div> 100% Free</div>
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"><i class="fa-solid fa-user-shield"></i></div> No Sign-up Needed</div>
                 </div>
             </div>
 
-            <!-- NATIVE INLINE MULTI-STEP PREDICTOR -->
+            <!-- NATIVE INLINE 2-STEP PREDICTOR (NO LEAD GATE) -->
             <div class="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden">
                 <div id="predictor-form-container">
                     
@@ -116,11 +116,10 @@
                             <h3 class="text-2xl font-bold text-slate-800 mb-1">AI Valuation Engine</h3>
                             <p class="text-sm text-slate-500 font-medium" id="step-subtitle">Step 1: Property Details</p>
                         </div>
-                        <!-- Step Dots -->
+                        <!-- Step Dots (2 Steps Only) -->
                         <div class="flex gap-2 pb-1">
                             <div id="dot1" class="w-3 h-3 rounded-full step-active border"></div>
                             <div id="dot2" class="w-3 h-3 rounded-full step-inactive border"></div>
-                            <div id="dot3" class="w-3 h-3 rounded-full step-inactive border"></div>
                         </div>
                     </div>
 
@@ -136,7 +135,7 @@
                                         <option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option>
                                         <option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option>
                                         <option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option>
-                                        <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong WEST</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
+                                        <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
                                         <option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option>
                                         <option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option>
                                         <option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option>
@@ -148,15 +147,16 @@
                                     <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
                                         <option value="1 ROOM">1 Room</option><option value="2 ROOM">2 Room</option><option value="3 ROOM">3 Room</option>
                                         <option value="4 ROOM" selected>4 Room</option><option value="5 ROOM">5 Room</option><option value="EXECUTIVE">Executive</option>
+                                        <option value="MULTI-GENERATION">Multi-Generation</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor Area (sqm)</label>
-                                    <input type="number" id="area" value="90" min="20" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="number" id="area" value="90" min="20" max="250" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Storey Level</label>
-                                    <input type="number" id="storey" value="8" min="1" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
+                                    <input type="number" id="storey" value="8" min="1" max="50" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lease Left (Yrs)</label>
@@ -210,29 +210,6 @@
                             </div>
                         </div>
 
-                        <!-- STEP 3: Lead Capture -->
-                        <div id="step3" class="hidden">
-                            <div class="mb-5 text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
-                                <i class="fa-solid fa-file-pdf text-3xl text-blue-500 mb-2"></i>
-                                <h4 class="text-sm font-bold text-slate-800">Where should we send your report?</h4>
-                                <p class="text-xs text-slate-500 mt-1">Enter your details to instantly download the PDF valuation.</p>
-                            </div>
-                            <div class="space-y-4 mb-5">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
-                                    <input type="text" id="lead_name" placeholder="E.g. Tan Ah Kow" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">WhatsApp Number</label>
-                                    <input type="tel" id="lead_phone" placeholder="+65 8123 4567" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
-                                    <input type="email" id="lead_email" placeholder="ahkow@email.com" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5">
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Navigation Buttons -->
                         <div class="flex gap-3 mt-6">
                             <button type="button" id="btnPrev" onclick="prevStep()" class="hidden w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm py-4 transition-colors">
@@ -242,7 +219,7 @@
                                 Next Step <i class="fa-solid fa-arrow-right"></i>
                             </button>
                             <button type="button" id="submitBtn" onclick="runPrediction()" class="hidden w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl text-sm py-4 transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2">
-                                <i class="fa-solid fa-unlock"></i> Unlock Valuation & PDF
+                                <i class="fa-solid fa-bolt"></i> Calculate Market Value
                             </button>
                         </div>
                     </form>
@@ -255,17 +232,22 @@
                     </div>
                     <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Simulated Market Value</h4>
                     
-                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight" id="displayPrice">S$ 0</div>
-                    <p class="text-xs text-blue-600 font-semibold mb-6"><i class="fa-solid fa-download"></i> Your PDF report is downloading...</p>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-1 tracking-tight" id="displayPrice">S$ 0</div>
+                    <p class="text-xs font-semibold text-slate-500 mb-6" id="displayRange">Range: S$ 0 — S$ 0</p>
                     
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 mb-6 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10"></div>
                         <h5 class="font-bold text-slate-800 mb-2">Ready to secure this price?</h5>
                         <p class="text-xs text-slate-500 mb-5 leading-relaxed">I have the track record to market your flat and negotiate this exact value or higher. Let's talk strategy.</p>
                         
-                        <a id="whatsappBtn" href="#" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-sm px-5 py-4 transition-all shadow-lg shadow-[#25D366]/30 transform hover:-translate-y-0.5">
-                            <i class="fa-brands fa-whatsapp text-lg"></i> Discuss on WhatsApp
-                        </a>
+                        <div class="space-y-3">
+                            <a id="whatsappBtn" href="#" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-sm px-5 py-3.5 transition-all shadow-lg shadow-[#25D366]/30 transform hover:-translate-y-0.5">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Discuss on WhatsApp
+                            </a>
+                            <button type="button" onclick="downloadCurrentPDF()" class="w-full inline-flex justify-center items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs px-5 py-3 transition-all">
+                                <i class="fa-solid fa-file-pdf text-red-500"></i> Download PDF Report
+                            </button>
+                        </div>
                     </div>
 
                     <button onclick="resetForm()" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors">
@@ -408,7 +390,7 @@
             </div>
         </div>
         
-        <h2 style="font-size: 20px; margin-bottom: 10px;">Valuation Analysis for <span id="pdf_name" style="color:#2563eb;"></span></h2>
+        <h2 style="font-size: 20px; margin-bottom: 10px;">Valuation Analysis for <span id="pdf_name" style="color:#2563eb;">Valued Client</span></h2>
         
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
             <h3 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-top:0;">Physical Specifications</h3>
@@ -438,6 +420,8 @@
     <!-- WIZARD, PRESETS & API LOGIC -->
     <script>
         let currentStep = 1;
+        let lastPayload = null;
+        let lastFormattedPrice = "S$ 0";
 
         // --- PRESET LOGIC ---
         function loadPreset(presetName) {
@@ -447,11 +431,10 @@
             const hdb_idx = document.getElementById('hdb_idx');
             const cooling_measure = document.getElementById('cooling_measure');
 
-            // Tambahkan animasi flash kecil agar kelihatan saat angka berubah
             const inputs = [sora, gdp_growth, cpi_val, hdb_idx, cooling_measure];
             inputs.forEach(input => {
-                input.classList.add('ring-2', 'ring-accent-400');
-                setTimeout(() => input.classList.remove('ring-2', 'ring-accent-400'), 300);
+                input.classList.add('ring-2', 'ring-blue-400');
+                setTimeout(() => input.classList.remove('ring-2', 'ring-blue-400'), 300);
             });
 
             if (presetName === 'baseline') {
@@ -463,37 +446,32 @@
             }
         }
 
-        // --- WIZARD LOGIC ---
+        // --- 2-STEP WIZARD LOGIC ---
         function updateWizardUI() {
             document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
             document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
-            document.getElementById('step3').classList.toggle('hidden', currentStep !== 3);
             
             document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
-            document.getElementById('btnNext').classList.toggle('hidden', currentStep === 3);
-            document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 3);
+            document.getElementById('btnNext').classList.toggle('hidden', currentStep === 2);
+            document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 2);
 
-            const subtitles = {1: "Step 1: Property Details", 2: "Step 2: Economic Outlook", 3: "Step 3: Get Your Report"};
+            const subtitles = {1: "Step 1: Property Details", 2: "Step 2: Economic Outlook"};
             document.getElementById('step-subtitle').innerText = subtitles[currentStep];
 
             document.getElementById('dot2').className = currentStep >= 2 ? "w-3 h-3 rounded-full step-active border" : "w-3 h-3 rounded-full step-inactive border";
-            document.getElementById('dot3').className = currentStep >= 3 ? "w-3 h-3 rounded-full step-active border" : "w-3 h-3 rounded-full step-inactive border";
         }
 
-        function nextStep() { if (currentStep < 3) { currentStep++; updateWizardUI(); } }
+        function nextStep() { if (currentStep < 2) { currentStep++; updateWizardUI(); } }
         function prevStep() { if (currentStep > 1) { currentStep--; updateWizardUI(); } }
 
+        function formatSGD(val) {
+            return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(val);
+        }
+
         function runPrediction() {
-            const leadName = document.getElementById('lead_name').value;
-            const leadPhone = document.getElementById('lead_phone').value;
-            const leadEmail = document.getElementById('lead_email').value;
-
-            if(!leadName || !leadPhone || !leadEmail) {
-                alert("Please complete your contact details to unlock the report.");
-                return;
-            }
-
-            document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing AI...';
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing AI...';
+            submitBtn.disabled = true;
             
             const payload = {
                 town: document.getElementById("town").value,
@@ -509,25 +487,37 @@
             };
 
             fetch("https://danawiraprama-sg-hdb-prediction.hf.space/predict", {
-                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("API Error");
+                return res.json();
+            })
             .then(data => {
-                let formattedPrice = new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(data.predicted_price);
+                const predPrice = data.predicted_price;
+                const lowEst = data.low_estimate || (predPrice * 0.94);
+                const highEst = data.high_estimate || (predPrice * 1.06);
+
+                lastFormattedPrice = formatSGD(predPrice);
+                lastPayload = payload;
                 
                 document.getElementById('predictor-form-container').classList.add('hidden');
                 document.getElementById('result-container').classList.remove('hidden');
-                document.getElementById('displayPrice').innerText = formattedPrice;
+                document.getElementById('displayPrice').innerText = lastFormattedPrice;
+                document.getElementById('displayRange').innerText = `Estimated Range: ${formatSGD(lowEst)} — ${formatSGD(highEst)}`;
 
-                const waText = encodeURIComponent(`Hi Jonathan! I'm ${leadName}. I just simulated my ${payload.flat_type} at ${payload.town} using your AI.\n\nAI Target Price: ${formattedPrice}.\nI'd like to discuss my options.`);
+                const waText = encodeURIComponent(`Hi Jonathan! I just simulated my ${payload.flat_type} at ${payload.town} using your AI.\n\nAI Target Price: ${lastFormattedPrice}.\nI'd like to discuss my options.`);
                 document.getElementById('whatsappBtn').href = `https://wa.me/6581234567?text=${waText}`;
 
-                generatePDF(payload, formattedPrice, leadName);
-                sendLeadToWebhook(leadName, leadEmail, leadPhone, payload, formattedPrice);
+                submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Calculate Market Value';
+                submitBtn.disabled = false;
             })
             .catch(err => {
                 alert("API Connection Error. Please ensure the Hugging Face server is running.");
-                document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-unlock"></i> Unlock Valuation & PDF';
+                submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Calculate Market Value';
+                submitBtn.disabled = false;
             });
         }
 
@@ -536,30 +526,31 @@
             updateWizardUI();
             document.getElementById('result-container').classList.add('hidden');
             document.getElementById('predictor-form-container').classList.remove('hidden');
-            document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-unlock"></i> Unlock Valuation & PDF';
         }
 
-        function generatePDF(payload, price, leadName) {
+        function downloadCurrentPDF() {
+            if (!lastPayload) return;
+
             document.getElementById('pdf_date').innerText = new Date().toLocaleDateString('en-SG');
-            document.getElementById('pdf_name').innerText = leadName;
-            document.getElementById('pdf_town').innerText = payload.town;
-            document.getElementById('pdf_type').innerText = payload.flat_type;
-            document.getElementById('pdf_area').innerText = payload.floor_area;
-            document.getElementById('pdf_storey').innerText = payload.storey;
-            document.getElementById('pdf_lease').innerText = payload.lease_left;
+            document.getElementById('pdf_name').innerText = "Valued Client";
+            document.getElementById('pdf_town').innerText = lastPayload.town;
+            document.getElementById('pdf_type').innerText = lastPayload.flat_type;
+            document.getElementById('pdf_area').innerText = lastPayload.floor_area;
+            document.getElementById('pdf_storey').innerText = lastPayload.storey;
+            document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
             
-            document.getElementById('pdf_sora').innerText = payload.sora;
-            document.getElementById('pdf_gdp').innerText = payload.gdp_growth;
-            document.getElementById('pdf_cpi').innerText = payload.cpi_val;
-            document.getElementById('pdf_hdbidx').innerText = payload.hdb_idx;
-            document.getElementById('pdf_price').innerText = price;
+            document.getElementById('pdf_sora').innerText = lastPayload.sora;
+            document.getElementById('pdf_gdp').innerText = lastPayload.gdp_growth;
+            document.getElementById('pdf_cpi').innerText = lastPayload.cpi_val;
+            document.getElementById('pdf_hdbidx').innerText = lastPayload.hdb_idx;
+            document.getElementById('pdf_price').innerText = lastFormattedPrice;
 
             const element = document.getElementById('pdfTemplate');
             element.style.display = 'block';
 
             const opt = {
                 margin: 0,
-                filename: `Nexus_Valuation_${leadName.replace(/\s+/g, '_')}.pdf`,
+                filename: `Nexus_Valuation_${lastPayload.town.replace(/\s+/g, '_')}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -568,23 +559,6 @@
             html2pdf().set(opt).from(element).save().then(() => {
                 element.style.display = 'none';
             });
-        }
-
-        function sendLeadToWebhook(name, email, phone, payload, price) {
-            const webhookUrl = "https://hook.make.com/xxxxxxxxxxxxxxxxxxxxxxx"; 
-
-            const dataToSend = {
-                lead_name: name, lead_email: email, lead_phone: phone,
-                property_town: payload.town, predicted_price: price, timestamp: new Date().toISOString()
-            };
-
-            if (webhookUrl.includes("xxxxxxxxxxxxxxxxxxxxxxx")) {
-                console.log("Mock Mode: Webhook not set. Data:", dataToSend);
-                return;
-            }
-
-            fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSend) })
-            .catch(err => console.error("Webhook failed:", err));
         }
     </script>
 </body>
