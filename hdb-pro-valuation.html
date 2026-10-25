@@ -345,70 +345,130 @@
         </div>
     </div>
 
-    <!-- HIDDEN WHITE-LABEL PDF TEMPLATE -->
-    <div id="pdfTemplate" style="display: none; background: white; padding: 40px; color: #1e293b; width: 800px; font-family: 'Helvetica', sans-serif;">
-        <!-- Header -->
-        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <!-- HIDDEN WHITE-LABEL PDF TEMPLATE (OPTIMIZED FOR HTML2PDF) -->
+    <div id="pdfTemplate" style="display: none; background-color: #ffffff; color: #0f172a; width: 750px; padding: 32px 36px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box;">
+        
+        <!-- HEADER KOP SURAT -->
+        <div style="border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-end;">
             <div>
-                <h1 style="margin: 0; color: #0f172a; font-size: 24px; font-weight: bold; letter-spacing: -0.5px;">NEXUS PRO PROPERTY INTELLIGENCE</h1>
-                <p style="margin: 3px 0 0 0; font-size: 11px; color: #64748b; text-transform: uppercase;">Confidential Market Equity Dossier</p>
+                <h1 style="margin: 0; color: #1e3a8a; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">NEXUS PROPERTY INTELLIGENCE</h1>
+                <p style="margin: 3px 0 0 0; font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">HDB Resale Equity & Valuation Dossier</p>
             </div>
             <div style="text-align: right;">
-                <p style="margin: 0; font-size: 13px; font-weight: bold; color: #2563eb;" id="pdf_date"></p>
-                <p style="margin: 0; font-size: 10px; color: #94a3b8;">Ref: SG-HDB-AI</p>
+                <span style="display: inline-block; background-color: #eff6ff; color: #1d4ed8; font-size: 9px; font-weight: bold; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; border: 1px solid #bfdbfe; margin-bottom: 3px;">Confidential</span>
+                <p style="margin: 0; font-size: 10px; color: #64748b;">Ref: <strong style="color: #0f172a;" id="pdf_ref_id">NX-2026-VAL</strong></p>
+                <p style="margin: 1px 0 0 0; font-size: 10px; color: #64748b;">Issue Date: <strong style="color: #0f172a;" id="pdf_date"></strong></p>
             </div>
         </div>
 
-        <!-- Agent Credential Box -->
-        <div style="background: #f1f5f9; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <!-- KOTAK PROFIL AGEN (WARNA SOLID & KONTRAS TINGGI) -->
+        <div style="background-color: #0f172a; border-radius: 8px; padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <p style="margin: 0; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold;">Prepared Exclusively By</p>
-                <p style="margin: 2px 0 0 0; font-size: 14px; font-weight: bold; color: #0f172a;" id="pdf_agent_name">Jonathan Tan</p>
-                <p style="margin: 2px 0 0 0; font-size: 11px; color: #475569;" id="pdf_agent_agency">PropNex Realty | CEA: R012345A</p>
+                <p style="margin: 0; font-size: 9px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Prepared Exclusively By</p>
+                <h2 style="margin: 2px 0 0 0; font-size: 16px; font-weight: 800; color: #ffffff;" id="pdf_agent_name">Jonathan Tan</h2>
+                <p style="margin: 2px 0 0 0; font-size: 11px; color: #cbd5e1; font-weight: 500;" id="pdf_agent_agency">PropNex Realty</p>
+            </div>
+            <div style="text-align: right; border-left: 1px solid #334155; padding-left: 16px;">
+                <p style="margin: 0; font-size: 9px; color: #94a3b8; text-transform: uppercase; font-weight: bold;">CEA Registration</p>
+                <p style="margin: 1px 0 3px 0; font-size: 12px; font-weight: bold; color: #38bdf8;" id="pdf_agent_cea">R012345A</p>
+                <p style="margin: 0; font-size: 11px; font-weight: bold;">
+    <a id="pdf_agent_wa_link" href="#" target="_blank" style="color: #38bdf8; text-decoration: underline;">
+        <span id="pdf_agent_phone">+65 8123 4567</span> (Chat WA)
+    </a>
+</p>
+            </div>
+        </div>
+
+        <!-- HERO VALUASI TARGET -->
+        <div style="background-color: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 18px; margin-bottom: 18px; text-align: center;">
+            <p style="margin: 0; font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Indicative Market Valuation</p>
+            <h1 style="margin: 6px 0 4px 0; font-size: 38px; font-weight: 800; color: #0f172a; letter-spacing: -1px;" id="pdf_price">S$ 0</h1>
+            
+            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 6px;">
+                <span style="background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 10px; font-weight: bold; padding: 3px 10px; border-radius: 4px;" id="pdf_range">
+                    Range: S$ 0 — S$ 0
+                </span>
+                <span style="background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 10px; font-weight: bold; padding: 3px 10px; border-radius: 4px;" id="pdf_psf">
+                    Implied PSF: S$ 0 psf
+                </span>
+            </div>
+            <p style="margin: 8px 0 0 0; font-size: 9px; color: #94a3b8;">XGBoost regression mapping 232,000+ records with monotone economic constraints.</p>
+        </div>
+
+        <!-- 2 KOLOM: SPESIFIKASI FISIK vs VARIABEL MAKRO -->
+        <div style="display: flex; gap: 14px; margin-bottom: 18px;">
+            <!-- Kolom Fisik -->
+            <div style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background-color: #ffffff;">
+                <h3 style="margin: 0 0 8px 0; font-size: 11px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">Subject Property Details</h3>
+                <table style="width: 100%; font-size: 10.5px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Town Location:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;" id="pdf_town">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Flat Type:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;" id="pdf_type">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Floor Area:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;"><span id="pdf_area">-</span> sqm (<span id="pdf_area_sqft">-</span> sqft)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Storey Level:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;">Level <span id="pdf_storey">-</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Remaining Lease:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; color: #2563eb;"><span id="pdf_lease">-</span> Years</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Kolom Makro -->
+            <div style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background-color: #ffffff;">
+                <h3 style="margin: 0 0 8px 0; font-size: 11px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">Macro Calibration</h3>
+                <table style="width: 100%; font-size: 10.5px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">SORA Interest Rate:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;"><span id="pdf_sora">-</span>%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">GDP Growth (YoY):</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;"><span id="pdf_gdp">-</span>%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Consumer Price Index:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;" id="pdf_cpi">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">HDB Price Index:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold;" id="pdf_hdbidx">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 0; color: #64748b;">Cooling Measures:</td>
+                        <td style="padding: 3px 0; text-align: right; font-weight: bold; color: #d97706;" id="pdf_cooling">Active</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- REKOMENDASI TAKTIK NEGOSIASI AGEN -->
+        <div style="background-color: #f1f5f9; border-left: 3px solid #2563eb; padding: 10px 14px; border-radius: 0 6px 6px 0; margin-bottom: 18px;">
+            <p style="margin: 0 0 3px 0; font-size: 10px; font-weight: bold; color: #1e3a8a; text-transform: uppercase;">Advisory Tactical Positioning</p>
+            <p style="margin: 0; font-size: 9.5px; color: #475569; line-height: 1.4;" id="pdf_positioning_text">
+                For seller representations, benchmark listing price towards the upper boundary to capture prospective Cash-Over-Valuation (COV). For buyers, utilize current cost-of-borrowing metrics to anchor negotiations around median thresholds.
+            </p>
+        </div>
+
+        <!-- FOOTER & LEGAL DISCLAIMER -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; justify-content: space-between; font-size: 8px; color: #94a3b8; line-height: 1.35;">
+            <div style="max-width: 560px;">
+                <p style="margin: 0;"><strong>Notice:</strong> Algorithmic valuation model mapping authentic HDB transaction registries. This dossier serves as a comparative market positioning analysis and does not replace formal bank mortgage appraisals.</p>
             </div>
             <div style="text-align: right;">
-                <p style="margin: 0; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold;">Direct Contact</p>
-                <p style="margin: 2px 0 0 0; font-size: 12px; font-weight: bold; color: #2563eb;" id="pdf_agent_phone">+65 8123 4567</p>
+                <p style="margin: 0;">Nexus Pro Real Estate Intelligence</p>
+                <p style="margin: 1px 0 0 0; color: #cbd5e1;">Page 1 of 1</p>
             </div>
-        </div>
-
-        <!-- Property Specs -->
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
-            <h3 style="margin: 0 0 10px 0; font-size: 12px; color: #2563eb; text-transform: uppercase;">1. Property Physical Specifications</h3>
-            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
-                <tr>
-                    <td style="padding: 4px 0; color: #64748b;">Town Location:</td>
-                    <td style="padding: 4px 0; font-weight: bold;" id="pdf_town"></td>
-                    <td style="padding: 4px 0; color: #64748b;">Storey Level:</td>
-                    <td style="padding: 4px 0; font-weight: bold;">Level <span id="pdf_storey"></span></td>
-                </tr>
-                <tr>
-                    <td style="padding: 4px 0; color: #64748b;">Flat Type:</td>
-                    <td style="padding: 4px 0; font-weight: bold;" id="pdf_type"></td>
-                    <td style="padding: 4px 0; color: #64748b;">Remaining Lease:</td>
-                    <td style="padding: 4px 0; font-weight: bold;"><span id="pdf_lease"></span> Years</td>
-                </tr>
-                <tr>
-                    <td style="padding: 4px 0; color: #64748b;">Floor Area:</td>
-                    <td style="padding: 4px 0; font-weight: bold;"><span id="pdf_area"></span> sqm</td>
-                    <td style="padding: 4px 0; color: #64748b;">Model Version:</td>
-                    <td style="padding: 4px 0; font-weight: bold;">Standard / Model A</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Valuation Target Box -->
-        <div style="text-align: center; border: 2px solid #2563eb; border-radius: 12px; padding: 25px; background: #eff6ff; margin-bottom: 20px;">
-            <p style="margin: 0; color: #1e40af; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px;">Simulated Fair Market Value</p>
-            <h1 style="font-size: 42px; color: #1e3a8a; margin: 10px 0; font-weight: 800;" id="pdf_price">S$ 0</h1>
-            <p style="margin: 0; font-size: 12px; color: #2563eb; font-weight: 600;" id="pdf_range">Range: S$ 0 — S$ 0</p>
-            <p style="margin: 8px 0 0 0; font-size: 10px; color: #64748b;">Multi-variate algorithmic regression calibrated across 232,000+ authentic transactions.</p>
-        </div>
-
-        <!-- Footer Disclaimer -->
-        <div style="font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-            <p style="margin: 0;">This dossier is prepared for market positioning and comparative negotiation purposes. It does not constitute a formal bank valuation.</p>
-            <p style="margin: 3px 0 0 0;">For transaction execution and negotiation strategy, contact the certified CEA representative listed above.</p>
         </div>
     </div>
 
@@ -642,83 +702,90 @@
 
         // --- 4. BRANDED PDF EXPORT ---
         function downloadBrandedPDF() {
-    if (!lastPayload) return;
-    const profile = loadAgentProfile();
+            if (!lastPayload) {
+                alert("Please calculate a property valuation first.");
+                return;
+            }
 
-    // 1. Format Dates & Ref ID
-    const today = new Date();
-    const dateFormatted = today.toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' });
-    const randomRef = Math.floor(1000 + Math.random() * 9000);
-    const refCode = `NX-${today.getFullYear()}-${randomRef}`;
+            // Ambil profil agen aktif (dari localStorage atau default)
+            const profile = loadAgentProfile();
 
-    // 2. Metrics calculation
-    const SQM_TO_SQFT = 10.7639;
-    const areaSqm = parseFloat(lastPayload.floor_area) || 90;
-    const areaSqft = Math.round(areaSqm * SQM_TO_SQFT);
-    
-    // Clean price number from string (e.g., "S$ 520,000" -> 520000)
-    const rawPriceNum = parseInt(lastFormattedPrice.replace(/[^0-9]/g, ''), 10) || 0;
-    const psfVal = areaSqft > 0 ? Math.round(rawPriceNum / areaSqft) : 0;
+            // 1. Format Tanggal & No. Referensi Dokumen
+            const today = new Date();
+            const dateFormatted = today.toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' });
+            const randomRef = Math.floor(1000 + Math.random() * 9000);
+            const refCode = `NX-${today.getFullYear()}-${randomRef}`;
 
-    // 3. Populate PDF Fields
-    document.getElementById('pdf_date').innerText = dateFormatted;
-    document.getElementById('pdf_ref_id').innerText = refCode;
-    
-    // Agent
-    document.getElementById('pdf_agent_name').innerText = profile.name;
-    document.getElementById('pdf_agent_agency').innerText = profile.agency;
-    document.getElementById('pdf_agent_cea').innerText = profile.cea;
-    document.getElementById('pdf_agent_phone').innerText = `+${profile.phone}`;
+            // 2. Kalkulasi Sqft dan PSF
+            const SQM_TO_SQFT = 10.7639;
+            const areaSqm = parseFloat(lastPayload.floor_area) || 90;
+            const areaSqft = Math.round(areaSqm * SQM_TO_SQFT);
+            const rawPrice = parseInt(lastFormattedPrice.replace(/[^0-9]/g, ''), 10) || 0;
+            const psfVal = areaSqft > 0 ? Math.round(rawPrice / areaSqft) : 0;
 
-    // Property
-    document.getElementById('pdf_town').innerText = lastPayload.town;
-    document.getElementById('pdf_type').innerText = lastPayload.flat_type;
-    document.getElementById('pdf_area').innerText = areaSqm;
-    document.getElementById('pdf_area_sqft').innerText = areaSqft.toLocaleString();
-    document.getElementById('pdf_storey').innerText = lastPayload.storey;
-    document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
+            // 3. Masukkan Data Agen ke Template PDF
+            const agentName = profile.name && profile.name.trim() !== "" ? profile.name : "Jonathan Tan";
+            const agentAgency = profile.agency && profile.agency.trim() !== "" ? profile.agency : "PropNex Realty";
+            const agentCea = profile.cea && profile.cea.trim() !== "" ? profile.cea : "R012345A";
+            const agentPhone = profile.phone && profile.phone.trim() !== "" ? profile.phone : "6581234567";
 
-    // Macro
-    document.getElementById('pdf_sora').innerText = parseFloat(lastPayload.sora).toFixed(2);
-    document.getElementById('pdf_gdp').innerText = parseFloat(lastPayload.gdp_growth).toFixed(1);
-    document.getElementById('pdf_cpi').innerText = parseFloat(lastPayload.cpi_val).toFixed(1);
-    document.getElementById('pdf_hdbidx').innerText = parseFloat(lastPayload.hdb_idx).toFixed(1);
-    document.getElementById('pdf_cooling').innerText = lastPayload.cooling_measure === 1 ? "Active (LTV / Wait-out)" : "Relaxed / Inactive";
+            document.getElementById('pdf_agent_name').innerText = agentName;
+            document.getElementById('pdf_agent_agency').innerText = agentAgency;
+            document.getElementById('pdf_agent_cea').innerText = agentCea;
+            document.getElementById('pdf_agent_phone').innerText = `+${agentPhone}`;
+            document.getElementById('pdf_agent_wa_link').href = `https://wa.me/${agentPhone}`;
 
-    // Pricing & PSF
-    document.getElementById('pdf_price').innerText = lastFormattedPrice;
-    document.getElementById('pdf_range').innerText = lastFormattedRange;
-    document.getElementById('pdf_psf').innerText = `Implied PSF: S$ ${psfVal.toLocaleString()} psf`;
+            // 4. Masukkan Data Tanggal & Properti
+            document.getElementById('pdf_date').innerText = dateFormatted;
+            document.getElementById('pdf_ref_id').innerText = refCode;
+            document.getElementById('pdf_town').innerText = lastPayload.town;
+            document.getElementById('pdf_type').innerText = lastPayload.flat_type;
+            document.getElementById('pdf_area').innerText = areaSqm;
+            document.getElementById('pdf_area_sqft').innerText = areaSqft.toLocaleString();
+            document.getElementById('pdf_storey').innerText = lastPayload.storey;
+            document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
 
-    // Dynamic Positioning Script
-    const positioningElement = document.getElementById('pdf_positioning_text');
-    if (lastPayload.sora > 4.0) {
-        positioningElement.innerHTML = `<strong>Elevated Rate Environment (SORA ${lastPayload.sora}%):</strong> Buyer purchasing power is throttled by TDSR/MSR. Sellers should benchmark near the median to avoid prolonged marketing cycles. Buyers should negotiate aggressively on older units.`;
-    } else if (lastPayload.hdb_idx > 195) {
-        positioningElement.innerHTML = `<strong>Bullish Index Run (Index ${lastPayload.hdb_idx}):</strong> Resale volume velocity is accelerating. Sellers hold leverage to test peak valuations with prospective Cash-Over-Valuation (COV).`;
-    } else {
-        positioningElement.innerHTML = `<strong>Balanced Market Condition:</strong> Units on floors ≥ level ${lastPayload.storey} with healthy remaining lease (${lastPayload.lease_left} yrs) maintain strong secondary market liquidity. Anchor negotiations firmly around S$ ${psfVal} psf.`;
-    }
+            // 5. Masukkan Data Makroekonomi
+            document.getElementById('pdf_sora').innerText = parseFloat(lastPayload.sora).toFixed(2);
+            document.getElementById('pdf_gdp').innerText = parseFloat(lastPayload.gdp_growth).toFixed(1);
+            document.getElementById('pdf_cpi').innerText = parseFloat(lastPayload.cpi_val).toFixed(1);
+            document.getElementById('pdf_hdbidx').innerText = parseFloat(lastPayload.hdb_idx).toFixed(1);
+            document.getElementById('pdf_cooling').innerText = lastPayload.cooling_measure === 1 ? "Active Policy" : "Inactive";
 
-    // 4. Render with html2pdf
-    const element = document.getElementById('pdfTemplate');
-    element.style.display = 'block';
+            // 6. Masukkan Nilai Valuasi & PSF
+            document.getElementById('pdf_price').innerText = lastFormattedPrice;
+            document.getElementById('pdf_range').innerText = lastFormattedRange;
+            document.getElementById('pdf_psf').innerText = `Implied PSF: S$ ${psfVal.toLocaleString()} psf`;
 
-    const cleanTown = lastPayload.town.replace(/\s+/g, '_');
-    const cleanAgent = profile.name.replace(/\s+/g, '_');
+            // 7. Dynamic Script Taktis
+            const posEl = document.getElementById('pdf_positioning_text');
+            if (lastPayload.sora > 4.0) {
+                posEl.innerHTML = `<strong>High-Rate Environment (SORA ${lastPayload.sora}%):</strong> Buyer purchasing power is constrained by MSR limits. Price listings close to median (${lastFormattedPrice}) to ensure optimal transaction velocity.`;
+            } else if (lastPayload.hdb_idx > 195) {
+                posEl.innerHTML = `<strong>Bullish Price Index (${lastPayload.hdb_idx}):</strong> Market liquidity is aggressive. Sellers hold leverage to test upper boundary targets to capture Cash-Over-Valuation (COV).`;
+            } else {
+                posEl.innerHTML = `<strong>Balanced Market Conditions:</strong> Properties on level ${lastPayload.storey} with healthy remaining lease (${lastPayload.lease_left} yrs) command firm secondary liquidity. Anchor target negotiation around S$ ${psfVal.toLocaleString()} psf.`;
+            }
 
-    const opt = {
-        margin: [10, 10, 10, 10], // tight 10mm margins
-        filename: `Nexus_Equity_Dossier_${cleanTown}_${cleanAgent}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+            // 8. Eksekusi Render PDF
+            const element = document.getElementById('pdfTemplate');
+            element.style.display = 'block';
 
-    html2pdf().set(opt).from(element).save().then(() => {
-        element.style.display = 'none';
-    });
-}
+            const cleanTown = lastPayload.town.replace(/\s+/g, '_');
+            const cleanAgent = agentName.replace(/\s+/g, '_');
+
+            const opt = {
+                margin: [8, 8, 8, 8],
+                filename: `Nexus_Dossier_${cleanTown}_${cleanAgent}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none';
+            });
+        }
     </script>
 </body>
 </html>
