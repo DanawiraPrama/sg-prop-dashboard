@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Singapore HDB Resale Dashboard | Nexus Advisory</title>
+    <title>HDB Market Intelligence & Agent Analytics | Nexus</title>
     
-    <!-- Load Tailwind CSS for styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Load Plotly for interactive charts -->
+    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-    
-    <!-- Load PapaParse for CSV parsing -->
+    <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    
-    <!-- Load FontAwesome for icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f8fafc;
             color: #0f172a;
         }
         
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -34,168 +31,310 @@
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border-radius: 12px;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            border-radius: 16px;
         }
         
-        .chart-container { height: 350px; width: 100%; }
+        .chart-container { height: 340px; width: 100%; }
+        
+        /* Smooth Drawer Transition */
+        .drawer-transition {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
-<body class="antialiased flex h-screen overflow-hidden">
+<body class="antialiased flex h-screen overflow-hidden bg-slate-50">
 
-    <!-- Sidebar -->
-    <aside class="w-72 bg-white border-r border-slate-200 flex flex-col h-full z-10 hidden md:flex">
-        <div class="p-6 border-b border-slate-200">
-            <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-city text-blue-600"></i> HDB Insights
-            </h1>
-            <p class="text-sm text-slate-500 mt-1">Analytics Dashboard</p>
+    <!-- MOBILE DRAWER BACKDROP -->
+    <div id="drawerBackdrop" onclick="toggleMobileFilter()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+    <!-- SIDEBAR FILTER (Responsive Slide-over on Mobile) -->
+    <aside id="sidebarDrawer" class="drawer-transition fixed md:static inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white border-r border-slate-200 flex flex-col h-full transform -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+        
+        <!-- Sidebar Header -->
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-900 text-white">
+            <div>
+                <h1 class="text-lg font-extrabold tracking-tight flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-blue-400"></i> Nexus<span class="text-blue-400">Pro</span>
+                </h1>
+                <p class="text-[11px] text-slate-400 font-medium">HDB Agent Market Intelligence</p>
+            </div>
+            <!-- Mobile Close Button -->
+            <button onclick="toggleMobileFilter()" class="md:hidden text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
         </div>
         
-        <div class="p-6 flex-1 overflow-y-auto">
-            <!-- Dataset Source & Navigation to AI Predictor -->
-            <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h3 class="text-sm font-semibold text-blue-800 mb-2">Nexus Ecosystem</h3>
-                <p class="text-xs text-blue-600 mb-3">Switch instantly to the predictive AI valuation model.</p>
-                <a href="sg-hdb-predict.html" class="block text-center w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all shadow-sm mb-3">
-                    <i class="fa-solid fa-bolt mr-1"></i> Open AI Predictor
+        <div class="p-5 flex-1 overflow-y-auto space-y-6">
+            
+            <!-- Quick Link to AI Predictor -->
+            <div class="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50/60 rounded-xl border border-blue-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[10px] font-bold tracking-wider uppercase text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">Valuation Tool</span>
+                    <i class="fa-solid fa-robot text-blue-600"></i>
+                </div>
+                <p class="text-xs text-slate-600 font-medium mb-3">Jump into the 11-feature macro XGBoost valuation engine.</p>
+                <a href="sg-hdb-predict.html" class="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all shadow-md shadow-blue-500/20">
+                    <span>Open AI Predictor</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                 </a>
-                <input type="file" id="csvFileInput" accept=".csv" class="hidden">
-                <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium py-2 px-4 rounded transition-colors shadow-sm mb-1">
-                    <i class="fa-solid fa-upload mr-2"></i> Upload Custom CSV
-                </button>
-                <div id="uploadStatus" class="text-[11px] mt-1 text-slate-600 font-medium italic">Initializing dataset...</div>
             </div>
 
-            <!-- Timeline/Date Filter Range -->
-            <div class="mb-6">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Date Range</label>
+            <!-- Timeline Range Selector -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    <i class="fa-regular fa-calendar-days text-slate-400 mr-1"></i> Transaction Period
+                </label>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <span class="text-[10px] uppercase font-bold text-slate-400">From</span>
-                        <select id="startMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                        </select>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">From</span>
+                        <select id="startMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500"></select>
                     </div>
                     <div>
-                        <span class="text-[10px] uppercase font-bold text-slate-400">To</span>
-                        <select id="endMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                        </select>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">To</span>
+                        <select id="endMonthSelector" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500"></select>
                     </div>
                 </div>
             </div>
 
-            <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-4">Filters</h2>
-            
             <!-- Town Filter -->
-            <div class="mb-6">
+            <div>
                 <div class="flex justify-between items-center mb-2">
-                    <label class="block text-sm font-medium text-slate-700">Town</label>
-                    <div class="space-x-1.5 text-xs">
-                        <button type="button" id="selectAllTowns" class="text-blue-600 hover:text-blue-800 font-semibold">Select All</button>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i> Towns
+                    </label>
+                    <div class="space-x-1.5 text-[11px]">
+                        <button type="button" id="selectAllTowns" class="text-blue-600 hover:text-blue-800 font-bold">All</button>
                         <span class="text-slate-300">|</span>
                         <button type="button" id="clearAllTowns" class="text-slate-500 hover:text-slate-700 font-semibold">Clear</button>
                     </div>
                 </div>
-                <div id="townFilterContainer" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
+                <div id="townFilterContainer" class="space-y-1.5 max-h-44 overflow-y-auto pr-1 text-xs"></div>
             </div>
 
             <!-- Flat Type Filter -->
-            <div class="mb-6">
+            <div>
                 <div class="flex justify-between items-center mb-2">
-                    <label class="block text-sm font-medium text-slate-700">Flat Type</label>
-                    <div class="space-x-1.5 text-xs">
-                        <button type="button" id="selectAllFlats" class="text-blue-600 hover:text-blue-800 font-semibold">Select All</button>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        <i class="fa-solid fa-house text-slate-400 mr-1"></i> Flat Type
+                    </label>
+                    <div class="space-x-1.5 text-[11px]">
+                        <button type="button" id="selectAllFlats" class="text-blue-600 hover:text-blue-800 font-bold">All</button>
                         <span class="text-slate-300">|</span>
                         <button type="button" id="clearAllFlats" class="text-slate-500 hover:text-slate-700 font-semibold">Clear</button>
                     </div>
                 </div>
-                <div id="flatTypeFilterContainer" class="space-y-2"></div>
+                <div id="flatTypeFilterContainer" class="space-y-1.5 text-xs"></div>
             </div>
+
+            <!-- Manual CSV Override -->
+            <div class="pt-4 border-t border-slate-100">
+                <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-csv text-emerald-600"></i> Upload Custom CSV
+                </button>
+                <p id="uploadStatus" class="text-[10px] mt-1.5 text-slate-500 italic text-center">Loading master data...</p>
+            </div>
+        </div>
+
+        <!-- Mobile Apply Button Footer -->
+        <div class="p-4 border-t border-slate-200 md:hidden bg-slate-50">
+            <button onclick="toggleMobileFilter()" class="w-full bg-slate-900 text-white font-bold text-xs py-3 rounded-xl shadow-lg">
+                View Results (<span id="mobileCountBadge">0</span> Records)
+            </button>
         </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- MAIN CONTENT AREA -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-        <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center">
-            <h1 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-city text-blue-600"></i> HDB Analytics Dashboard</h1>
-            <a href="sg-hdb-predict.html" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition-all">
-                <i class="fa-solid fa-bolt mr-1"></i> AI Valuation Engine
-            </a>
+        
+        <!-- Top Sticky Header -->
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 md:px-8 md:py-4 flex justify-between items-center z-20">
+            <div class="flex items-center gap-3">
+                <!-- Hamburger Trigger for Mobile -->
+                <button onclick="toggleMobileFilter()" class="md:hidden bg-blue-50 text-blue-700 hover:bg-blue-100 p-2.5 rounded-xl border border-blue-200 transition-colors">
+                    <i class="fa-solid fa-sliders text-base"></i>
+                </button>
+                <div>
+                    <h2 class="text-base md:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+                        Resale Market Pulse
+                    </h2>
+                    <p class="text-[11px] md:text-xs text-slate-500" id="dataContextLabel">Syncing transactions...</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="sg-hdb-predict.html" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>AI Valuation</span>
+                </a>
+            </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-4 md:p-8">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex justify-between items-end mb-8">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Market Overview</h2>
-                        <p class="text-slate-500 mt-1" id="dataContextLabel">Loading dataset...</p>
+        <!-- Scrollable Dashboard Body -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <!-- 1. AGENT PITCHING CHEAT SHEET & MARKET INTELLIGENCE BOX -->
+                <div class="glass-card p-5 md:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white border-0 shadow-xl">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-700/60 mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-sm md:text-base font-bold text-white tracking-wide">Agent Intelligence & Pitching Strategy</h3>
+                                <p class="text-xs text-slate-400">Real-time market insights tailored for your client presentations</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="marketSentimentBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">
+                                <i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> Market: Balanced
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+                            <p class="text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
+                                <i class="fa-solid fa-tag text-teal-400 mr-1"></i> Target Pricing Spread (P25 - P75)
+                            </p>
+                            <div class="text-lg font-extrabold text-white" id="insight-pricing-spread">S$ 0 — S$ 0</div>
+                            <p class="text-[11px] text-slate-300 mt-1" id="insight-spread-desc">Liquidity floor to premium ceiling</p>
+                        </div>
+
+                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+                            <p class="text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
+                                <i class="fa-solid fa-chart-line text-blue-400 mr-1"></i> PSF Benchmark (Median)
+                            </p>
+                            <div class="text-lg font-extrabold text-white" id="insight-psf">S$ 0 psf</div>
+                            <p class="text-[11px] text-slate-300 mt-1" id="insight-psf-desc">Key talking point for private downgraders</p>
+                        </div>
+
+                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+                            <p class="text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
+                                <i class="fa-solid fa-bullhorn text-amber-400 mr-1"></i> Recommended Pitch Angle
+                            </p>
+                            <p class="text-xs font-medium text-slate-200 leading-relaxed" id="insight-pitch-angle">
+                                Select filters to unlock tactical negotiation scripts for this segment.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-blue-500">
-                        <div class="p-3 bg-blue-100 rounded-full text-blue-600"><i class="fa-solid fa-exchange-alt text-xl"></i></div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Total Transactions</p>
-                            <h3 class="text-2xl font-bold text-slate-800" id="kpi-transactions">-</h3>
+                <!-- 2. HIGH-LEVEL EXECUTIVE KPIS -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Volume</p>
+                                <h4 class="text-xl md:text-2xl font-extrabold text-slate-900 mt-1" id="kpi-transactions">-</h4>
+                            </div>
+                            <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-handshake"></i>
+                            </span>
                         </div>
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Closed transactions in range</p>
                     </div>
-                    
-                    <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-emerald-500">
-                        <div class="p-3 bg-emerald-100 rounded-full text-emerald-600"><i class="fa-solid fa-dollar-sign text-xl"></i></div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Median Resale Price</p>
-                            <h3 class="text-2xl font-bold text-slate-800" id="kpi-price">-</h3>
+
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-emerald-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Median Price</p>
+                                <h4 class="text-xl md:text-2xl font-extrabold text-slate-900 mt-1" id="kpi-price">-</h4>
+                            </div>
+                            <span class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-dollar-sign"></i>
+                            </span>
                         </div>
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Overall resale benchmark</p>
                     </div>
-                    
-                    <div class="glass-card p-6 flex items-center gap-4 border-l-4 border-purple-500">
-                        <div class="p-3 bg-purple-100 rounded-full text-purple-600"><i class="fa-solid fa-ruler-combined text-xl"></i></div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Median Price / Sqm</p>
-                            <h3 class="text-2xl font-bold text-slate-800" id="kpi-psm">-</h3>
+
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-purple-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Median PSF</p>
+                                <h4 class="text-xl md:text-2xl font-extrabold text-slate-900 mt-1" id="kpi-psf">-</h4>
+                            </div>
+                            <span class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                            </span>
                         </div>
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Per square foot standard</p>
+                    </div>
+
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-amber-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Median PSM</p>
+                                <h4 class="text-xl md:text-2xl font-extrabold text-slate-900 mt-1" id="kpi-psm">-</h4>
+                            </div>
+                            <span class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-chart-area"></i>
+                            </span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Official HDB metric ($/sqm)</p>
                     </div>
                 </div>
 
-                <!-- Charts Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="glass-card p-6">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Price Trend by Month</h3>
+                <!-- 3. INTERACTIVE CHARTS GRID -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-4 md:p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Monthly Median Price Trend</h3>
+                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Timeline Analysis</span>
+                        </div>
                         <div id="chart-trend" class="chart-container"></div>
                     </div>
-                    <div class="glass-card p-6">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Median Price Comparison by Town</h3>
+
+                    <div class="glass-card p-4 md:p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Town Price Ranking</h3>
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Submarket Median</span>
+                        </div>
                         <div id="chart-town" class="chart-container"></div>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 mb-8">
-                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Price vs. Floor Area</h3>
-                    <div id="chart-scatter" class="chart-container" style="height: 450px;"></div>
+                <!-- 4. PRICE VS AREA SCATTER -->
+                <div class="glass-card p-4 md:p-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <div>
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Price vs. Floor Area (COV Outlier Detection)</h3>
+                            <p class="text-xs text-slate-400">Identify units commanding record prices relative to size</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded">Scatter Mapping</span>
+                    </div>
+                    <div id="chart-scatter" class="chart-container" style="height: 420px;"></div>
                 </div>
 
-                <!-- Recent Transactions Table -->
-                <div class="glass-card p-6 mb-12">
-                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Recent Transactions</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-600">
+                <!-- 5. RECENT TRANSACTION TABLE -->
+                <div class="glass-card p-4 md:p-6 mb-10">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Recent Benchmark Transactions</h3>
+                            <p class="text-xs text-slate-400">Latest recorded transactions matching your active filters</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto -mx-4 md:mx-0">
+                        <table class="w-full text-left text-xs whitespace-nowrap md:whitespace-normal">
+                            <thead class="bg-slate-100/70 text-slate-600 uppercase font-bold text-[10px] tracking-wider">
                                 <tr>
-                                    <th class="p-3 rounded-tl-lg font-medium">Month</th>
-                                    <th class="p-3 font-medium">Town</th>
-                                    <th class="p-3 font-medium">Flat Type</th>
-                                    <th class="p-3 font-medium">Street Name</th>
-                                    <th class="p-3 font-medium">Area (sqm)</th>
-                                    <th class="p-3 rounded-tr-lg font-medium">Price (S$)</th>
+                                    <th class="p-3 rounded-l-lg">Month</th>
+                                    <th class="p-3">Town</th>
+                                    <th class="p-3">Type</th>
+                                    <th class="p-3">Street Name</th>
+                                    <th class="p-3">Area</th>
+                                    <th class="p-3">PSF</th>
+                                    <th class="p-3 rounded-r-lg">Price (S$)</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
@@ -206,15 +345,54 @@
         let activeTowns = new Set();
         let activeFlatTypes = new Set();
 
+        // 1 sqm = 10.7639 sqft
+        const SQM_TO_SQFT = 10.7639;
+
+        // --- MOBILE DRAWER TOGGLE ---
+        function toggleMobileFilter() {
+            const drawer = document.getElementById('sidebarDrawer');
+            const backdrop = document.getElementById('drawerBackdrop');
+            const isClosed = drawer.classList.contains('-translate-x-full');
+
+            if (isClosed) {
+                drawer.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                drawer.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        // --- FORMATTERS ---
+        function formatSGD(num) {
+            return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(num);
+        }
+
+        function getMedian(arr) {
+            if (!arr || arr.length === 0) return 0;
+            const sorted = [...arr].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+
+        function getPercentile(arr, p) {
+            if (!arr || arr.length === 0) return 0;
+            const sorted = [...arr].sort((a, b) => a - b);
+            const index = Math.floor(p * (sorted.length - 1));
+            return sorted[index];
+        }
+
+        // --- INITIALIZE FILTERS ---
         function initializeFilters() {
             const uniqueTowns = [...new Set(allData.map(d => d.town))].sort();
             const uniqueFlatTypes = [...new Set(allData.map(d => d.flat_type))].sort();
 
-            activeTowns = new Set(uniqueTowns.slice(0, 8));
-            activeFlatTypes = new Set(uniqueFlatTypes);
+            // Default check first 8 towns and all flat types
+            if (activeTowns.size === 0) activeTowns = new Set(uniqueTowns.slice(0, 8));
+            if (activeFlatTypes.size === 0) activeFlatTypes = new Set(uniqueFlatTypes);
 
             document.getElementById('townFilterContainer').innerHTML = uniqueTowns.map(town => `
-                <label class="flex items-center space-x-2 text-sm text-slate-600 cursor-pointer">
+                <label class="flex items-center space-x-2 text-slate-600 hover:text-slate-900 cursor-pointer py-0.5">
                     <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 filter-checkbox" 
                            data-type="town" value="${town}" ${activeTowns.has(town) ? 'checked' : ''}>
                     <span>${town}</span>
@@ -222,22 +400,22 @@
             `).join('');
 
             document.getElementById('flatTypeFilterContainer').innerHTML = uniqueFlatTypes.map(flat => `
-                <label class="flex items-center space-x-2 text-sm text-slate-600 cursor-pointer">
+                <label class="flex items-center space-x-2 text-slate-600 hover:text-slate-900 cursor-pointer py-0.5">
                     <input type="checkbox" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 filter-checkbox" 
-                           data-type="flat" value="${flat}" checked>
+                           data-type="flat" value="${flat}" ${activeFlatTypes.has(flat) ? 'checked' : ''}>
                     <span>${flat}</span>
                 </label>
             `).join('');
 
             document.querySelectorAll('.filter-checkbox').forEach(cb => {
-                cb.addEventListener('change', (e) => {
+                cb.onchange = (e) => {
                     const val = e.target.value;
                     const isTown = e.target.dataset.type === 'town';
                     const targetSet = isTown ? activeTowns : activeFlatTypes;
                     if (e.target.checked) targetSet.add(val);
                     else targetSet.delete(val);
                     applyFilters();
-                });
+                };
             });
 
             document.getElementById('selectAllTowns').onclick = () => {
@@ -269,10 +447,19 @@
             const startSelector = document.getElementById('startMonthSelector');
             const endSelector = document.getElementById('endMonthSelector');
 
-            startSelector.innerHTML = uniqueMonths.map((m, idx) => `<option value="${m}" ${idx === 0 ? 'selected' : ''}>${m}</option>`).join('');
+            // Default: last 12 available months
+            const defaultStartIdx = Math.max(0, uniqueMonths.length - 12);
+            startSelector.innerHTML = uniqueMonths.map((m, idx) => `<option value="${m}" ${idx === defaultStartIdx ? 'selected' : ''}>${m}</option>`).join('');
             endSelector.innerHTML = uniqueMonths.map((m, idx) => `<option value="${m}" ${idx === uniqueMonths.length - 1 ? 'selected' : ''}>${m}</option>`).join('');
 
-            startSelector.onchange = endSelector.onchange = applyFilters;
+            startSelector.onchange = () => {
+                if (startSelector.value > endSelector.value) endSelector.value = startSelector.value;
+                applyFilters();
+            };
+            endSelector.onchange = () => {
+                if (endSelector.value < startSelector.value) startSelector.value = endSelector.value;
+                applyFilters();
+            };
         }
 
         function applyFilters() {
@@ -283,62 +470,122 @@
                 d.month >= startMonth && d.month <= endMonth &&
                 activeTowns.has(d.town) && activeFlatTypes.has(d.flat_type)
             );
+            
+            document.getElementById('mobileCountBadge').innerText = filteredData.length.toLocaleString();
             updateDashboard();
         }
 
-        function formatCurrency(num) {
-            return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(num);
-        }
-
-        function getMedian(arr) {
-            if (!arr || arr.length === 0) return 0;
-            const sorted = [...arr].sort((a, b) => a - b);
-            const mid = Math.floor(sorted.length / 2);
-            return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-        }
-
+        // --- DASHBOARD & INSIGHTS ENGINE ---
         function updateDashboard() {
             if (filteredData.length === 0) {
                 document.getElementById('kpi-transactions').innerText = '0';
                 document.getElementById('kpi-price').innerText = '-';
+                document.getElementById('kpi-psf').innerText = '-';
                 document.getElementById('kpi-psm').innerText = '-';
+                document.getElementById('insight-pricing-spread').innerText = 'No records';
+                document.getElementById('insight-psf').innerText = '-';
+                document.getElementById('insight-pitch-angle').innerText = 'Please select at least 1 Town and 1 Flat Type from the filters.';
                 Plotly.purge('chart-trend'); Plotly.purge('chart-town'); Plotly.purge('chart-scatter');
-                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No records found.</td></tr>';
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">No matching records found.</td></tr>';
                 return;
             }
 
             const prices = filteredData.map(d => parseFloat(d.resale_price));
             const psms = filteredData.map(d => parseFloat(d.resale_price) / parseFloat(d.floor_area_sqm));
-            
+            const psfs = filteredData.map(d => parseFloat(d.resale_price) / (parseFloat(d.floor_area_sqm) * SQM_TO_SQFT));
+
+            const medianPrice = getMedian(prices);
+            const medianPSM = getMedian(psms);
+            const medianPSF = getMedian(psfs);
+            const p25Price = getPercentile(prices, 0.25);
+            const p75Price = getPercentile(prices, 0.75);
+
+            // Update KPIs
             document.getElementById('kpi-transactions').innerText = filteredData.length.toLocaleString();
-            document.getElementById('kpi-price').innerText = formatCurrency(getMedian(prices));
-            document.getElementById('kpi-psm').innerText = formatCurrency(getMedian(psms));
+            document.getElementById('kpi-price').innerText = formatSGD(medianPrice);
+            document.getElementById('kpi-psf').innerText = `S$ ${Math.round(medianPSF)} psf`;
+            document.getElementById('kpi-psm').innerText = `S$ ${Math.round(medianPSM)}`;
+
+            // Update Agent Cheat Sheet
+            document.getElementById('insight-pricing-spread').innerText = `${formatSGD(p25Price)} — ${formatSGD(p75Price)}`;
+            document.getElementById('insight-spread-desc').innerText = `P25 Liquidity Floor vs P75 Premium Outlier`;
+            document.getElementById('insight-psf').innerText = `S$ ${Math.round(medianPSF)} psf`;
+
+            // Calculate Growth & Dynamic Pitch Script
+            const months = [...new Set(filteredData.map(d => d.month))].sort();
+            let pitchScript = "";
+            let sentimentBadge = "⚖️ Balanced Market";
+            let badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300";
+
+            if (months.length >= 2) {
+                const firstMonthData = filteredData.filter(d => d.month === months[0]);
+                const lastMonthData = filteredData.filter(d => d.month === months[months.length - 1]);
+                const firstMed = getMedian(firstMonthData.map(d => d.resale_price));
+                const lastMed = getMedian(lastMonthData.map(d => d.resale_price));
+                const growthPct = (((lastMed - firstMed) / firstMed) * 100).toFixed(1);
+
+                if (growthPct > 2.0) {
+                    sentimentBadge = `🔥 Strong Seller's Market (+${growthPct}%)`;
+                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300";
+                    pitchScript = `<strong>For Sellers:</strong> Strong upward momentum detected (+${growthPct}%). Push listing prices towards the 75th percentile (${formatSGD(p75Price)}) to capture buyers willing to pay cash over valuation (COV).`;
+                } else if (growthPct < -1.5) {
+                    sentimentBadge = `❄️ Buyer Advantage (${growthPct}%)`;
+                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300";
+                    pitchScript = `<strong>For Buyers:</strong> Price consolidation underway (${growthPct}%). Advise buyers to negotiate firmly around the 25th percentile (${formatSGD(p25Price)}) for genuine discount plays.`;
+                } else {
+                    sentimentBadge = `⚖️ Stable / Resilient Market (${growthPct > 0 ? '+' : ''}${growthPct}%)`;
+                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300";
+                    pitchScript = `<strong>Strategy:</strong> Fair market pricing holds around ${formatSGD(medianPrice)} (S$ ${Math.round(medianPSF)} psf). Units on mid-to-high floors with remaining lease > 70 years can comfortably anchor listings at the median.`;
+                }
+            } else {
+                pitchScript = `<strong>Market Pulse:</strong> Baseline median value sits at ${formatSGD(medianPrice)} across ${filteredData.length.toLocaleString()} active comparables.`;
+            }
+
+            document.getElementById('marketSentimentBadge').innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> ${sentimentBadge}`;
+            document.getElementById('marketSentimentBadge').className = badgeClass;
+            document.getElementById('insight-pitch-angle').innerHTML = pitchScript;
 
             renderCharts();
             renderTable();
         }
 
+        // --- RENDER PLOTLY CHARTS ---
         function renderCharts() {
             const chartConfig = { responsive: true, displayModeBar: false };
-            const fontConfig = { family: 'Inter, sans-serif', color: '#64748b' };
+            const fontConfig = { family: 'Plus Jakarta Sans, sans-serif', color: '#64748b' };
 
+            // 1. Trend Chart
             const months = [...new Set(filteredData.map(d => d.month))].sort();
             const trendData = months.map(m => getMedian(filteredData.filter(d => d.month === m).map(d => d.resale_price)));
 
             Plotly.newPlot('chart-trend', [{
                 x: months, y: trendData, type: 'scatter', mode: 'lines+markers',
-                line: { color: '#3b82f6', width: 3, shape: 'spline' }, marker: { size: 6, color: '#2563eb' }
-            }], { margin: { t: 10, r: 10, l: 60, b: 40 }, xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' }, yaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' }, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent' }, chartConfig);
+                line: { color: '#2563eb', width: 3, shape: 'spline' },
+                marker: { size: 6, color: '#1d4ed8' }
+            }], {
+                margin: { t: 15, r: 15, l: 60, b: 40 },
+                xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                yaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent'
+            }, chartConfig);
 
+            // 2. Town Comparison Bar
             const towns = [...activeTowns].sort();
             const townData = towns.map(t => getMedian(filteredData.filter(d => d.town === t).map(d => d.resale_price)));
 
             Plotly.newPlot('chart-town', [{
-                y: towns, x: townData, type: 'bar', orientation: 'h', marker: { color: '#10b981' }
-            }], { margin: { t: 10, r: 10, l: 120, b: 40 }, xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' }, yaxis: { tickfont: { ...fontConfig, size: 10 } }, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent' }, chartConfig);
+                y: towns, x: townData, type: 'bar', orientation: 'h',
+                marker: { color: '#059669', borderRadius: 4 }
+            }], {
+                margin: { t: 15, r: 15, l: 110, b: 40 },
+                xaxis: { tickfont: fontConfig, gridcolor: '#f1f5f9' },
+                yaxis: { tickfont: { ...fontConfig, size: 10 } },
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent'
+            }, chartConfig);
 
+            // 3. Scatter Plot (Price vs Area)
             const flatTypesArr = [...activeFlatTypes];
-            const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#64748b'];
+            const colors = ['#2563eb', '#059669', '#7c3aed', '#d97706', '#db2777', '#475569', '#0891b2'];
             
             const scatterTraces = flatTypesArr.map((type, idx) => {
                 const typeData = filteredData.filter(d => d.flat_type === type);
@@ -347,63 +594,88 @@
                     y: typeData.map(d => parseFloat(d.resale_price)),
                     mode: 'markers', type: 'scatter', name: type,
                     text: typeData.map(d => `${d.town} - ${d.street_name || ''}`),
-                    marker: { size: 6, color: colors[idx % colors.length], opacity: 0.7 }
+                    marker: { size: 6, color: colors[idx % colors.length], opacity: 0.65 }
                 };
             });
 
             Plotly.newPlot('chart-scatter', scatterTraces, {
-                margin: { t: 10, r: 10, l: 60, b: 40 },
+                margin: { t: 15, r: 15, l: 60, b: 40 },
                 xaxis: { title: 'Floor Area (sqm)', titlefont: fontConfig, tickfont: fontConfig, gridcolor: '#f1f5f9' },
                 yaxis: { title: 'Resale Price (S$)', titlefont: fontConfig, tickfont: fontConfig, gridcolor: '#f1f5f9' },
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', legend: { font: fontConfig }
             }, chartConfig);
         }
 
+        // --- RENDER TABLE WITH PSF ---
         function renderTable() {
             const tableBody = document.getElementById('table-body');
-            const displayData = [...filteredData].sort((a, b) => b.month.localeCompare(a.month) || b.resale_price - a.resale_price).slice(0, 10);
+            const displayData = [...filteredData]
+                .sort((a, b) => b.month.localeCompare(a.month) || b.resale_price - a.resale_price)
+                .slice(0, 10);
             
-            tableBody.innerHTML = displayData.map(d => `
-                <tr class="hover:bg-slate-50 transition-colors">
+            tableBody.innerHTML = displayData.map(d => {
+                const areaSqm = parseFloat(d.floor_area_sqm);
+                const psf = Math.round(parseFloat(d.resale_price) / (areaSqm * SQM_TO_SQFT));
+                return `
+                <tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3 text-slate-500">${d.month}</td>
-                    <td class="p-3 font-medium text-slate-800">${d.town}</td>
-                    <td class="p-3 text-slate-600">${d.flat_type}</td>
+                    <td class="p-3 font-semibold text-slate-900">${d.town}</td>
+                    <td class="p-3 text-slate-700">${d.flat_type}</td>
                     <td class="p-3 text-slate-500">${d.street_name || '-'}</td>
-                    <td class="p-3 text-slate-600">${parseFloat(d.floor_area_sqm).toFixed(1)}</td>
-                    <td class="p-3 font-bold text-slate-800">${formatCurrency(d.resale_price)}</td>
+                    <td class="p-3 text-slate-700">${areaSqm.toFixed(1)} sqm</td>
+                    <td class="p-3 font-bold text-blue-600">S$ ${psf} psf</td>
+                    <td class="p-3 font-extrabold text-slate-900">${formatSGD(d.resale_price)}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
+        // --- CSV DATA PARSING ---
         function handleCSVString(csvString, sourceName) {
             Papa.parse(csvString, {
                 header: true, dynamicTyping: true, skipEmptyLines: true,
                 complete: function(results) {
                     allData = results.data.filter(d => d.resale_price && d.town && d.flat_type);
-                    document.getElementById('dataContextLabel').innerText = `Showing Real Data (${sourceName})`;
-                    document.getElementById('dataContextLabel').className = "text-emerald-600 font-semibold mt-1";
+                    document.getElementById('dataContextLabel').innerText = `Active Dataset: ${sourceName} (${allData.length.toLocaleString()} rows)`;
                     document.getElementById('uploadStatus').innerText = "Dataset loaded successfully!";
-                    document.getElementById('uploadStatus').className = "text-xs mt-2 text-emerald-600 font-medium";
+                    document.getElementById('uploadStatus').className = "text-[10px] mt-1.5 text-emerald-600 font-bold text-center";
                     initializeFilters();
                     applyFilters();
                 }
             });
         }
 
-        // --- Load Master CSV from Repository ---
+        // Fallback generator for offline/local previews
+        function generateMockData() {
+            const towns = ['ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT MERAH', 'CENTRAL AREA', 'CLEMENTI', 'PUNGGOL', 'QUEENSTOWN', 'TAMPINES', 'WOODLANDS'];
+            const flatTypes = ['3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE'];
+            const months = ['2025-01', '2025-04', '2025-07', '2025-10', '2026-01', '2026-04'];
+            const data = [];
+            for (let i = 0; i < 2000; i++) {
+                const month = months[Math.floor(Math.random() * months.length)];
+                const town = towns[Math.floor(Math.random() * towns.length)];
+                const flatType = flatTypes[Math.floor(Math.random() * flatTypes.length)];
+                let baseArea = flatType === '3 ROOM' ? 68 : (flatType === '4 ROOM' ? 92 : (flatType === '5 ROOM' ? 112 : 142));
+                let area = baseArea + (Math.random() * 6 - 3);
+                let psm = ['CENTRAL AREA', 'QUEENSTOWN', 'BISHAN'].includes(town) ? 8500 : 5600;
+                let price = Math.round((area * psm) / 1000) * 1000;
+                data.push({ month, town, flat_type: flatType, street_name: `${town} Central`, floor_area_sqm: area.toFixed(1), resale_price: price });
+            }
+            return data;
+        }
+
         async function loadHDBDatasets() {
             document.getElementById('uploadStatus').innerText = "Loading master dataset...";
             try {
+                // Read the actual master CSV file in the repo
                 const response = await fetch('hdb_resale_2017_2026_final (1).csv');
-                if (!response.ok) throw new Error("File not found");
+                if (!response.ok) throw new Error("File not reachable");
                 const text = await response.text();
-                handleCSVString(text, "HDB Master 2017-2026");
+                handleCSVString(text, "HDB 2017-2026 Master");
             } catch (err) {
-                // Fallback to sample generator if offline / CORS restricted
-                console.warn("Using mock fallback due to:", err.message);
+                console.warn("Falling back to demo dataset:", err.message);
                 allData = generateMockData();
-                document.getElementById('dataContextLabel').innerText = "Showing Sample Analytics (Fallback Mode)";
-                document.getElementById('uploadStatus').innerText = "Using simulated fallback data.";
+                document.getElementById('dataContextLabel').innerText = "Active Dataset: Demo Analytical Mode (2,000 samples)";
+                document.getElementById('uploadStatus').innerText = "Showing demo transactions.";
                 initializeFilters();
                 applyFilters();
             }
