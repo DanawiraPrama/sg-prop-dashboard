@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus Pro | HDB Valuation & Market Intelligence SaaS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.97)), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+        }
+
+        input, select {
+            font-size: 16px !important;
+        }
+        @media (min-width: 768px) {
+            input, select {
+                font-size: 0.875rem !important;
+            }
+        }
+
+        .step-active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .step-inactive { background-color: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Top SaaS Navigation -->
+    <nav class="fixed w-full z-40 glass-panel border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="#" class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-line text-blue-600"></i> Nexus<span class="text-slate-900">Pro</span>
+                </a>
+                <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200">
+                    B2B Agent Edition
+                </span>
+            </div>
+
+            <!-- License Counter & Agent Profile Trigger -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Expiry Counter Pill -->
+                <button onclick="openLicenseModal()" id="licenseBadge" class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="licenseStatusText">Checking License...</span>
+                </button>
+
+                <!-- Profile Customizer Button -->
+                <button onclick="openProfileModal()" class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-slate-200">
+                    <i class="fa-solid fa-id-badge text-blue-600"></i>
+                    <span class="hidden sm:inline" id="navAgentName">Agent Branding</span>
+                </button>
+
+                <!-- Link to Analytics Dashboard -->
+                <a href="index.html" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-3.5 py-1.5 rounded-full text-xs transition-colors">
+                    <i class="fa-solid fa-chart-pie mr-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero / Engine Container -->
+    <section class="hero-bg min-h-screen pt-24 md:pt-32 pb-16 flex items-center relative">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 w-full">
+            
+            <!-- Value Proposition -->
+            <div class="text-white lg:col-span-5 text-center lg:text-left space-y-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold text-xs uppercase tracking-wider backdrop-blur-sm">
+                    <i class="fa-solid fa-shield-halved"></i> Singapore Real Estate Professional Suite
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                    Win Exclusive Listings With <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">Data Proof</span>.
+                </h1>
+                <p class="text-sm md:text-base text-slate-300 leading-relaxed font-light">
+                    Generate white-label valuation dossiers calibrated with Singapore macro indicators (SORA, CPI, GDP) to justify your pricing and secure higher COV for your clients.
+                </p>
+
+                <!-- Active Agent Branding Summary Card -->
+                <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-left text-xs space-y-1 max-w-md mx-auto lg:mx-0">
+                    <div class="flex justify-between items-center text-slate-400 text-[11px] font-bold uppercase">
+                        <span>Report Co-Branding</span>
+                        <button onclick="openProfileModal()" class="text-blue-400 hover:underline">Edit</button>
+                    </div>
+                    <p class="font-bold text-white text-sm" id="heroAgentDisplay">Jonathan Tan</p>
+                    <p class="text-slate-300" id="heroAgencyDisplay">PropNex Realty | CEA: R012345A</p>
+                </div>
+            </div>
+
+            <!-- VALUATION ENGINE CARD -->
+            <div class="glass-panel p-5 sm:p-7 md:p-8 rounded-2xl md:rounded-3xl lg:col-span-7 relative w-full">
+                
+                <div id="predictor-form-container">
+                    <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
+                        <div>
+                            <span class="text-[10px] uppercase font-extrabold tracking-wider text-blue-600" id="step-badge">Step 1 of 2</span>
+                            <h3 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight" id="step-subtitle">Subject Property Details</h3>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <div id="dot1" class="w-2.5 h-2.5 rounded-full step-active border transition-all"></div>
+                            <div id="dot2" class="w-2.5 h-2.5 rounded-full step-inactive border transition-all"></div>
+                        </div>
+                    </div>
+
+                    <form id="aiPredictorForm" onsubmit="event.preventDefault();">
+                        
+                        <!-- STEP 1: Specs -->
+                        <div id="step1" class="space-y-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Town / Estate</label>
+                                <select id="town" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3 transition-colors">
+                                    <option value="ANG MO KIO">Ang Mo Kio</option><option value="BEDOK">Bedok</option><option value="BISHAN">Bishan</option>
+                                    <option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option>
+                                    <option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option>
+                                    <option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option>
+                                    <option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option>
+                                    <option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option>
+                                    <option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option>
+                                    <option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option>
+                                    <option value="WOODLANDS">Woodlands</option><option value="YISHUN">Yishun</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Flat Type</label>
+                                    <select id="flat_type" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3 transition-colors">
+                                        <option value="1 ROOM">1 Room</option><option value="2 ROOM">2 Room</option><option value="3 ROOM">3 Room</option>
+                                        <option value="4 ROOM" selected>4 Room</option><option value="5 ROOM">5 Room</option><option value="EXECUTIVE">Executive</option>
+                                        <option value="MULTI-GENERATION">Multi-Gen</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Floor Area (sqm)</label>
+                                    <input type="number" id="area" value="90" min="20" max="250" inputmode="numeric" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Storey Level</label>
+                                    <input type="number" id="storey" value="8" min="1" max="50" inputmode="numeric" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Remaining Lease (Yrs)</label>
+                                    <input type="number" id="lease" value="75" min="39" max="99" inputmode="numeric" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: Economic Conditions -->
+                        <div id="step2" class="hidden space-y-4">
+                            <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl">
+                                <span class="block text-[10px] font-bold text-blue-900 uppercase tracking-wider mb-2">Simulate Macro Scenario</span>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button type="button" onclick="loadPreset('baseline')" class="px-2 py-2 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-700 hover:bg-slate-50 active:scale-95 transition-all text-center">
+                                        Current Market
+                                    </button>
+                                    <button type="button" onclick="loadPreset('high_interest')" class="px-2 py-2 rounded-lg border border-red-200 bg-red-50 text-[11px] font-bold text-red-700 hover:bg-red-100 active:scale-95 transition-all text-center">
+                                        High Rates 🔴
+                                    </button>
+                                    <button type="button" onclick="loadPreset('market_boom')" class="px-2 py-2 rounded-lg border border-emerald-200 bg-emerald-50 text-[11px] font-bold text-emerald-700 hover:bg-emerald-100 active:scale-95 transition-all text-center">
+                                        Bull Run 🟢
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">SORA Rate (%)</label>
+                                    <input type="number" id="sora" value="3.5" step="0.1" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">GDP Growth (%)</label>
+                                    <input type="number" id="gdp_growth" value="2.5" step="0.5" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">CPI Inflation</label>
+                                    <input type="number" id="cpi_val" value="102.0" step="0.5" inputmode="decimal" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">HDB Index Target</label>
+                                    <input type="number" id="hdb_idx" value="180.0" inputmode="numeric" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Cooling Measures</label>
+                                <select id="cooling_measure" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-2.5">
+                                    <option value="1">Active (Restrictions & Wait-out apply)</option>
+                                    <option value="0">Inactive / Relaxed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-2.5 pt-4 mt-2">
+                            <button type="button" id="btnPrev" onclick="prevStep()" class="hidden w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs md:text-sm py-3.5 transition-colors">
+                                Back
+                            </button>
+                            <button type="button" id="btnNext" onclick="nextStep()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs md:text-sm py-3.5 transition-all shadow-md flex justify-center items-center gap-2">
+                                Next Step <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <button type="button" id="submitBtn" onclick="executeValuation()" class="hidden w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs md:text-sm py-3.5 transition-all shadow-lg shadow-blue-500/25 flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-bolt"></i> Generate Valuation & Dossier
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- VALUATION RESULT SCREEN -->
+                <div id="result-container" class="hidden text-center py-4">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-3 shadow-sm">
+                        <i class="fa-solid fa-check text-xl"></i>
+                    </div>
+                    
+                    <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Simulated Market Value</p>
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-1 tracking-tight" id="displayPrice">S$ 0</div>
+                    <p class="text-xs font-semibold text-blue-700 mb-5" id="displayRange">Estimated Range: S$ 0 — S$ 0</p>
+                    
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-md mb-5 text-left relative overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase text-slate-400">Prepared Exclusively By</span>
+                                <h5 class="text-sm font-bold text-slate-800" id="cardAgentName">Jonathan Tan</h5>
+                                <p class="text-xs text-slate-500" id="cardAgency">PropNex Realty (CEA: R012345A)</p>
+                            </div>
+                            <span class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-certificate"></i>
+                            </span>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <a id="whatsappBtn" href="#" target="_blank" class="flex-1 inline-flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#1fae54] text-white font-bold rounded-xl text-xs py-3 transition-colors shadow">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> Share via WhatsApp
+                            </a>
+                            <button type="button" onclick="downloadBrandedPDF()" class="inline-flex justify-center items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs py-3 px-4 transition-colors">
+                                <i class="fa-solid fa-file-pdf text-red-400"></i> Download Branded PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="resetForm()" class="text-xs text-blue-600 font-bold hover:text-blue-800 transition-colors inline-flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Run Another Calculation
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- LICENSE ACTIVATION MODAL -->
+    <div id="licenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-key text-blue-600"></i> Subscription License
+                </h3>
+                <button onclick="closeLicenseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                Enter your annual activation token to access the AI Valuation Engine and generate co-branded client dossiers.
+            </p>
+
+            <div class="space-y-3 mb-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">License Key</label>
+                    <input type="text" id="licenseKeyInput" placeholder="NEXUS-PRO-2027-XXXX" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="activateLicenseKey()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition-all">
+                    Verify & Activate License
+                </button>
+                <!-- Quick Demo Shortcut -->
+                <button onclick="activateDemoLicense()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-colors">
+                    Use Instant 365-Day Demo Key (TRIAL-2027)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AGENT WHITE-LABEL PROFILE SETTINGS MODAL -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-id-badge text-blue-600"></i> Agent Branding Settings
+                </h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <p class="text-xs text-slate-500 mb-4">
+                These credentials will be dynamically embedded into all generated PDF equity dossiers and client WhatsApp action links.
+            </p>
+
+            <div class="space-y-3 mb-5">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Your Full Name</label>
+                    <input type="text" id="agentNameInput" value="Jonathan Tan" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">CEA Registration No.</label>
+                        <input type="text" id="agentCeaInput" value="R012345A" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Agency Name</label>
+                        <input type="text" id="agencyInput" value="PropNex Realty" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Your WhatsApp Number (with country code)</label>
+                    <input type="tel" id="agentPhoneInput" value="6581234567" placeholder="6591234567" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                </div>
+            </div>
+
+            <button onclick="saveAgentProfile()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs shadow-md transition-all">
+                Save & Update Branding
+            </button>
+        </div>
+    </div>
+
+    <!-- HIDDEN WHITE-LABEL PDF TEMPLATE -->
+    <div id="pdfTemplate" style="display: none; background: white; padding: 40px; color: #1e293b; width: 800px; font-family: 'Helvetica', sans-serif;">
+        <!-- Header -->
+        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h1 style="margin: 0; color: #0f172a; font-size: 24px; font-weight: bold; letter-spacing: -0.5px;">NEXUS PRO PROPERTY INTELLIGENCE</h1>
+                <p style="margin: 3px 0 0 0; font-size: 11px; color: #64748b; text-transform: uppercase;">Confidential Market Equity Dossier</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 13px; font-weight: bold; color: #2563eb;" id="pdf_date"></p>
+                <p style="margin: 0; font-size: 10px; color: #94a3b8;">Ref: SG-HDB-AI</p>
+            </div>
+        </div>
+
+        <!-- Agent Credential Box -->
+        <div style="background: #f1f5f9; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="margin: 0; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold;">Prepared Exclusively By</p>
+                <p style="margin: 2px 0 0 0; font-size: 14px; font-weight: bold; color: #0f172a;" id="pdf_agent_name">Jonathan Tan</p>
+                <p style="margin: 2px 0 0 0; font-size: 11px; color: #475569;" id="pdf_agent_agency">PropNex Realty | CEA: R012345A</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold;">Direct Contact</p>
+                <p style="margin: 2px 0 0 0; font-size: 12px; font-weight: bold; color: #2563eb;" id="pdf_agent_phone">+65 8123 4567</p>
+            </div>
+        </div>
+
+        <!-- Property Specs -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 12px; color: #2563eb; text-transform: uppercase;">1. Property Physical Specifications</h3>
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 4px 0; color: #64748b;">Town Location:</td>
+                    <td style="padding: 4px 0; font-weight: bold;" id="pdf_town"></td>
+                    <td style="padding: 4px 0; color: #64748b;">Storey Level:</td>
+                    <td style="padding: 4px 0; font-weight: bold;">Level <span id="pdf_storey"></span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #64748b;">Flat Type:</td>
+                    <td style="padding: 4px 0; font-weight: bold;" id="pdf_type"></td>
+                    <td style="padding: 4px 0; color: #64748b;">Remaining Lease:</td>
+                    <td style="padding: 4px 0; font-weight: bold;"><span id="pdf_lease"></span> Years</td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #64748b;">Floor Area:</td>
+                    <td style="padding: 4px 0; font-weight: bold;"><span id="pdf_area"></span> sqm</td>
+                    <td style="padding: 4px 0; color: #64748b;">Model Version:</td>
+                    <td style="padding: 4px 0; font-weight: bold;">Standard / Model A</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Valuation Target Box -->
+        <div style="text-align: center; border: 2px solid #2563eb; border-radius: 12px; padding: 25px; background: #eff6ff; margin-bottom: 20px;">
+            <p style="margin: 0; color: #1e40af; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px;">Simulated Fair Market Value</p>
+            <h1 style="font-size: 42px; color: #1e3a8a; margin: 10px 0; font-weight: 800;" id="pdf_price">S$ 0</h1>
+            <p style="margin: 0; font-size: 12px; color: #2563eb; font-weight: 600;" id="pdf_range">Range: S$ 0 — S$ 0</p>
+            <p style="margin: 8px 0 0 0; font-size: 10px; color: #64748b;">Multi-variate algorithmic regression calibrated across 232,000+ authentic transactions.</p>
+        </div>
+
+        <!-- Footer Disclaimer -->
+        <div style="font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+            <p style="margin: 0;">This dossier is prepared for market positioning and comparative negotiation purposes. It does not constitute a formal bank valuation.</p>
+            <p style="margin: 3px 0 0 0;">For transaction execution and negotiation strategy, contact the certified CEA representative listed above.</p>
+        </div>
+    </div>
+
+    <!-- CORE LOGIC & SAAS ENGINE -->
+    <script>
+        let currentStep = 1;
+        let lastPayload = null;
+        let lastFormattedPrice = "S$ 0";
+        let lastFormattedRange = "S$ 0 — S$ 0";
+
+        // --- 1. SUBSCRIPTION & LICENSE SYSTEM ---
+        function checkLicenseState() {
+            const rawLicense = localStorage.getItem('nexus_pro_license');
+            const badge = document.getElementById('licenseBadge');
+            const statusText = document.getElementById('licenseStatusText');
+
+            if (!rawLicense) {
+                badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors";
+                statusText.innerText = "Trial Mode (3 Days)";
+                return true;
+            }
+
+            try {
+                const license = JSON.parse(rawLicense);
+                const expiry = new Date(license.expiryDate);
+                const today = new Date();
+                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+                if (diffDays <= 0) {
+                    badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors";
+                    statusText.innerText = "License Expired";
+                    return false;
+                } else {
+                    badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors";
+                    statusText.innerText = `Active: ${diffDays}d Left`;
+                    return true;
+                }
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function openLicenseModal() { document.getElementById('licenseModal').classList.remove('hidden'); }
+        function closeLicenseModal() { document.getElementById('licenseModal').classList.add('hidden'); }
+
+        function activateDemoLicense() {
+            const oneYearLater = new Date();
+            oneYearLater.setDate(oneYearLater.getDate() + 365);
+            
+            const licenseObj = {
+                key: "TRIAL-2027",
+                tier: "PRO_ANNUAL",
+                expiryDate: oneYearLater.toISOString()
+            };
+
+            localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
+            closeLicenseModal();
+            checkLicenseState();
+            alert("Success! 365-Day Professional License activated.");
+        }
+
+        function activateLicenseKey() {
+            const inputKey = document.getElementById('licenseKeyInput').value.trim();
+            if (!inputKey) {
+                alert("Please enter a valid license token.");
+                return;
+            }
+
+            // Simple token verification logic: if contains '2027' or 'PRO' grant 365 days
+            if (inputKey.toUpperCase().includes("PRO") || inputKey.toUpperCase().includes("2027")) {
+                activateDemoLicense();
+            } else {
+                alert("Invalid license token. Please contact support or use the trial key.");
+            }
+        }
+
+        // --- 2. AGENT WHITE-LABEL BRANDING SYSTEM ---
+        function loadAgentProfile() {
+            const savedProfile = localStorage.getItem('nexus_agent_profile');
+            let profile = {
+                name: "Jonathan Tan",
+                cea: "R012345A",
+                agency: "PropNex Realty",
+                phone: "6581234567"
+            };
+
+            if (savedProfile) {
+                try { profile = { ...profile, ...JSON.parse(savedProfile) }; } catch(e){}
+            }
+
+            document.getElementById('agentNameInput').value = profile.name;
+            document.getElementById('agentCeaInput').value = profile.cea;
+            document.getElementById('agencyInput').value = profile.agency;
+            document.getElementById('agentPhoneInput').value = profile.phone;
+
+            document.getElementById('navAgentName').innerText = profile.name;
+            document.getElementById('heroAgentDisplay').innerText = profile.name;
+            document.getElementById('heroAgencyDisplay').innerText = `${profile.agency} | CEA: ${profile.cea}`;
+
+            return profile;
+        }
+
+        function openProfileModal() { document.getElementById('profileModal').classList.remove('hidden'); }
+        function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+
+        function saveAgentProfile() {
+            const profile = {
+                name: document.getElementById('agentNameInput').value.trim() || "Jonathan Tan",
+                cea: document.getElementById('agentCeaInput').value.trim() || "R012345A",
+                agency: document.getElementById('agencyInput').value.trim() || "PropNex Realty",
+                phone: document.getElementById('agentPhoneInput').value.trim() || "6581234567"
+            };
+
+            localStorage.setItem('nexus_agent_profile', JSON.stringify(profile));
+            closeProfileModal();
+            loadAgentProfile();
+            alert("Agent branding profile updated!");
+        }
+
+        // --- 3. WIZARD & CALCULATION ENGINE ---
+        function loadPreset(presetName) {
+            const sora = document.getElementById('sora');
+            const gdp_growth = document.getElementById('gdp_growth');
+            const cpi_val = document.getElementById('cpi_val');
+            const hdb_idx = document.getElementById('hdb_idx');
+            const cooling_measure = document.getElementById('cooling_measure');
+
+            if (presetName === 'baseline') {
+                sora.value = "3.5"; gdp_growth.value = "2.5"; cpi_val.value = "102.0"; hdb_idx.value = "180.0"; cooling_measure.value = "1";
+            } else if (presetName === 'high_interest') {
+                sora.value = "5.2"; gdp_growth.value = "0.5"; cpi_val.value = "110.5"; hdb_idx.value = "165.0"; cooling_measure.value = "1";
+            } else if (presetName === 'market_boom') {
+                sora.value = "1.8"; gdp_growth.value = "5.5"; cpi_val.value = "99.0"; hdb_idx.value = "210.0"; cooling_measure.value = "0";
+            }
+        }
+
+        function updateWizardUI() {
+            document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
+            document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
+            
+            document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
+            document.getElementById('btnNext').classList.toggle('hidden', currentStep === 2);
+            document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 2);
+
+            document.getElementById('step-badge').innerText = `Step ${currentStep} of 2`;
+            document.getElementById('step-subtitle').innerText = currentStep === 1 ? "Subject Property Details" : "Macro Economic Outlook";
+            document.getElementById('dot2').className = currentStep >= 2 ? "w-2.5 h-2.5 rounded-full step-active border" : "w-2.5 h-2.5 rounded-full step-inactive border";
+        }
+
+        function nextStep() { if (currentStep < 2) { currentStep++; updateWizardUI(); } }
+        function prevStep() { if (currentStep > 1) { currentStep--; updateWizardUI(); } }
+
+        function formatSGD(val) {
+            return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(val);
+        }
+
+        function executeValuation() {
+            // Verify license before processing
+            if (!checkLicenseState()) {
+                openLicenseModal();
+                alert("Your subscription has expired. Please renew or enter your license key to unlock calculations.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing XGBoost...';
+            submitBtn.disabled = true;
+
+            const profile = loadAgentProfile();
+            
+            const payload = {
+                town: document.getElementById("town").value,
+                flat_type: document.getElementById("flat_type").value,
+                floor_area: parseFloat(document.getElementById("area").value),
+                storey: parseFloat(document.getElementById("storey").value),
+                lease_left: parseFloat(document.getElementById("lease").value),
+                sora: parseFloat(document.getElementById("sora").value),
+                gdp_growth: parseFloat(document.getElementById("gdp_growth").value),
+                cpi_val: parseFloat(document.getElementById("cpi_val").value),
+                hdb_idx: parseFloat(document.getElementById("hdb_idx").value),
+                cooling_measure: parseInt(document.getElementById("cooling_measure").value)
+            };
+
+            fetch("https://danawiraprama-sg-hdb-prediction.hf.space/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("API Error");
+                return res.json();
+            })
+            .then(data => {
+                const predPrice = data.predicted_price;
+                const lowEst = data.low_estimate || (predPrice * 0.94);
+                const highEst = data.high_estimate || (predPrice * 1.06);
+
+                lastFormattedPrice = formatSGD(predPrice);
+                lastFormattedRange = `Estimated Range: ${formatSGD(lowEst)} — ${formatSGD(highEst)}`;
+                lastPayload = payload;
+                
+                document.getElementById('predictor-form-container').classList.add('hidden');
+                document.getElementById('result-container').classList.remove('hidden');
+                document.getElementById('displayPrice').innerText = lastFormattedPrice;
+                document.getElementById('displayRange').innerText = lastFormattedRange;
+
+                // Update card info with active agent
+                document.getElementById('cardAgentName').innerText = profile.name;
+                document.getElementById('cardAgency').innerText = `${profile.agency} (CEA: ${profile.cea})`;
+
+                // Build agent whatsapp text
+                const waText = encodeURIComponent(`Hi ${profile.name}! I reviewed the valuation report you generated for my ${payload.flat_type} at ${payload.town} (Valuation: ${lastFormattedPrice}). Let's discuss pricing strategy.`);
+                document.getElementById('whatsappBtn').href = `https://wa.me/${profile.phone}?text=${waText}`;
+
+                submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Generate Valuation & Dossier';
+                submitBtn.disabled = false;
+            })
+            .catch(err => {
+                alert("API Connection Error. Please verify the Hugging Face space status.");
+                submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Generate Valuation & Dossier';
+                submitBtn.disabled = false;
+            });
+        }
+
+        function resetForm() {
+            currentStep = 1;
+            updateWizardUI();
+            document.getElementById('result-container').classList.add('hidden');
+            document.getElementById('predictor-form-container').classList.remove('hidden');
+        }
+
+        // --- 4. BRANDED PDF EXPORT ---
+        function downloadBrandedPDF() {
+            if (!lastPayload) return;
+            const profile = loadAgentProfile();
+
+            document.getElementById('pdf_date').innerText = new Date().toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' });
+            document.getElementById('pdf_agent_name').innerText = profile.name;
+            document.getElementById('pdf_agent_agency').innerText = `${profile.agency} | CEA: ${profile.cea}`;
+            document.getElementById('pdf_agent_phone').innerText = `+${profile.phone}`;
+
+            document.getElementById('pdf_town').innerText = lastPayload.town;
+            document.getElementById('pdf_type').innerText = lastPayload.flat_type;
+            document.getElementById('pdf_area').innerText = lastPayload.floor_area;
+            document.getElementById('pdf_storey').innerText = lastPayload.storey;
+            document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
+            document.getElementById('pdf_price').innerText = lastFormattedPrice;
+            document.getElementById('pdf_range').innerText = lastFormattedRange;
+
+            const element = document.getElementById('pdfTemplate');
+            element.style.display = 'block';
+
+            const opt = {
+                margin: 0,
+                filename: `Valuation_Dossier_${lastPayload.town.replace(/\s+/g, '_')}_${profile.name.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none';
+            });
+        }
+
+        // Initialize on boot
+        window.onload = () => {
+            loadAgentProfile();
+            checkLicenseState();
+        };
+    </script>
+</body>
+</html>
