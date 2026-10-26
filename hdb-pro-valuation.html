@@ -276,34 +276,37 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
                 <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-key text-blue-600"></i> Subscription License
+                    <i class="fa-solid fa-shield-halved text-blue-600"></i> Pro License Activation
                 </h3>
-                <button onclick="closeLicenseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeLicenseModal()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
             <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                Enter your annual activation token to access the AI Valuation Engine and generate co-branded client dossiers.
+                Enter your registered agent email and license token to verify your subscription and unlock full valuation reports.
             </p>
 
-            <div class="space-y-3 mb-4">
+            <div class="space-y-3 mb-5">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Registered Agent Email</label>
+                    <input type="email" id="licenseEmailInput" placeholder="agent@agency.com" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                </div>
                 <div>
                     <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">License Key</label>
-                    <input type="text" id="licenseKeyInput" placeholder="NEXUS-PRO-2027-XXXX" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <input type="text" id="licenseKeyInput" placeholder="NEXUS-PRO-2027-XXXX" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 text-xs uppercase">
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <button onclick="activateLicenseKey()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition-all">
-                    Verify & Activate License
+            <div class="space-y-2.5">
+                <button type="button" onclick="activateLicenseKey()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key"></i> Verify & Activate License
                 </button>
-                <!-- Quick Demo Shortcut -->
-                <button onclick="activateDemoLicense()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-colors">
-                    Use Instant 365-Day Demo Key (TRIAL-2027)
+                <!-- Quick Demo Shortcut for Testing -->
+                <button type="button" onclick="activateDemoLicense()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-colors">
+                    Use Instant Offline Demo Key (TRIAL-2027)
                 </button>
             </div>
         </div>
     </div>
-
     <!-- AGENT WHITE-LABEL PROFILE SETTINGS MODAL -->
     <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
@@ -539,27 +542,30 @@
         }
 
         async function activateLicenseKey() {
-            const inputKey = document.getElementById('licenseKeyInput').value.trim();
-            if (!inputKey) {
-                alert("Please enter a valid license token.");
+            const inputEmail = document.getElementById('licenseEmailInput').value.trim().toLowerCase();
+            const inputKey = document.getElementById('licenseKeyInput').value.trim().toUpperCase();
+
+            if (!inputEmail || !inputKey) {
+                alert("Harap masukkan Registered Email dan License Key Anda.");
                 return;
             }
 
-            // Ambil tombol untuk ubah state loading
             const btn = document.querySelector('#licenseModal button[onclick="activateLicenseKey()"]');
             const originalText = btn ? btn.innerText : "Verify & Activate License";
             if (btn) {
-                btn.innerText = "Verifying with Cloud...";
+                btn.innerText = "Verifying Credentials...";
                 btn.disabled = true;
             }
 
             try {
-                const response = await fetch(`${LICENSE_API_URL}?key=${encodeURIComponent(inputKey)}`);
+                const queryUrl = `${LICENSE_API_URL}?key=${encodeURIComponent(inputKey)}&email=${encodeURIComponent(inputEmail)}`;
+                const response = await fetch(queryUrl);
                 const result = await response.json();
 
                 if (result.valid) {
                     const licenseObj = {
                         key: inputKey,
+                        email: inputEmail,
                         tier: "PRO_ANNUAL",
                         expiryDate: result.expiryDate,
                         agentName: result.agentName || "Valued Agent",
@@ -568,23 +574,22 @@
 
                     localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
 
-                    // Sinkronkan otomatis ke profil agen jika data tersedia dari Sheets
-                    if (result.agentName) {
-                        const savedProfile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
-                        savedProfile.name = result.agentName;
-                        if (result.agency) savedProfile.agency = result.agency;
-                        localStorage.setItem('nexus_agent_profile', JSON.stringify(savedProfile));
-                        if (typeof loadAgentProfile === "function") loadAgentProfile();
-                    }
+                    // Auto-sync profil agen jika data tersedia dari Sheets
+                    const savedProfile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
+                    if (result.agentName) savedProfile.name = result.agentName;
+                    if (result.agency) savedProfile.agency = result.agency;
+                    localStorage.setItem('nexus_agent_profile', JSON.stringify(savedProfile));
+
+                    if (typeof loadAgentProfile === "function") loadAgentProfile();
 
                     closeLicenseModal();
                     checkLicenseState();
-                    alert(`Verification Successful!\nWelcome, ${result.agentName || "Agent"}.\nLicense Active for ${result.daysLeft} days.`);
+                    alert(`Aktivasi Berhasil!\nSelamat datang, ${result.agentName}.\nLisensi aktif untuk ${result.daysLeft} hari ke depan.`);
                 } else {
-                    alert(`Activation Failed: ${result.message}`);
+                    alert(`Aktivasi Gagal: ${result.message}`);
                 }
             } catch (err) {
-                alert("Network error connecting to license server. Please verify your connection.");
+                alert("Gagal terhubung ke server lisensi. Pastikan koneksi internet aktif.");
             } finally {
                 if (btn) {
                     btn.innerText = originalText;
