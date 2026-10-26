@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus Pro | Institutional Portal Access</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .portal-bg {
+            background-image: radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 45%),
+                              radial-gradient(circle at 85% 80%, rgba(13, 148, 136, 0.12) 0%, transparent 50%),
+                              linear-gradient(rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.98)),
+                              url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+        }
+        input {
+            font-size: 16px !important;
+        }
+        @media (min-width: 768px) {
+            input {
+                font-size: 0.875rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="portal-bg min-h-screen text-slate-800 flex flex-col justify-between p-4 sm:p-6 md:p-8 antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Top Brand Header -->
+    <header class="w-full max-w-6xl mx-auto flex justify-between items-center py-2">
+        <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md shadow-blue-500/30">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+                <span class="text-lg md:text-xl font-extrabold text-white tracking-tight">Nexus<span class="text-blue-400">Pro</span></span>
+                <span class="hidden sm:inline-block ml-2 text-[10px] font-bold uppercase tracking-wider bg-white/10 text-slate-300 px-2 py-0.5 rounded border border-white/15">
+                    Singapore B2B Edition
+                </span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-bold text-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Cloud Engine Online
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Access Form Card -->
+    <main class="w-full max-w-md mx-auto my-auto py-8">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 md:p-9 relative overflow-hidden">
+            
+            <!-- Banner Sesi Aktif (Muncul otomatis jika agen sudah login sebelumnya) -->
+            <div id="activeSessionBanner" class="hidden mb-6 p-4 rounded-2xl bg-blue-50 border border-blue-200 text-left">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider block">Sesi Lisensi Aktif Ditemukan</span>
+                        <h4 class="text-sm font-extrabold text-slate-900 mt-0.5" id="savedAgentName">Jonathan Tan</h4>
+                        <p class="text-xs text-slate-600" id="savedAgentAgency">PropNex Realty</p>
+                        <p class="text-[11px] font-bold text-emerald-600 mt-1" id="savedDaysLeft">Masa aktif tersisa: 365 hari</p>
+                    </div>
+                    <button onclick="clearSavedSession()" title="Ganti Akun" class="text-xs font-bold text-slate-400 hover:text-red-600 transition-colors p-1">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+                <div class="mt-3.5 pt-3 border-t border-blue-100 flex gap-2">
+                    <button onclick="goToValuationApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2">
+                        Masuk ke Workspace <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Header Form -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-100/70 text-blue-700 mb-3 shadow-inner">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Agent Gateway Access</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Masukkan kredensial terdaftar untuk membuka platform valuasi dan ekspor dossier co-branded.</p>
+            </div>
+
+            <!-- Error / Alert Banner -->
+            <div id="alertBox" class="hidden mb-5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
+
+            <!-- Form Autentikasi -->
+            <form id="accessForm" onsubmit="handlePortalLogin(event)" class="space-y-4">
+                
+                <!-- Input Email -->
+                <div>
+                    <label for="agentEmail" class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                        <i class="fa-regular fa-envelope text-blue-600 mr-1"></i> Registered Agent Email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="agentEmail" 
+                        required 
+                        placeholder="contoh: agent@propnex.com" 
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-colors placeholder:text-slate-400 placeholder:font-normal"
+                    >
+                </div>
+
+                <!-- Input License Key -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label for="licenseKey" class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                            <i class="fa-solid fa-key text-blue-600 mr-1"></i> License Token / Key
+                        </label>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="licenseKey" 
+                        required 
+                        placeholder="NEXUS-PRO-2027-XXXX" 
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 font-extrabold tracking-wide rounded-xl focus:ring-2 focus:ring-blue-500 outline-none p-3.5 transition-colors uppercase placeholder:text-slate-400 placeholder:font-normal"
+                    >
+                </div>
+
+                <!-- Tombol Submit -->
+                <button 
+                    type="submit" 
+                    id="submitBtn" 
+                    class="w-full mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-sm py-3.5 transition-all shadow-lg shadow-blue-500/25 flex justify-center items-center gap-2 active:scale-[0.99]"
+                >
+                    <i class="fa-solid fa-lock-open text-xs"></i> Verifikasi & Masuk
+                </button>
+            </form>
+
+            <!-- Bantuan / Kontak Support -->
+            <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-500">
+                    Belum punya lisensi tahunan atau butuh bantuan?
+                </p>
+                <a href="https://wa.me/6581234567?text=Hi%20Nexus%20Pro,%20saya%20tertarik%20berlangganan%20lisensi%20agen%20tahunan." target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 mt-1 transition-colors">
+                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> Hubungi Konsultan Nexus Pro
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Copyright -->
+    <footer class="w-full max-w-6xl mx-auto py-3 text-center text-xs text-slate-400">
+        <p>&copy; 2026 Nexus Property Intelligence. Designed for Singapore CEA Licensed Real Estate Professionals.</p>
+    </footer>
+
+    <!-- LOGIKA VERIFIKASI & REDIRECT -->
+    <script>
+        // Endpoint Google Apps Script Anda
+        const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbw11g2HvnLTOL9n49uvG6l-9px_dbqqfv5I-Xmcov2H4DliEy5xnczP2UhjAJFWGcBB6A/exec";
+        
+        // Halaman tujuan setelah verifikasi sukses
+        const TARGET_APP_PAGE = "hdb-pro-valuation.html";
+
+        // Tampilkan Banner Peringatan
+        function showAlert(msg, isSuccess = false) {
+            const box = document.getElementById('alertBox');
+            box.innerText = msg;
+            box.className = isSuccess 
+                ? "mb-5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200"
+                : "mb-5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-red-50 text-red-700 border border-red-200";
+            box.classList.remove('hidden');
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBox').classList.add('hidden');
+        }
+
+        // Cek apakah browser sudah memiliki lisensi aktif tersimpan
+        function checkExistingSession() {
+            const rawLicense = localStorage.getItem('nexus_pro_license');
+            const rawProfile = localStorage.getItem('nexus_agent_profile');
+
+            if (!rawLicense) return;
+
+            try {
+                const license = JSON.parse(rawLicense);
+                const profile = rawProfile ? JSON.parse(rawProfile) : {};
+                const expiry = new Date(license.expiryDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 0) {
+                    // Tampilkan kotak sesi aktif
+                    document.getElementById('activeSessionBanner').classList.remove('hidden');
+                    document.getElementById('savedAgentName').innerText = profile.name || license.agentName || "Valued Agent";
+                    document.getElementById('savedAgentAgency').innerText = `${profile.agency || license.agency || "Agency"} | CEA: ${profile.cea || "-"}`;
+                    document.getElementById('savedDaysLeft').innerText = `Masa aktif lisensi tersisa: ${diffDays} hari`;
+                    
+                    // Auto-fill input agar nyaman
+                    if (license.email) document.getElementById('agentEmail').value = license.email;
+                    if (license.key) document.getElementById('licenseKey').value = license.key;
+                }
+            } catch (e) {
+                localStorage.removeItem('nexus_pro_license');
+            }
+        }
+
+        function clearSavedSession() {
+            localStorage.removeItem('nexus_pro_license');
+            localStorage.removeItem('nexus_agent_profile');
+            document.getElementById('activeSessionBanner').classList.add('hidden');
+            document.getElementById('agentEmail').value = "";
+            document.getElementById('licenseKey').value = "";
+            showAlert("Sesi berhasil direset. Silakan masukkan kredensial baru.");
+        }
+
+        function goToValuationApp() {
+            window.location.href = TARGET_APP_PAGE;
+        }
+
+        // Tangani proses login & verifikasi cloud
+        async function handlePortalLogin(e) {
+            e.preventDefault();
+            hideAlert();
+
+            const email = document.getElementById('agentEmail').value.trim().toLowerCase();
+            const key = document.getElementById('licenseKey').value.trim().toUpperCase();
+
+            if (!email || !key) {
+                showAlert("Harap lengkapi Registered Email dan License Key Anda.");
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan ke Cloud...';
+            btn.disabled = true;
+
+            try {
+                const queryUrl = `${LICENSE_API_URL}?key=${encodeURIComponent(key)}&email=${encodeURIComponent(email)}`;
+                const response = await fetch(queryUrl);
+                const result = await response.json();
+
+                if (result.valid) {
+                    // 1. Simpan Lisensi ke LocalStorage
+                    const licenseObj = {
+                        key: key,
+                        email: email,
+                        tier: "PRO_ANNUAL",
+                        expiryDate: result.expiryDate,
+                        agentName: result.agentName || "Valued Agent",
+                        agency: result.agency || "Real Estate Agency"
+                    };
+                    localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
+
+                    // 2. Simpan Profil Lengkap (Nama, CEA, Agensi, WA) ke LocalStorage
+                    const agentProfile = {
+                        name: result.agentName || "Valued Agent",
+                        agency: result.agency || "Real Estate Agency",
+                        cea: result.cea || "R000000A",
+                        phone: result.phone || "6581234567"
+                    };
+                    localStorage.setItem('nexus_agent_profile', JSON.stringify(agentProfile));
+
+                    showAlert(`Verifikasi Berhasil! Selamat datang, ${result.agentName}. Mengalihkan...`, true);
+
+                    // Redirect otomatis dalam 1.2 detik
+                    setTimeout(() => {
+                        window.location.href = TARGET_APP_PAGE;
+                    }, 1200);
+
+                } else {
+                    showAlert(`Akses Ditolak: ${result.message}`);
+                }
+            } catch (err) {
+                showAlert("Gagal terhubung ke database cloud. Pastikan internet Anda stabil.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Jalankan pengecekan sesi saat halaman siap
+        document.addEventListener('DOMContentLoaded', checkExistingSession);
+    </script>
+</body>
+</html>
