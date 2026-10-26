@@ -479,11 +479,15 @@
         let lastFormattedPrice = "S$ 0";
         let lastFormattedRange = "S$ 0 — S$ 0";
 
-        // --- 1. SUBSCRIPTION & LICENSE SYSTEM ---
+       // --- 1. SUBSCRIPTION & LICENSE SYSTEM (CONNECTED TO GOOGLE SHEETS) ---
+        const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbw11g2HvnLTOL9n49uvG6l-9px_dbqqfv5I-Xmcov2H4DliEy5xnczP2UhjAJFWGcBB6A/exec";
+
         function checkLicenseState() {
-            const rawLicense = localStorage.getItem('nexus_pro_license');
             const badge = document.getElementById('licenseBadge');
             const statusText = document.getElementById('licenseStatusText');
+            if (!badge || !statusText) return true;
+
+            const rawLicense = localStorage.getItem('nexus_pro_license');
 
             if (!rawLicense) {
                 badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors";
@@ -495,9 +499,10 @@
                 const license = JSON.parse(rawLicense);
                 const expiry = new Date(license.expiryDate);
                 const today = new Date();
+                today.setHours(0, 0, 0, 0);
                 const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
 
-                if (diffDays <= 0) {
+                if (isNaN(diffDays) || diffDays <= 0) {
                     badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors";
                     statusText.innerText = "License Expired";
                     return false;
@@ -507,7 +512,10 @@
                     return true;
                 }
             } catch (e) {
-                return false;
+                localStorage.removeItem('nexus_pro_license');
+                badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors";
+                statusText.innerText = "Trial Mode (3 Days)";
+                return true;
             }
         }
 
@@ -527,21 +535,61 @@
             localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
             closeLicenseModal();
             checkLicenseState();
-            alert("Success! 365-Day Professional License activated.");
+            alert("Success! Local Demo License activated.");
         }
 
-        function activateLicenseKey() {
+        async function activateLicenseKey() {
             const inputKey = document.getElementById('licenseKeyInput').value.trim();
             if (!inputKey) {
                 alert("Please enter a valid license token.");
                 return;
             }
 
-            // Simple token verification logic: if contains '2027' or 'PRO' grant 365 days
-            if (inputKey.toUpperCase().includes("PRO") || inputKey.toUpperCase().includes("2027")) {
-                activateDemoLicense();
-            } else {
-                alert("Invalid license token. Please contact support or use the trial key.");
+            // Ambil tombol untuk ubah state loading
+            const btn = document.querySelector('#licenseModal button[onclick="activateLicenseKey()"]');
+            const originalText = btn ? btn.innerText : "Verify & Activate License";
+            if (btn) {
+                btn.innerText = "Verifying with Cloud...";
+                btn.disabled = true;
+            }
+
+            try {
+                const response = await fetch(`${LICENSE_API_URL}?key=${encodeURIComponent(inputKey)}`);
+                const result = await response.json();
+
+                if (result.valid) {
+                    const licenseObj = {
+                        key: inputKey,
+                        tier: "PRO_ANNUAL",
+                        expiryDate: result.expiryDate,
+                        agentName: result.agentName || "Valued Agent",
+                        agency: result.agency || "Real Estate Agency"
+                    };
+
+                    localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
+
+                    // Sinkronkan otomatis ke profil agen jika data tersedia dari Sheets
+                    if (result.agentName) {
+                        const savedProfile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
+                        savedProfile.name = result.agentName;
+                        if (result.agency) savedProfile.agency = result.agency;
+                        localStorage.setItem('nexus_agent_profile', JSON.stringify(savedProfile));
+                        if (typeof loadAgentProfile === "function") loadAgentProfile();
+                    }
+
+                    closeLicenseModal();
+                    checkLicenseState();
+                    alert(`Verification Successful!\nWelcome, ${result.agentName || "Agent"}.\nLicense Active for ${result.daysLeft} days.`);
+                } else {
+                    alert(`Activation Failed: ${result.message}`);
+                }
+            } catch (err) {
+                alert("Network error connecting to license server. Please verify your connection.");
+            } finally {
+                if (btn) {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
             }
         }
 
