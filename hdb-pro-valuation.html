@@ -62,25 +62,25 @@
 
             <!-- License Counter, Branding, Dashboard & Logout Trigger -->
             <div class="flex items-center gap-1.5 sm:gap-2.5">
-                <!-- Status Sisa Hari Lisensi -->
+                <!-- Status License Days -->
                 <div id="licenseBadge" class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span id="licenseStatusText">Checking...</span>
                 </div>
 
-                <!-- Tombol Branding Agen -->
+                <!-- Agent Branding Trigger -->
                 <button onclick="openProfileModal()" class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-slate-200">
                     <i class="fa-solid fa-id-badge text-blue-600"></i>
                     <span class="hidden sm:inline" id="navAgentName">Agent Branding</span>
                 </button>
 
-                <!-- Link Dashboard -->
+                <!-- Dashboard Link -->
                 <a href="index.html" class="hidden md:inline-flex items-center bg-slate-900 hover:bg-slate-800 text-white font-bold px-3.5 py-1.5 rounded-full text-xs transition-colors">
                     <i class="fa-solid fa-chart-pie mr-1.5"></i> Dashboard
                 </a>
 
-                <!-- Tombol Exit / Logout -->
-                <button onclick="logoutAgent()" class="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-red-200" title="Keluar dan Ganti Akun">
+                <!-- Exit / Logout Trigger -->
+                <button onclick="logoutAgent()" class="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-red-200" title="Sign out and switch profile">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span class="hidden sm:inline">Logout</span>
                 </button>
@@ -118,6 +118,7 @@
             <!-- VALUATION ENGINE CARD -->
             <div class="glass-panel p-5 sm:p-7 md:p-8 rounded-2xl md:rounded-3xl lg:col-span-7 relative w-full">
                 
+                <!-- INPUT FORM WIZARD -->
                 <div id="predictor-form-container">
                     <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
                         <div>
@@ -236,17 +237,43 @@
                     </form>
                 </div>
 
-                <!-- VALUATION RESULT SCREEN -->
-                <div id="result-container" class="hidden text-center py-4">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-3 shadow-sm">
+                <!-- VALUATION RESULT SCREEN (WITH CMA) -->
+                <div id="result-container" class="hidden text-center py-2">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-2 shadow-sm">
                         <i class="fa-solid fa-check text-xl"></i>
                     </div>
                     
                     <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Simulated Market Value</p>
                     <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-1 tracking-tight" id="displayPrice">S$ 0</div>
-                    <p class="text-xs font-semibold text-blue-700 mb-5" id="displayRange">Estimated Range: S$ 0 — S$ 0</p>
+                    <p class="text-xs font-semibold text-blue-700 mb-4" id="displayRange">Estimated Range: S$ 0 — S$ 0</p>
+
+                    <!-- CMA Web Snapshot Table -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mb-4 text-left">
+                        <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-100">
+                            <span class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">
+                                <i class="fa-solid fa-scale-balanced text-blue-600 mr-1"></i> Recent Cluster Comparables
+                            </span>
+                            <span class="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-full">Actual Records</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-100">
+                                        <th class="pb-1.5 font-bold">Block / Street</th>
+                                        <th class="pb-1.5 font-bold">Storey</th>
+                                        <th class="pb-1.5 font-bold">Area</th>
+                                        <th class="pb-1.5 font-bold text-right">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="web_cma_rows" class="divide-y divide-slate-50 text-slate-700 font-medium">
+                                    <!-- Injected by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     
-                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-md mb-5 text-left relative overflow-hidden">
+                    <!-- Agent Card & Actions -->
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-md mb-4 text-left relative overflow-hidden">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                             <div>
                                 <span class="text-[10px] font-bold uppercase text-slate-400">Prepared Exclusively By</span>
@@ -306,13 +333,13 @@
                 <button type="button" onclick="activateLicenseKey()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-key"></i> Verify & Activate License
                 </button>
-                <!-- Quick Demo Shortcut for Testing -->
                 <button type="button" onclick="activateDemoLicense()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-colors">
                     Use Instant Offline Demo Key (TRIAL-2027)
                 </button>
             </div>
         </div>
     </div>
+
     <!-- AGENT WHITE-LABEL PROFILE SETTINGS MODAL -->
     <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
@@ -370,7 +397,7 @@
             </div>
         </div>
 
-        <!-- KOTAK PROFIL AGEN (WARNA SOLID & KONTRAS TINGGI) -->
+        <!-- AGENT PROFILE BOX -->
         <div style="background-color: #0f172a; border-radius: 8px; padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <p style="margin: 0; font-size: 9px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Prepared Exclusively By</p>
@@ -381,14 +408,14 @@
                 <p style="margin: 0; font-size: 9px; color: #94a3b8; text-transform: uppercase; font-weight: bold;">CEA Registration</p>
                 <p style="margin: 1px 0 3px 0; font-size: 12px; font-weight: bold; color: #38bdf8;" id="pdf_agent_cea">R012345A</p>
                 <p style="margin: 0; font-size: 11px; font-weight: bold;">
-    <a id="pdf_agent_wa_link" href="#" target="_blank" style="color: #38bdf8; text-decoration: underline;">
-        <span id="pdf_agent_phone">+65 8123 4567</span> (Chat WA)
-    </a>
-</p>
+                    <a id="pdf_agent_wa_link" href="#" target="_blank" style="color: #38bdf8; text-decoration: underline;">
+                        <span id="pdf_agent_phone">+65 8123 4567</span> (Chat WA)
+                    </a>
+                </p>
             </div>
         </div>
 
-        <!-- HERO VALUASI TARGET -->
+        <!-- VALUATION TARGET SUMMARY -->
         <div style="background-color: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 18px; margin-bottom: 18px; text-align: center;">
             <p style="margin: 0; font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Indicative Market Valuation</p>
             <h1 style="margin: 6px 0 4px 0; font-size: 38px; font-weight: 800; color: #0f172a; letter-spacing: -1px;" id="pdf_price">S$ 0</h1>
@@ -404,9 +431,9 @@
             <p style="margin: 8px 0 0 0; font-size: 9px; color: #94a3b8;">XGBoost regression mapping 232,000+ records with monotone economic constraints.</p>
         </div>
 
-        <!-- 2 KOLOM: SPESIFIKASI FISIK vs VARIABEL MAKRO -->
+        <!-- 2 COLUMNS: PHYSICAL SPECS vs MACRO VARIABLES -->
         <div style="display: flex; gap: 14px; margin-bottom: 18px;">
-            <!-- Kolom Fisik -->
+            <!-- Physical Specs -->
             <div style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background-color: #ffffff;">
                 <h3 style="margin: 0 0 8px 0; font-size: 11px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">Subject Property Details</h3>
                 <table style="width: 100%; font-size: 10.5px; border-collapse: collapse;">
@@ -433,7 +460,7 @@
                 </table>
             </div>
 
-            <!-- Kolom Makro -->
+            <!-- Macro Variables -->
             <div style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background-color: #ffffff;">
                 <h3 style="margin: 0 0 8px 0; font-size: 11px; font-weight: 800; color: #1e3a8a; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">Macro Calibration</h3>
                 <table style="width: 100%; font-size: 10.5px; border-collapse: collapse;">
@@ -459,6 +486,31 @@
                     </tr>
                 </table>
             </div>
+        </div>
+
+        <!-- SECTION CMA: COMPARATIVE MARKET TRANSACTIONS (HISTORICAL COMPS) -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background-color: #ffffff; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; margin-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 11px; font-weight: 800; color: #1e3a8a; text-transform: uppercase;">
+                    Recent Verified Benchmark Transactions (Surrounding Cluster)
+                </h3>
+                <span style="font-size: 9px; color: #64748b; font-weight: 600;">Past 6-Month Resale Registry</span>
+            </div>
+            
+            <table style="width: 100%; font-size: 9.5px; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background-color: #f8fafc; color: #475569; border-bottom: 1px solid #cbd5e1;">
+                        <th style="padding: 5px 6px;">Month</th>
+                        <th style="padding: 5px 6px;">Block / Street</th>
+                        <th style="padding: 5px 6px;">Level</th>
+                        <th style="padding: 5px 6px;">Area</th>
+                        <th style="padding: 5px 6px; text-align: right;">Transacted Price</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf_cma_rows">
+                    <!-- Dynamic Comps Rows -->
+                </tbody>
+            </table>
         </div>
 
         <!-- REKOMENDASI TAKTIK NEGOSIASI AGEN -->
@@ -487,6 +539,7 @@
         let lastPayload = null;
         let lastFormattedPrice = "S$ 0";
         let lastFormattedRange = "S$ 0 — S$ 0";
+        let currentCmaComps = [];
 
         // --- 1. SUBSCRIPTION & LICENSE CLOUD GATEWAY ---
         const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbyE_AN1VeEs1Bc6yTPd3I58GfgelYHTYdfP0pwYTUvH_d8wrcKIOV6ayJz79cN9xQEKgA/exec";
@@ -790,6 +843,7 @@
                 cooling_measure: parseInt(document.getElementById("cooling_measure")?.value) || 1
             };
 
+            // 1. Prediction Call
             fetch("https://danawiraprama-sg-hdb-prediction.hf.space/predict", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -827,6 +881,19 @@
                     waBtn.href = `https://wa.me/${profile.phone}?text=${waText}`;
                 }
 
+                // 2. Fetch Comparative Market Analysis (CMA Comps)
+                fetch("https://danawiraprama-sg-hdb-prediction.hf.space/cma", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ town: payload.town, flat_type: payload.flat_type })
+                })
+                .then(res => res.json())
+                .then(cmaData => {
+                    currentCmaComps = cmaData.comps || [];
+                    renderCMATables(currentCmaComps);
+                })
+                .catch(err => console.log("CMA Fetch Error:", err));
+
                 if (submitBtn) {
                     submitBtn.innerHTML = originalBtnHTML;
                     submitBtn.disabled = false;
@@ -838,6 +905,47 @@
                     submitBtn.innerHTML = originalBtnHTML;
                     submitBtn.disabled = false;
                 }
+            });
+        }
+
+        // Render CMA to Web Interface & PDF Hidden Template
+        function renderCMATables(comps) {
+            const webTbody = document.getElementById('web_cma_rows');
+            const pdfTbody = document.getElementById('pdf_cma_rows');
+            if (!webTbody || !pdfTbody) return;
+
+            webTbody.innerHTML = '';
+            pdfTbody.innerHTML = '';
+
+            if (comps.length === 0) {
+                webTbody.innerHTML = '<tr><td colspan="4" class="py-2 text-center text-slate-400">No recent transactions found.</td></tr>';
+                pdfTbody.innerHTML = '<tr><td colspan="5" style="padding: 6px; text-align: center; color: #94a3b8;">No direct cluster records found.</td></tr>';
+                return;
+            }
+
+            comps.forEach(item => {
+                const formattedPrice = formatSGD(item.price);
+
+                // Populate Web Snapshot Table
+                webTbody.innerHTML += `
+                    <tr>
+                        <td class="py-2 font-semibold text-slate-800">${item.block} ${item.street}</td>
+                        <td class="py-2">${item.storey}</td>
+                        <td class="py-2">${item.area_sqm} sqm</td>
+                        <td class="py-2 text-right font-bold text-blue-700">${formattedPrice}</td>
+                    </tr>
+                `;
+
+                // Populate PDF Template
+                pdfTbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 4px 6px; color: #64748b;">${item.date}</td>
+                        <td style="padding: 4px 6px; font-weight: bold; color: #0f172a;">${item.block} ${item.street}</td>
+                        <td style="padding: 4px 6px; color: #334155;">${item.storey}</td>
+                        <td style="padding: 4px 6px; color: #334155;">${item.area_sqm} sqm</td>
+                        <td style="padding: 4px 6px; text-align: right; font-weight: bold; color: #1e3a8a;">${formattedPrice}</td>
+                    </tr>
+                `;
             });
         }
 
