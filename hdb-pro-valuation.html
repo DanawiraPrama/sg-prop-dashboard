@@ -483,7 +483,7 @@
         let lastFormattedRange = "S$ 0 — S$ 0";
 
        // --- 1. SUBSCRIPTION & LICENSE SYSTEM (CONNECTED TO GOOGLE SHEETS) ---
-        const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbzcoxsYrMA0fTGtOMjgpjOtOs4Gdpdsq_tWAznXEAHoTFIdTW7kKWAo8Bf0E8EP1gp5cA/exec";
+        const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbyE_AN1VeEs1Bc6yTPd3I58GfgelYHTYdfP0pwYTUvH_d8wrcKIOV6ayJz79cN9xQEKgA/exec";
 
         function checkLicenseState() {
             const badge = document.getElementById('licenseBadge');
@@ -574,17 +574,20 @@
 
                     localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
 
-                    // Auto-sync profil agen jika data tersedia dari Sheets
+                    // Auto-sync profil agen lengkap dari database Google Sheets
                     const savedProfile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
                     if (result.agentName) savedProfile.name = result.agentName;
                     if (result.agency) savedProfile.agency = result.agency;
+                    if (result.cea) savedProfile.cea = result.cea;
+                    if (result.phone) savedProfile.phone = result.phone;
                     localStorage.setItem('nexus_agent_profile', JSON.stringify(savedProfile));
 
+                    // Muat ulang tampilan profil agen di antarmuka web
                     if (typeof loadAgentProfile === "function") loadAgentProfile();
 
                     closeLicenseModal();
                     checkLicenseState();
-                    alert(`Aktivasi Berhasil!\nSelamat datang, ${result.agentName}.\nLisensi aktif untuk ${result.daysLeft} hari ke depan.`);
+                    alert(`Aktivasi Berhasil!\nSelamat datang, ${result.agentName}.\nData profil, CEA, dan WhatsApp Anda telah tersinkronisasi.`);
                 } else {
                     alert(`Aktivasi Gagal: ${result.message}`);
                 }
