@@ -60,24 +60,30 @@
                 </span>
             </div>
 
-            <!-- License Counter & Agent Profile Trigger -->
-            <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Expiry Counter Pill -->
-                <button onclick="openLicenseModal()" id="licenseBadge" class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors">
+            <!-- License Counter, Branding, Dashboard & Logout Trigger -->
+            <div class="flex items-center gap-1.5 sm:gap-2.5">
+                <!-- Status Sisa Hari Lisensi -->
+                <div id="licenseBadge" class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="licenseStatusText">Checking License...</span>
-                </button>
+                    <span id="licenseStatusText">Checking...</span>
+                </div>
 
-                <!-- Profile Customizer Button -->
+                <!-- Tombol Branding Agen -->
                 <button onclick="openProfileModal()" class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-slate-200">
                     <i class="fa-solid fa-id-badge text-blue-600"></i>
                     <span class="hidden sm:inline" id="navAgentName">Agent Branding</span>
                 </button>
 
-                <!-- Link to Analytics Dashboard -->
-                <a href="index.html" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-3.5 py-1.5 rounded-full text-xs transition-colors">
-                    <i class="fa-solid fa-chart-pie mr-1"></i> Dashboard
+                <!-- Link Dashboard -->
+                <a href="index.html" class="hidden md:inline-flex items-center bg-slate-900 hover:bg-slate-800 text-white font-bold px-3.5 py-1.5 rounded-full text-xs transition-colors">
+                    <i class="fa-solid fa-chart-pie mr-1.5"></i> Dashboard
                 </a>
+
+                <!-- Tombol Exit / Logout -->
+                <button onclick="logoutAgent()" class="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-red-200" title="Keluar dan Ganti Akun">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -482,20 +488,19 @@
         let lastFormattedPrice = "S$ 0";
         let lastFormattedRange = "S$ 0 — S$ 0";
 
-       // --- 1. SUBSCRIPTION & LICENSE SYSTEM (CONNECTED TO GOOGLE SHEETS) ---
+        // --- 1. SUBSCRIPTION & LICENSE CLOUD GATEWAY ---
         const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbyE_AN1VeEs1Bc6yTPd3I58GfgelYHTYdfP0pwYTUvH_d8wrcKIOV6ayJz79cN9xQEKgA/exec";
+        const LOGIN_PAGE_URL = "login.html";
 
         function checkLicenseState() {
             const badge = document.getElementById('licenseBadge');
             const statusText = document.getElementById('licenseStatusText');
-            if (!badge || !statusText) return true;
-
             const rawLicense = localStorage.getItem('nexus_pro_license');
 
+            // Gate protection: If no active license found, redirect back to login
             if (!rawLicense) {
-                badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors";
-                statusText.innerText = "Trial Mode (3 Days)";
-                return true;
+                window.location.href = LOGIN_PAGE_URL;
+                return false;
             }
 
             try {
@@ -503,27 +508,43 @@
                 const expiry = new Date(license.expiryDate);
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
+
                 const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
 
                 if (isNaN(diffDays) || diffDays <= 0) {
-                    badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors";
-                    statusText.innerText = "License Expired";
+                    if (badge) {
+                        badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200";
+                    }
+                    if (statusText) {
+                        statusText.innerText = "License Expired";
+                    }
+                    alert("Your subscription has expired. Please sign in again with an active token.");
+                    logoutAgent();
                     return false;
                 } else {
-                    badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors";
-                    statusText.innerText = `Active: ${diffDays}d Left`;
+                    if (badge) {
+                        badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
+                    }
+                    if (statusText) {
+                        statusText.innerText = `Active: ${diffDays}d Left`;
+                    }
                     return true;
                 }
             } catch (e) {
-                localStorage.removeItem('nexus_pro_license');
-                badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors";
-                statusText.innerText = "Trial Mode (3 Days)";
-                return true;
+                logoutAgent();
+                return false;
             }
         }
 
-        function openLicenseModal() { document.getElementById('licenseModal').classList.remove('hidden'); }
-        function closeLicenseModal() { document.getElementById('licenseModal').classList.add('hidden'); }
+        function openLicenseModal() { 
+            const m = document.getElementById('licenseModal'); 
+            if (m) m.classList.remove('hidden'); 
+        }
+
+        function closeLicenseModal() { 
+            const m = document.getElementById('licenseModal'); 
+            if (m) m.classList.add('hidden'); 
+        }
 
         function activateDemoLicense() {
             const oneYearLater = new Date();
@@ -531,22 +552,25 @@
             
             const licenseObj = {
                 key: "TRIAL-2027",
+                email: "trial@demo.sg",
                 tier: "PRO_ANNUAL",
-                expiryDate: oneYearLater.toISOString()
+                expiryDate: oneYearLater.toISOString(),
+                agentName: "Trial Agent",
+                agency: "Demo Agency"
             };
 
             localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
             closeLicenseModal();
             checkLicenseState();
-            alert("Success! Local Demo License activated.");
+            alert("Success! Offline 365-Day Demo Key activated.");
         }
 
         async function activateLicenseKey() {
-            const inputEmail = document.getElementById('licenseEmailInput').value.trim().toLowerCase();
-            const inputKey = document.getElementById('licenseKeyInput').value.trim().toUpperCase();
+            const inputEmail = document.getElementById('licenseEmailInput')?.value.trim().toLowerCase();
+            const inputKey = document.getElementById('licenseKeyInput')?.value.trim().toUpperCase();
 
             if (!inputEmail || !inputKey) {
-                alert("Please Insert your Registered Email and License Key.");
+                alert("Please provide both your Registered Email and License Key.");
                 return;
             }
 
@@ -574,7 +598,7 @@
 
                     localStorage.setItem('nexus_pro_license', JSON.stringify(licenseObj));
 
-                    // Auto-sync profil agen lengkap dari database Google Sheets
+                    // Synchronize agent credentials to localStorage
                     const savedProfile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
                     if (result.agentName) savedProfile.name = result.agentName;
                     if (result.agency) savedProfile.agency = result.agency;
@@ -582,17 +606,17 @@
                     if (result.phone) savedProfile.phone = result.phone;
                     localStorage.setItem('nexus_agent_profile', JSON.stringify(savedProfile));
 
-                    // Muat ulang tampilan profil agen di antarmuka web
-                    if (typeof loadAgentProfile === "function") loadAgentProfile();
+                    // Re-render UI branding elements
+                    loadAgentProfile();
 
                     closeLicenseModal();
                     checkLicenseState();
-                    alert(`Aktivasi Berhasil!\nSelamat datang, ${result.agentName}.\nData profil, CEA, dan WhatsApp Anda telah tersinkronisasi.`);
+                    alert(`Activation Successful!\nWelcome, ${result.agentName}.\nYour license is active for ${result.daysLeft} days.`);
                 } else {
-                    alert(`Aktivasi Gagal: ${result.message}`);
+                    alert(`Activation Rejected: ${result.message}`);
                 }
             } catch (err) {
-                alert("Gagal terhubung ke server lisensi. Pastikan koneksi internet aktif.");
+                alert("Connection failed. Please check your internet access or cloud endpoint.");
             } finally {
                 if (btn) {
                     btn.innerText = originalText;
@@ -601,9 +625,8 @@
             }
         }
 
-        // --- 2. AGENT WHITE-LABEL BRANDING SYSTEM ---
+        // --- 2. AGENT WHITE-LABEL BRANDING & LOGOUT SYSTEM ---
         function loadAgentProfile() {
-            const savedProfile = localStorage.getItem('nexus_agent_profile');
             let profile = {
                 name: "Jonathan Tan",
                 cea: "R012345A",
@@ -611,40 +634,60 @@
                 phone: "6581234567"
             };
 
+            const savedProfile = localStorage.getItem('nexus_agent_profile');
             if (savedProfile) {
-                try { profile = { ...profile, ...JSON.parse(savedProfile) }; } catch(e){}
+                try { 
+                    profile = { ...profile, ...JSON.parse(savedProfile) }; 
+                } catch (e) {}
             }
 
-            document.getElementById('agentNameInput').value = profile.name;
-            document.getElementById('agentCeaInput').value = profile.cea;
-            document.getElementById('agencyInput').value = profile.agency;
-            document.getElementById('agentPhoneInput').value = profile.phone;
+            // Safe DOM setters that never crash if an element does not exist
+            const safeSetVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+            const safeSetText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
 
-            document.getElementById('navAgentName').innerText = profile.name;
-            document.getElementById('heroAgentDisplay').innerText = profile.name;
-            document.getElementById('heroAgencyDisplay').innerText = `${profile.agency} | CEA: ${profile.cea}`;
+            safeSetVal('agentNameInput', profile.name);
+            safeSetVal('agentCeaInput', profile.cea);
+            safeSetVal('agencyInput', profile.agency);
+            safeSetVal('agentPhoneInput', profile.phone);
+
+            safeSetText('navAgentName', profile.name);
+            safeSetText('heroAgentDisplay', profile.name);
+            safeSetText('heroAgencyDisplay', `${profile.agency} | CEA: ${profile.cea}`);
 
             return profile;
         }
 
-        function openProfileModal() { document.getElementById('profileModal').classList.remove('hidden'); }
-        function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+        function openProfileModal() { 
+            const m = document.getElementById('profileModal'); 
+            if (m) m.classList.remove('hidden'); 
+        }
+
+        function closeProfileModal() { 
+            const m = document.getElementById('profileModal'); 
+            if (m) m.classList.add('hidden'); 
+        }
 
         function saveAgentProfile() {
             const profile = {
-                name: document.getElementById('agentNameInput').value.trim() || "Jonathan Tan",
-                cea: document.getElementById('agentCeaInput').value.trim() || "R012345A",
-                agency: document.getElementById('agencyInput').value.trim() || "PropNex Realty",
-                phone: document.getElementById('agentPhoneInput').value.trim() || "6581234567"
+                name: document.getElementById('agentNameInput')?.value.trim() || "Jonathan Tan",
+                cea: document.getElementById('agentCeaInput')?.value.trim() || "R012345A",
+                agency: document.getElementById('agencyInput')?.value.trim() || "PropNex Realty",
+                phone: document.getElementById('agentPhoneInput')?.value.trim() || "6581234567"
             };
 
             localStorage.setItem('nexus_agent_profile', JSON.stringify(profile));
             closeProfileModal();
             loadAgentProfile();
-            alert("Agent branding profile updated!");
+            alert("Agent branding profile updated successfully!");
         }
 
-        // --- 3. WIZARD & CALCULATION ENGINE ---
+        function logoutAgent() {
+            localStorage.removeItem('nexus_pro_license');
+            localStorage.removeItem('nexus_agent_profile');
+            window.location.href = LOGIN_PAGE_URL;
+        }
+
+        // --- 3. WIZARD & VALUATION ENGINE ---
         function loadPreset(presetName) {
             const sora = document.getElementById('sora');
             const gdp_growth = document.getElementById('gdp_growth');
@@ -653,59 +696,98 @@
             const cooling_measure = document.getElementById('cooling_measure');
 
             if (presetName === 'baseline') {
-                sora.value = "3.5"; gdp_growth.value = "2.5"; cpi_val.value = "102.0"; hdb_idx.value = "180.0"; cooling_measure.value = "1";
+                if (sora) sora.value = "3.5"; 
+                if (gdp_growth) gdp_growth.value = "2.5"; 
+                if (cpi_val) cpi_val.value = "102.0"; 
+                if (hdb_idx) hdb_idx.value = "180.0"; 
+                if (cooling_measure) cooling_measure.value = "1";
             } else if (presetName === 'high_interest') {
-                sora.value = "5.2"; gdp_growth.value = "0.5"; cpi_val.value = "110.5"; hdb_idx.value = "165.0"; cooling_measure.value = "1";
+                if (sora) sora.value = "5.2"; 
+                if (gdp_growth) gdp_growth.value = "0.5"; 
+                if (cpi_val) cpi_val.value = "110.5"; 
+                if (hdb_idx) hdb_idx.value = "165.0"; 
+                if (cooling_measure) cooling_measure.value = "1";
             } else if (presetName === 'market_boom') {
-                sora.value = "1.8"; gdp_growth.value = "5.5"; cpi_val.value = "99.0"; hdb_idx.value = "210.0"; cooling_measure.value = "0";
+                if (sora) sora.value = "1.8"; 
+                if (gdp_growth) gdp_growth.value = "5.5"; 
+                if (cpi_val) cpi_val.value = "99.0"; 
+                if (hdb_idx) hdb_idx.value = "210.0"; 
+                if (cooling_measure) cooling_measure.value = "0";
             }
         }
 
         function updateWizardUI() {
-            document.getElementById('step1').classList.toggle('hidden', currentStep !== 1);
-            document.getElementById('step2').classList.toggle('hidden', currentStep !== 2);
-            
-            document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
-            document.getElementById('btnNext').classList.toggle('hidden', currentStep === 2);
-            document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== 2);
+            const s1 = document.getElementById('step1');
+            const s2 = document.getElementById('step2');
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            const submitBtn = document.getElementById('submitBtn');
+            const badge = document.getElementById('step-badge');
+            const subtitle = document.getElementById('step-subtitle');
+            const dot2 = document.getElementById('dot2');
 
-            document.getElementById('step-badge').innerText = `Step ${currentStep} of 2`;
-            document.getElementById('step-subtitle').innerText = currentStep === 1 ? "Subject Property Details" : "Macro Economic Outlook";
-            document.getElementById('dot2').className = currentStep >= 2 ? "w-2.5 h-2.5 rounded-full step-active border" : "w-2.5 h-2.5 rounded-full step-inactive border";
+            if (s1) s1.classList.toggle('hidden', currentStep !== 1);
+            if (s2) s2.classList.toggle('hidden', currentStep !== 2);
+            
+            if (btnPrev) btnPrev.classList.toggle('hidden', currentStep === 1);
+            if (btnNext) btnNext.classList.toggle('hidden', currentStep === 2);
+            if (submitBtn) submitBtn.classList.toggle('hidden', currentStep !== 2);
+
+            if (badge) badge.innerText = `Step ${currentStep} of 2`;
+            if (subtitle) subtitle.innerText = currentStep === 1 ? "Subject Property Details" : "Macro Economic Outlook";
+            if (dot2) dot2.className = currentStep >= 2 ? "w-2.5 h-2.5 rounded-full step-active border" : "w-2.5 h-2.5 rounded-full step-inactive border";
         }
 
-        function nextStep() { if (currentStep < 2) { currentStep++; updateWizardUI(); } }
-        function prevStep() { if (currentStep > 1) { currentStep--; updateWizardUI(); } }
+        function nextStep() { 
+            if (currentStep < 2) { 
+                currentStep++; 
+                updateWizardUI(); 
+            } 
+        }
+
+        function prevStep() { 
+            if (currentStep > 1) { 
+                currentStep--; 
+                updateWizardUI(); 
+            } 
+        }
 
         function formatSGD(val) {
-            return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 0 }).format(val);
+            return new Intl.NumberFormat('en-SG', { 
+                style: 'currency', 
+                currency: 'SGD', 
+                maximumFractionDigits: 0 
+            }).format(val);
         }
 
         function executeValuation() {
-            // Verify license before processing
+            // Guard: Verify license status before running machine learning models
             if (!checkLicenseState()) {
                 openLicenseModal();
-                alert("Your subscription has expired. Please renew or enter your license key to unlock calculations.");
+                alert("Access restricted. Please activate an annual license to run property valuations.");
                 return;
             }
 
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing XGBoost...';
-            submitBtn.disabled = true;
+            const originalBtnHTML = submitBtn ? submitBtn.innerHTML : '<i class="fa-solid fa-bolt"></i> Generate Valuation & Dossier';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing XGBoost...';
+                submitBtn.disabled = true;
+            }
 
             const profile = loadAgentProfile();
             
             const payload = {
-                town: document.getElementById("town").value,
-                flat_type: document.getElementById("flat_type").value,
-                floor_area: parseFloat(document.getElementById("area").value),
-                storey: parseFloat(document.getElementById("storey").value),
-                lease_left: parseFloat(document.getElementById("lease").value),
-                sora: parseFloat(document.getElementById("sora").value),
-                gdp_growth: parseFloat(document.getElementById("gdp_growth").value),
-                cpi_val: parseFloat(document.getElementById("cpi_val").value),
-                hdb_idx: parseFloat(document.getElementById("hdb_idx").value),
-                cooling_measure: parseInt(document.getElementById("cooling_measure").value)
+                town: document.getElementById("town")?.value || "ANG MO KIO",
+                flat_type: document.getElementById("flat_type")?.value || "4 ROOM",
+                floor_area: parseFloat(document.getElementById("area")?.value) || 90,
+                storey: parseFloat(document.getElementById("storey")?.value) || 8,
+                lease_left: parseFloat(document.getElementById("lease")?.value) || 75,
+                sora: parseFloat(document.getElementById("sora")?.value) || 3.5,
+                gdp_growth: parseFloat(document.getElementById("gdp_growth")?.value) || 2.5,
+                cpi_val: parseFloat(document.getElementById("cpi_val")?.value) || 102.0,
+                hdb_idx: parseFloat(document.getElementById("hdb_idx")?.value) || 180.0,
+                cooling_measure: parseInt(document.getElementById("cooling_measure")?.value) || 1
             };
 
             fetch("https://danawiraprama-sg-hdb-prediction.hf.space/predict", {
@@ -714,7 +796,7 @@
                 body: JSON.stringify(payload)
             })
             .then(res => {
-                if (!res.ok) throw new Error("API Error");
+                if (!res.ok) throw new Error("API Failure");
                 return res.json();
             })
             .then(data => {
@@ -726,105 +808,122 @@
                 lastFormattedRange = `Estimated Range: ${formatSGD(lowEst)} — ${formatSGD(highEst)}`;
                 lastPayload = payload;
                 
-                document.getElementById('predictor-form-container').classList.add('hidden');
-                document.getElementById('result-container').classList.remove('hidden');
-                document.getElementById('displayPrice').innerText = lastFormattedPrice;
-                document.getElementById('displayRange').innerText = lastFormattedRange;
+                document.getElementById('predictor-form-container')?.classList.add('hidden');
+                document.getElementById('result-container')?.classList.remove('hidden');
+                
+                const dispPrice = document.getElementById('displayPrice');
+                const dispRange = document.getElementById('displayRange');
+                const cardName = document.getElementById('cardAgentName');
+                const cardAgency = document.getElementById('cardAgency');
+                const waBtn = document.getElementById('whatsappBtn');
 
-                // Update card info with active agent
-                document.getElementById('cardAgentName').innerText = profile.name;
-                document.getElementById('cardAgency').innerText = `${profile.agency} (CEA: ${profile.cea})`;
+                if (dispPrice) dispPrice.innerText = lastFormattedPrice;
+                if (dispRange) dispRange.innerText = lastFormattedRange;
+                if (cardName) cardName.innerText = profile.name;
+                if (cardAgency) cardAgency.innerText = `${profile.agency} (CEA: ${profile.cea})`;
 
-                // Build agent whatsapp text
-                const waText = encodeURIComponent(`Hi ${profile.name}! I reviewed the valuation report you generated for my ${payload.flat_type} at ${payload.town} (Valuation: ${lastFormattedPrice}). Let's discuss pricing strategy.`);
-                document.getElementById('whatsappBtn').href = `https://wa.me/${profile.phone}?text=${waText}`;
+                if (waBtn) {
+                    const waText = encodeURIComponent(`Hi ${profile.name}! I reviewed the valuation report you generated for my ${payload.flat_type} at ${payload.town} (Valuation: ${lastFormattedPrice}). Let's discuss pricing strategy.`);
+                    waBtn.href = `https://wa.me/${profile.phone}?text=${waText}`;
+                }
 
-                submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Generate Valuation & Dossier';
-                submitBtn.disabled = false;
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalBtnHTML;
+                    submitBtn.disabled = false;
+                }
             })
             .catch(err => {
                 alert("API Connection Error. Please verify the Hugging Face space status.");
-                submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Generate Valuation & Dossier';
-                submitBtn.disabled = false;
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalBtnHTML;
+                    submitBtn.disabled = false;
+                }
             });
         }
 
         function resetForm() {
             currentStep = 1;
             updateWizardUI();
-            document.getElementById('result-container').classList.add('hidden');
-            document.getElementById('predictor-form-container').classList.remove('hidden');
+            document.getElementById('result-container')?.classList.add('hidden');
+            document.getElementById('predictor-form-container')?.classList.remove('hidden');
         }
 
-        // --- 4. BRANDED PDF EXPORT ---
+        // --- 4. EXECUTIVE BRANDED PDF EXPORT ---
         function downloadBrandedPDF() {
             if (!lastPayload) {
                 alert("Please calculate a property valuation first.");
                 return;
             }
 
-            // Ambil profil agen aktif (dari localStorage atau default)
             const profile = loadAgentProfile();
 
-            // 1. Format Tanggal & No. Referensi Dokumen
+            // Date & Confidential Audit Reference ID
             const today = new Date();
             const dateFormatted = today.toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' });
             const randomRef = Math.floor(1000 + Math.random() * 9000);
             const refCode = `NX-${today.getFullYear()}-${randomRef}`;
 
-            // 2. Kalkulasi Sqft dan PSF
+            // Metric Calculations (Sqft & Implied PSF)
             const SQM_TO_SQFT = 10.7639;
             const areaSqm = parseFloat(lastPayload.floor_area) || 90;
             const areaSqft = Math.round(areaSqm * SQM_TO_SQFT);
             const rawPrice = parseInt(lastFormattedPrice.replace(/[^0-9]/g, ''), 10) || 0;
             const psfVal = areaSqft > 0 ? Math.round(rawPrice / areaSqft) : 0;
 
-            // 3. Masukkan Data Agen ke Template PDF
+            // Safe population helper for PDF template
+            const setPdfText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+
             const agentName = profile.name && profile.name.trim() !== "" ? profile.name : "Jonathan Tan";
             const agentAgency = profile.agency && profile.agency.trim() !== "" ? profile.agency : "PropNex Realty";
             const agentCea = profile.cea && profile.cea.trim() !== "" ? profile.cea : "R012345A";
             const agentPhone = profile.phone && profile.phone.trim() !== "" ? profile.phone : "6581234567";
 
-            document.getElementById('pdf_agent_name').innerText = agentName;
-            document.getElementById('pdf_agent_agency').innerText = agentAgency;
-            document.getElementById('pdf_agent_cea').innerText = agentCea;
-            document.getElementById('pdf_agent_phone').innerText = `+${agentPhone}`;
-            document.getElementById('pdf_agent_wa_link').href = `https://wa.me/${agentPhone}`;
+            // Populate Agent Credentials
+            setPdfText('pdf_agent_name', agentName);
+            setPdfText('pdf_agent_agency', agentAgency);
+            setPdfText('pdf_agent_cea', agentCea);
+            setPdfText('pdf_agent_phone', `+${agentPhone}`);
+            
+            const waLink = document.getElementById('pdf_agent_wa_link');
+            if (waLink) waLink.href = `https://wa.me/${agentPhone}`;
 
-            // 4. Masukkan Data Tanggal & Properti
-            document.getElementById('pdf_date').innerText = dateFormatted;
-            document.getElementById('pdf_ref_id').innerText = refCode;
-            document.getElementById('pdf_town').innerText = lastPayload.town;
-            document.getElementById('pdf_type').innerText = lastPayload.flat_type;
-            document.getElementById('pdf_area').innerText = areaSqm;
-            document.getElementById('pdf_area_sqft').innerText = areaSqft.toLocaleString();
-            document.getElementById('pdf_storey').innerText = lastPayload.storey;
-            document.getElementById('pdf_lease').innerText = lastPayload.lease_left;
+            // Populate Header & Property Details
+            setPdfText('pdf_date', dateFormatted);
+            setPdfText('pdf_ref_id', refCode);
+            setPdfText('pdf_town', lastPayload.town);
+            setPdfText('pdf_type', lastPayload.flat_type);
+            setPdfText('pdf_area', areaSqm);
+            setPdfText('pdf_area_sqft', areaSqft.toLocaleString());
+            setPdfText('pdf_storey', lastPayload.storey);
+            setPdfText('pdf_lease', lastPayload.lease_left);
 
-            // 5. Masukkan Data Makroekonomi
-            document.getElementById('pdf_sora').innerText = parseFloat(lastPayload.sora).toFixed(2);
-            document.getElementById('pdf_gdp').innerText = parseFloat(lastPayload.gdp_growth).toFixed(1);
-            document.getElementById('pdf_cpi').innerText = parseFloat(lastPayload.cpi_val).toFixed(1);
-            document.getElementById('pdf_hdbidx').innerText = parseFloat(lastPayload.hdb_idx).toFixed(1);
-            document.getElementById('pdf_cooling').innerText = lastPayload.cooling_measure === 1 ? "Active Policy" : "Inactive";
+            // Populate Macro Scenario Parameters
+            setPdfText('pdf_sora', parseFloat(lastPayload.sora).toFixed(2));
+            setPdfText('pdf_gdp', parseFloat(lastPayload.gdp_growth).toFixed(1));
+            setPdfText('pdf_cpi', parseFloat(lastPayload.cpi_val).toFixed(1));
+            setPdfText('pdf_hdbidx', parseFloat(lastPayload.hdb_idx).toFixed(1));
+            setPdfText('pdf_cooling', lastPayload.cooling_measure === 1 ? "Active Policy" : "Inactive");
 
-            // 6. Masukkan Nilai Valuasi & PSF
-            document.getElementById('pdf_price').innerText = lastFormattedPrice;
-            document.getElementById('pdf_range').innerText = lastFormattedRange;
-            document.getElementById('pdf_psf').innerText = `Implied PSF: S$ ${psfVal.toLocaleString()} psf`;
+            // Populate Valuations & PSF
+            setPdfText('pdf_price', lastFormattedPrice);
+            setPdfText('pdf_range', lastFormattedRange);
+            setPdfText('pdf_psf', `Implied PSF: S$ ${psfVal.toLocaleString()} psf`);
 
-            // 7. Dynamic Script Taktis
+            // Contextual Strategy Note
             const posEl = document.getElementById('pdf_positioning_text');
-            if (lastPayload.sora > 4.0) {
-                posEl.innerHTML = `<strong>High-Rate Environment (SORA ${lastPayload.sora}%):</strong> Buyer purchasing power is constrained by MSR limits. Price listings close to median (${lastFormattedPrice}) to ensure optimal transaction velocity.`;
-            } else if (lastPayload.hdb_idx > 195) {
-                posEl.innerHTML = `<strong>Bullish Price Index (${lastPayload.hdb_idx}):</strong> Market liquidity is aggressive. Sellers hold leverage to test upper boundary targets to capture Cash-Over-Valuation (COV).`;
-            } else {
-                posEl.innerHTML = `<strong>Balanced Market Conditions:</strong> Properties on level ${lastPayload.storey} with healthy remaining lease (${lastPayload.lease_left} yrs) command firm secondary liquidity. Anchor target negotiation around S$ ${psfVal.toLocaleString()} psf.`;
+            if (posEl) {
+                if (lastPayload.sora > 4.0) {
+                    posEl.innerHTML = `<strong>High-Rate Regime (SORA ${lastPayload.sora}%):</strong> Buyer purchasing power is throttled by MSR boundaries. Price listings near median (${lastFormattedPrice}) to preserve marketing momentum.`;
+                } else if (lastPayload.hdb_idx > 195) {
+                    posEl.innerHTML = `<strong>Bullish Index Run (${lastPayload.hdb_idx}):</strong> Secondary volume velocity is accelerating. Sellers hold leverage to anchor targets near the upper spread to capture Cash-Over-Valuation (COV).`;
+                } else {
+                    posEl.innerHTML = `<strong>Balanced Market Conditions:</strong> Properties on level ${lastPayload.storey} with healthy remaining lease (${lastPayload.lease_left} yrs) maintain firm secondary liquidity. Benchmark negotiation targets around S$ ${psfVal.toLocaleString()} psf.`;
+                }
             }
 
-            // 8. Eksekusi Render PDF
+            // Render PDF Document
             const element = document.getElementById('pdfTemplate');
+            if (!element) return;
             element.style.display = 'block';
 
             const cleanTown = lastPayload.town.replace(/\s+/g, '_');
@@ -842,6 +941,15 @@
                 element.style.display = 'none';
             });
         }
+
+        // --- 5. INITIALIZATION ON BOOT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLicenseState();
+            loadAgentProfile();
+        });
+
+        // Instant execution fallback
+        checkLicenseState();
     </script>
 </body>
 </html>
