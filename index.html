@@ -224,7 +224,7 @@
                 
                 // Jika belum login, lempar ke halaman login (sesuaikan namanya jika bukan login.html)
                 if (!rawLicense) {
-                    window.location.href = "login.html"; 
+                    window.location.href = "index.html"; 
                     return;
                 }
 
@@ -237,7 +237,7 @@
 
                 if (diffDays <= 0) {
                     localStorage.removeItem('nexus_pro_license');
-                    window.location.href = "login.html";
+                    window.location.href = "index.html";
                     return;
                 }
 
@@ -279,7 +279,7 @@
             localStorage.removeItem('nexus_pro_license');
             localStorage.removeItem('nexus_agent_profile');
             // Refresh halaman langsung biar instan, atau arahkan ke login
-            window.location.href = "login.html";
+            window.location.href = "index.html";
         }
     </script>
 </body>
