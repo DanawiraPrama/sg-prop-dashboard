@@ -216,91 +216,71 @@
 
     <!-- CORE LOGIC: SESSION & SECURITY GUARD -->
     <script>
-        const LOGIN_PAGE_URL = "index.html";
-
-        // --- 1. AUTHENTICATION & PROFILE GUARD (ANTI-CRASH) ---
-        function checkLicenseState() {
-            const badge = document.getElementById('licenseBadge');
-            const statusText = document.getElementById('licenseStatusText');
-            const rawLicense = localStorage.getItem('nexus_pro_license');
-
-            // Gate protection: If no active license found, kick back to index.html
-            if (!rawLicense) {
-                window.location.href = LOGIN_PAGE_URL;
-                return false;
-            }
-
+        // --- SCRIPT SAPU JAGAT (ANTI-CRASH & AUTO-FIND) ---
+        document.addEventListener("DOMContentLoaded", function() {
             try {
+                // 1. Cek Data Lisensi di Browser
+                const rawLicense = localStorage.getItem('nexus_pro_license');
+                
+                // Jika belum login, lempar ke halaman login (sesuaikan namanya jika bukan login.html)
+                if (!rawLicense) {
+                    window.location.href = "login.html"; 
+                    return;
+                }
+
+                // 2. Hitung Sisa Hari
                 const license = JSON.parse(rawLicense);
-                const expiry = new Date(license.expiryDate);
+                const expiryDate = new Date(license.expiryDate);
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
+                const diffDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
 
-                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-
-                if (isNaN(diffDays) || diffDays <= 0) {
-                    alert("Your subscription has expired. Please sign in again with an active token.");
-                    logoutAgent();
-                    return false;
-                } else {
-                    if (badge) badge.className = "hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
-                    if (statusText) statusText.innerText = `Active: ${diffDays}d Left`;
-                    return true;
+                if (diffDays <= 0) {
+                    localStorage.removeItem('nexus_pro_license');
+                    window.location.href = "login.html";
+                    return;
                 }
-            } catch (e) {
-                logoutAgent();
-                return false;
-            }
-        }
 
-        // --- 2. LOAD PROFILE (NULL-SAFE) ---
-        function loadAgentProfile() {
-            const savedProfile = localStorage.getItem('nexus_agent_profile');
-            let profile = {
-                name: "Valued Agent",
-                cea: "R000000A",
-                agency: "Real Estate Agency"
-            };
+                // 3. PAKSA GANTI TEKS "Checking..." (Tanpa peduli ID)
+                const allSpans = document.querySelectorAll("span");
+                allSpans.forEach(span => {
+                    if (span.innerText.includes("Checking")) {
+                        span.innerText = `Pro: ${diffDays}d Left`;
+                        
+                        // Ubah warna background induknya jadi hijau
+                        if (span.parentElement) {
+                            span.parentElement.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
+                        }
+                    }
+                });
 
-            if (savedProfile) {
-                try { 
-                    profile = { ...profile, ...JSON.parse(savedProfile) }; 
-                } catch (e) {}
-            }
+                // 4. PAKSA GANTI NAMA AGENT (Otomatis ganti kata "Agent" atau "Professional")
+                const profile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
+                const agentName = profile.name || license.agentName || "Valued Agent";
+                
+                // Cari kata "Professional" di tulisan "Welcome back, Professional." dan ganti jadi nama agen
+                const allHeadings = document.querySelectorAll("span, h1, h2, h3, h4, h5, p");
+                allHeadings.forEach(el => {
+                    if (el.innerText === "Professional") {
+                        el.innerText = agentName;
+                    }
+                    if (el.id === "navAgentName") {
+                        el.innerText = agentName.split(' ')[0]; // Ambil nama depan saja untuk navbar
+                    }
+                });
 
-            // Safe DOM injectors
-            const safeSetText = (id, val) => { 
-                const el = document.getElementById(id); 
-                if (el) el.innerText = val; 
-            };
-
-            // Inject into Navigation and Greeting Text
-            safeSetText('navAgentName', profile.name);
-            safeSetText('navAgentAgency', `${profile.agency} | CEA: ${profile.cea}`);
-            
-            const greeting = document.getElementById('agentGreeting');
-            if (greeting) {
-                const firstName = profile.name.split(' ')[0];
-                greeting.innerText = `Hi ${firstName}, real-time market insights tailored for your client presentations.`;
-            }
-        }
-
-        // --- 3. LOGOUT SYSTEM ---
-        function logoutAgent() {
-            if (confirm("Are you sure you want to log out and switch profiles?")) {
-                localStorage.removeItem('nexus_pro_license');
-                localStorage.removeItem('nexus_agent_profile');
-                window.location.href = LOGIN_PAGE_URL;
-            }
-        }
-
-        // Initialize Guard First, Then Load Data
-        document.addEventListener('DOMContentLoaded', () => {
-            if(checkLicenseState()) {
-                loadAgentProfile();
-                loadHDBDatasets(); // Fungsi untuk meload CSV/Data grafik
+            } catch (error) {
+                console.error("Auto-Fix Script Error:", error);
             }
         });
+
+        // 5. Fungsi Logout
+        function logoutAgent() {
+            localStorage.removeItem('nexus_pro_license');
+            localStorage.removeItem('nexus_agent_profile');
+            // Refresh halaman langsung biar instan, atau arahkan ke login
+            window.location.href = "login.html";
+        }
     </script>
 </body>
 </html>
