@@ -215,21 +215,30 @@
     </main>
 
     <!-- CORE LOGIC: SESSION & SECURITY GUARD -->
+    <!-- CORE LOGIC: SESSION & SECURITY GUARD -->
     <script>
-        // --- SCRIPT SAPU JAGAT (ANTI-CRASH & AUTO-FIND) ---
         document.addEventListener("DOMContentLoaded", function() {
             try {
-                // 1. Cek Data Lisensi di Browser
+                // 1. Tarik data dari memori browser
                 const rawLicense = localStorage.getItem('nexus_pro_license');
                 
-                // Jika belum login, lempar ke halaman login (sesuaikan namanya jika bukan login.html)
+                // JIKA KOSONG / BELUM LOGIN, TENDANG KE login.html
                 if (!rawLicense) {
-                    window.location.href = "index.html"; 
-                    return;
+                    window.location.href = "login.html"; 
+                    return; // Stop proses di sini biar nggak nyangkut
                 }
 
-                // 2. Hitung Sisa Hari
+                // 2. Ekstrak data lisensi dan profil
                 const license = JSON.parse(rawLicense);
+                const rawProfile = localStorage.getItem('nexus_agent_profile');
+                let agentName = license.agentName || "Professional";
+                
+                if (rawProfile) {
+                    const profile = JSON.parse(rawProfile);
+                    agentName = profile.name || agentName;
+                }
+
+                // 3. Hitung hari
                 const expiryDate = new Date(license.expiryDate);
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -237,40 +246,30 @@
 
                 if (diffDays <= 0) {
                     localStorage.removeItem('nexus_pro_license');
-                    window.location.href = "index.html";
+                    window.location.href = "login.html";
                     return;
                 }
 
-                // 3. PAKSA GANTI TEKS "Checking..." (Tanpa peduli ID)
-                const allSpans = document.querySelectorAll("span");
-                allSpans.forEach(span => {
-                    if (span.innerText.includes("Checking")) {
-                        span.innerText = `Pro: ${diffDays}d Left`;
-                        
-                        // Ubah warna background induknya jadi hijau
-                        if (span.parentElement) {
-                            span.parentElement.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
-                        }
-                    }
-                });
+                // 4. TEMBAK LANGSUNG KE ID YANG ADA DI HTML LOE
+                const statusText = document.getElementById("licenseStatusText");
+                const badge = document.getElementById("licenseBadge");
+                const welcomeName = document.getElementById("welcomeAgentName");
+                const navName = document.getElementById("navAgentName");
 
-                // 4. PAKSA GANTI NAMA AGENT (Otomatis ganti kata "Agent" atau "Professional")
-                const profile = JSON.parse(localStorage.getItem('nexus_agent_profile') || '{}');
-                const agentName = profile.name || license.agentName || "Valued Agent";
+                if (statusText) statusText.innerText = `Active: ${diffDays}d Left`;
                 
-                // Cari kata "Professional" di tulisan "Welcome back, Professional." dan ganti jadi nama agen
-                const allHeadings = document.querySelectorAll("span, h1, h2, h3, h4, h5, p");
-                allHeadings.forEach(el => {
-                    if (el.innerText === "Professional") {
-                        el.innerText = agentName;
-                    }
-                    if (el.id === "navAgentName") {
-                        el.innerText = agentName.split(' ')[0]; // Ambil nama depan saja untuk navbar
-                    }
-                });
+                if (badge) {
+                    badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
+                }
+
+                if (welcomeName) welcomeName.innerText = agentName;
+                if (navName) navName.innerText = agentName.split(" ")[0]; // Ambil nama depan aja buat di pojok kanan atas
 
             } catch (error) {
-                console.error("Auto-Fix Script Error:", error);
+                console.error("Crash di Script Dashboard:", error);
+                // Kalau data corrupt/error, bersihkan lalu tendang ke login
+                localStorage.removeItem('nexus_pro_license');
+                window.location.href = "login.html";
             }
         });
 
@@ -278,8 +277,7 @@
         function logoutAgent() {
             localStorage.removeItem('nexus_pro_license');
             localStorage.removeItem('nexus_agent_profile');
-            // Refresh halaman langsung biar instan, atau arahkan ke login
-            window.location.href = "index.html";
+            window.location.href = "login.html";
         }
     </script>
 </body>
