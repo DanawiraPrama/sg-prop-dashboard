@@ -216,15 +216,15 @@
 
     <!-- CORE LOGIC: SESSION & SECURITY GUARD -->
     <script>
-        const LOGIN_PAGE_URL = "index.html"; // Redirects to the login gateway
+        const LOGIN_PAGE_URL = "index.html";
 
-        // 1. License & Session Verification
+        // --- 1. AUTHENTICATION & PROFILE GUARD (ANTI-CRASH) ---
         function checkLicenseState() {
             const badge = document.getElementById('licenseBadge');
             const statusText = document.getElementById('licenseStatusText');
             const rawLicense = localStorage.getItem('nexus_pro_license');
 
-            // Gate protection: If no active license found, kick back to index.html (Login Gateway)
+            // Gate protection: If no active license found, kick back to index.html
             if (!rawLicense) {
                 window.location.href = LOGIN_PAGE_URL;
                 return false;
@@ -239,13 +239,11 @@
                 const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
 
                 if (isNaN(diffDays) || diffDays <= 0) {
-                    if (badge) badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200";
-                    if (statusText) statusText.innerText = "License Expired";
                     alert("Your subscription has expired. Please sign in again with an active token.");
                     logoutAgent();
                     return false;
                 } else {
-                    if (badge) badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
+                    if (badge) badge.className = "hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
                     if (statusText) statusText.innerText = `Active: ${diffDays}d Left`;
                     return true;
                 }
@@ -255,7 +253,7 @@
             }
         }
 
-        // 2. Load Agent Profile into the Dashboard UI
+        // --- 2. LOAD PROFILE (NULL-SAFE) ---
         function loadAgentProfile() {
             const savedProfile = localStorage.getItem('nexus_agent_profile');
             let profile = {
@@ -276,23 +274,31 @@
                 if (el) el.innerText = val; 
             };
 
-            // Inject into Navigation and Welcome Text
-            safeSetText('navAgentName', profile.name.split(" ")[0]); // Shows first name in navbar
-            safeSetText('welcomeAgentName', profile.name);
-            safeSetText('welcomeAgencyText', `${profile.agency} | CEA: ${profile.cea}`);
+            // Inject into Navigation and Greeting Text
+            safeSetText('navAgentName', profile.name);
+            safeSetText('navAgentAgency', `${profile.agency} | CEA: ${profile.cea}`);
+            
+            const greeting = document.getElementById('agentGreeting');
+            if (greeting) {
+                const firstName = profile.name.split(' ')[0];
+                greeting.innerText = `Hi ${firstName}, real-time market insights tailored for your client presentations.`;
+            }
         }
 
-        // 3. Logout System
+        // --- 3. LOGOUT SYSTEM ---
         function logoutAgent() {
-            localStorage.removeItem('nexus_pro_license');
-            localStorage.removeItem('nexus_agent_profile');
-            window.location.href = LOGIN_PAGE_URL;
+            if (confirm("Are you sure you want to log out and switch profiles?")) {
+                localStorage.removeItem('nexus_pro_license');
+                localStorage.removeItem('nexus_agent_profile');
+                window.location.href = LOGIN_PAGE_URL;
+            }
         }
 
-        // Initialize Guard and Profile on page load
+        // Initialize Guard First, Then Load Data
         document.addEventListener('DOMContentLoaded', () => {
             if(checkLicenseState()) {
                 loadAgentProfile();
+                loadHDBDatasets(); // Fungsi untuk meload CSV/Data grafik
             }
         });
     </script>
