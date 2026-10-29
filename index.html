@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus Pro | Market Intelligence Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f8fafc;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-blue-600 selection:text-white pb-12">
+
+    <!-- Top SaaS Navigation -->
+    <nav class="fixed w-full z-40 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="#" class="text-xl md:text-2xl font-extrabold text-blue-700 tracking-tight flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-line text-blue-600"></i> Nexus<span class="text-slate-900">Pro</span>
+                </a>
+                <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200">
+                    Agent Dashboard
+                </span>
+            </div>
+
+            <!-- License Counter, Branding, Valuation Link & Logout Trigger -->
+            <div class="flex items-center gap-1.5 sm:gap-2.5">
+                <!-- Status License Days -->
+                <div id="licenseBadge" class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="licenseStatusText">Checking...</span>
+                </div>
+
+                <!-- Agent Profile Visual Identifier -->
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200">
+                    <i class="fa-solid fa-user-tie text-blue-600 text-sm"></i>
+                    <span class="text-xs font-bold text-slate-700" id="navAgentName">Agent</span>
+                </div>
+
+                <!-- Valuation Engine Link -->
+                <a href="hdb-pro-valuation.html" class="hidden md:inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1.5 rounded-full text-xs transition-colors shadow-sm">
+                    <i class="fa-solid fa-calculator mr-1.5"></i> Valuation Engine
+                </a>
+
+                <!-- Exit / Logout Trigger -->
+                <button onclick="logoutAgent()" class="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-full text-xs transition-colors border border-red-200" title="Sign out and switch profile">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <main class="pt-24 max-w-7xl mx-auto px-4 md:px-8">
+        
+        <!-- Welcome Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Welcome back, <span id="welcomeAgentName" class="text-blue-600">Professional</span>.
+                </h1>
+                <p class="text-sm text-slate-500 mt-1" id="welcomeAgencyText">Here is your market intelligence overview for today.</p>
+            </div>
+            <div>
+                <!-- Mobile Quick Action (Visible only on small screens) -->
+                <a href="hdb-pro-valuation.html" class="md:hidden w-full inline-flex justify-center items-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition-colors shadow-md">
+                    <i class="fa-solid fa-calculator mr-2"></i> Run Property Valuation
+                </a>
+            </div>
+        </div>
+
+        <!-- Analytics Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <div class="stat-card rounded-2xl p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Generated Dossiers</p>
+                    <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-file-pdf"></i></span>
+                </div>
+                <h3 class="text-3xl font-extrabold text-slate-800">24</h3>
+                <p class="text-xs font-semibold text-emerald-500 mt-2"><i class="fa-solid fa-arrow-trend-up"></i> +3 this week</p>
+            </div>
+
+            <div class="stat-card rounded-2xl p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Client Leads</p>
+                    <span class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-users"></i></span>
+                </div>
+                <h3 class="text-3xl font-extrabold text-slate-800">12</h3>
+                <p class="text-xs font-semibold text-emerald-500 mt-2"><i class="fa-solid fa-check"></i> 4 Follow-ups scheduled</p>
+            </div>
+
+            <div class="stat-card rounded-2xl p-5 border-l-4 border-l-blue-500">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wider">Quick Action</p>
+                    <span class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-bolt"></i></span>
+                </div>
+                <h3 class="text-lg font-extrabold text-slate-800 mb-2">New Listing Pitch?</h3>
+                <a href="hdb-pro-valuation.html" class="inline-flex w-full justify-center items-center bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-lg text-xs transition-colors">
+                    Create PDF Dossier <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Detailed Workspace Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Market Trends (Takes up 2 columns) -->
+            <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
+                    <h2 class="text-base font-extrabold text-slate-800"><i class="fa-solid fa-chart-area text-blue-500 mr-2"></i> Macro Market Pulse</h2>
+                    <span class="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded">Singapore Registry</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Mock Data Item 1 -->
+                    <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold"><i class="fa-solid fa-percent"></i></div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">SORA Interest Rates</h4>
+                                <p class="text-xs text-slate-500">Mortgage borrowing costs remain elevated.</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-extrabold text-slate-800">3.52%</p>
+                            <p class="text-[10px] font-bold text-red-500 uppercase">Constraining MSR</p>
+                        </div>
+                    </div>
+
+                    <!-- Mock Data Item 2 -->
+                    <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold"><i class="fa-solid fa-building"></i></div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">HDB Price Index</h4>
+                                <p class="text-xs text-slate-500">Secondary market volume stabilizing.</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-extrabold text-slate-800">182.4</p>
+                            <p class="text-[10px] font-bold text-emerald-500 uppercase">+1.2% Q-o-Q</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Insight Note -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl mt-4">
+                        <p class="text-xs text-blue-800 font-semibold leading-relaxed">
+                            <strong>Tactical Advice:</strong> With interest rates stabilizing above 3.5%, buyers are heavily restricted by the Mortgage Servicing Ratio (MSR). Advise sellers to price realistically near the AI median valuation to ensure faster transaction velocity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity / Logs (1 column) -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <h2 class="text-base font-extrabold text-slate-800 mb-5 border-b border-slate-100 pb-3"><i class="fa-solid fa-clock-rotate-left text-blue-500 mr-2"></i> Recent Valuations</h2>
+                
+                <div class="space-y-4">
+                    <!-- History Item -->
+                    <div class="border-l-2 border-slate-200 pl-3 py-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Today, 10:42 AM</p>
+                        <p class="text-sm font-bold text-slate-700">Ang Mo Kio • 4 Room</p>
+                        <p class="text-xs font-semibold text-blue-600">S$ 540,000</p>
+                    </div>
+                    <!-- History Item -->
+                    <div class="border-l-2 border-slate-200 pl-3 py-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Yesterday, 14:15 PM</p>
+                        <p class="text-sm font-bold text-slate-700">Tampines • 5 Room</p>
+                        <p class="text-xs font-semibold text-blue-600">S$ 685,000</p>
+                    </div>
+                    <!-- History Item -->
+                    <div class="border-l-2 border-slate-200 pl-3 py-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Oct 24, 09:30 AM</p>
+                        <p class="text-sm font-bold text-slate-700">Bukit Merah • Executive</p>
+                        <p class="text-xs font-semibold text-blue-600">S$ 890,000</p>
+                    </div>
+                </div>
+                
+                <button class="w-full mt-6 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-2.5 rounded-lg text-xs transition-colors border border-slate-200">
+                    View Full History
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- CORE LOGIC: SESSION & SECURITY GUARD -->
+    <script>
+        const LOGIN_PAGE_URL = "index.html"; // Redirects to the login gateway
+
+        // 1. License & Session Verification
+        function checkLicenseState() {
+            const badge = document.getElementById('licenseBadge');
+            const statusText = document.getElementById('licenseStatusText');
+            const rawLicense = localStorage.getItem('nexus_pro_license');
+
+            // Gate protection: If no active license found, kick back to index.html (Login Gateway)
+            if (!rawLicense) {
+                window.location.href = LOGIN_PAGE_URL;
+                return false;
+            }
+
+            try {
+                const license = JSON.parse(rawLicense);
+                const expiry = new Date(license.expiryDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+                if (isNaN(diffDays) || diffDays <= 0) {
+                    if (badge) badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200";
+                    if (statusText) statusText.innerText = "License Expired";
+                    alert("Your subscription has expired. Please sign in again with an active token.");
+                    logoutAgent();
+                    return false;
+                } else {
+                    if (badge) badge.className = "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm";
+                    if (statusText) statusText.innerText = `Active: ${diffDays}d Left`;
+                    return true;
+                }
+            } catch (e) {
+                logoutAgent();
+                return false;
+            }
+        }
+
+        // 2. Load Agent Profile into the Dashboard UI
+        function loadAgentProfile() {
+            const savedProfile = localStorage.getItem('nexus_agent_profile');
+            let profile = {
+                name: "Valued Agent",
+                cea: "R000000A",
+                agency: "Real Estate Agency"
+            };
+
+            if (savedProfile) {
+                try { 
+                    profile = { ...profile, ...JSON.parse(savedProfile) }; 
+                } catch (e) {}
+            }
+
+            // Safe DOM injectors
+            const safeSetText = (id, val) => { 
+                const el = document.getElementById(id); 
+                if (el) el.innerText = val; 
+            };
+
+            // Inject into Navigation and Welcome Text
+            safeSetText('navAgentName', profile.name.split(" ")[0]); // Shows first name in navbar
+            safeSetText('welcomeAgentName', profile.name);
+            safeSetText('welcomeAgencyText', `${profile.agency} | CEA: ${profile.cea}`);
+        }
+
+        // 3. Logout System
+        function logoutAgent() {
+            localStorage.removeItem('nexus_pro_license');
+            localStorage.removeItem('nexus_agent_profile');
+            window.location.href = LOGIN_PAGE_URL;
+        }
+
+        // Initialize Guard and Profile on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if(checkLicenseState()) {
+                loadAgentProfile();
+            }
+        });
+    </script>
+</body>
+</html>
