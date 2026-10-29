@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HDB Market Intelligence & Agent Analytics | Nexus</title>
+    <title>Market Intelligence Dashboard | Nexus Pro</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -58,7 +58,7 @@
                 <h1 class="text-lg font-extrabold tracking-tight flex items-center gap-2">
                     <i class="fa-solid fa-chart-line text-blue-400"></i> Nexus<span class="text-blue-400">Pro</span>
                 </h1>
-                <p class="text-[11px] text-slate-400 font-medium">HDB Agent Market Intelligence</p>
+                <p class="text-[11px] text-slate-400 font-medium">B2B Market Intelligence</p>
             </div>
             <!-- Mobile Close Button -->
             <button onclick="toggleMobileFilter()" class="md:hidden text-slate-400 hover:text-white p-2">
@@ -69,14 +69,14 @@
         <div class="p-5 flex-1 overflow-y-auto space-y-6">
             
             <!-- Quick Link to AI Predictor -->
-            <div class="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50/60 rounded-xl border border-blue-100">
+            <div class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50/60 rounded-xl border border-blue-100">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold tracking-wider uppercase text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">Valuation Tool</span>
+                    <span class="text-[10px] font-bold tracking-wider uppercase text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-full">Executive Tools</span>
                     <i class="fa-solid fa-robot text-blue-600"></i>
                 </div>
                 <p class="text-xs text-slate-600 font-medium mb-3">Jump into the 11-feature macro XGBoost valuation engine.</p>
                 <a href="hdb-pro-valuation.html" class="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all shadow-md shadow-blue-500/20">
-                    <span>Open AI Predictor</span>
+                    <span>Open Valuation Engine</span>
                     <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                 </a>
             </div>
@@ -102,7 +102,7 @@
             <div>
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                        <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i> Towns
+                        <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i> Towns / Estates
                     </label>
                     <div class="space-x-1.5 text-[11px]">
                         <button type="button" id="selectAllTowns" class="text-blue-600 hover:text-blue-800 font-bold">All</button>
@@ -132,7 +132,7 @@
             <div class="pt-4 border-t border-slate-100">
                 <input type="file" id="csvFileInput" accept=".csv" class="hidden">
                 <button onclick="document.getElementById('csvFileInput').click()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-file-csv text-emerald-600"></i> Upload Custom CSV
+                    <i class="fa-solid fa-file-csv text-emerald-600"></i> Upload Custom CSV Dataset
                 </button>
                 <p id="uploadStatus" class="text-[10px] mt-1.5 text-slate-500 italic text-center">Loading master data...</p>
             </div>
@@ -141,7 +141,7 @@
         <!-- Mobile Apply Button Footer -->
         <div class="p-4 border-t border-slate-200 md:hidden bg-slate-50">
             <button onclick="toggleMobileFilter()" class="w-full bg-slate-900 text-white font-bold text-xs py-3 rounded-xl shadow-lg">
-                View Results (<span id="mobileCountBadge">0</span> Records)
+                View Insights (<span id="mobileCountBadge">0</span> Records)
             </button>
         </div>
     </aside>
@@ -149,8 +149,8 @@
     <!-- MAIN CONTENT AREA -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
         
-        <!-- Top Sticky Header -->
-        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 md:px-8 md:py-4 flex justify-between items-center z-20">
+        <!-- Top Sticky Header with Agent Profile -->
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 md:px-6 md:py-4 flex justify-between items-center z-20">
             <div class="flex items-center gap-3">
                 <!-- Hamburger Trigger for Mobile -->
                 <button onclick="toggleMobileFilter()" class="md:hidden bg-blue-50 text-blue-700 hover:bg-blue-100 p-2.5 rounded-xl border border-blue-200 transition-colors">
@@ -164,39 +164,59 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <a href="hdb-pro-valuation.html" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span>AI Valuation</span>
-                </a>
+            <!-- Agent Identity & Action Triggers -->
+            <div class="flex items-center gap-3 md:gap-4">
+                
+                <!-- License Validity Badge -->
+                <div id="licenseBadge" class="hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="licenseStatusText">Checking...</span>
+                </div>
+
+                <!-- Agent Name & Agency Display -->
+                <div class="hidden lg:block text-right border-l border-slate-200 pl-4">
+                    <p class="text-sm font-extrabold text-slate-900 leading-tight" id="navAgentName">Agent Name</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5" id="navAgentAgency">Agency</p>
+                </div>
+                
+                <!-- Quick App Nav & Logout -->
+                <div class="flex items-center gap-1.5">
+                    <a href="hdb-pro-valuation.html" title="Go to Valuation Engine" class="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3.5 sm:py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm transition-colors shadow-md">
+                        <i class="fa-solid fa-bolt text-amber-300"></i>
+                        <span class="hidden sm:inline-block ml-2 text-xs">Valuation</span>
+                    </a>
+                    <button onclick="logoutAgent()" title="Sign Out & Switch Account" class="flex items-center justify-center w-9 h-9 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold rounded-xl transition-colors">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
         <!-- Scrollable Dashboard Body -->
-        <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
             <div class="max-w-7xl mx-auto space-y-6">
 
                 <!-- 1. AGENT PITCHING CHEAT SHEET & MARKET INTELLIGENCE BOX -->
                 <div class="glass-card p-5 md:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white border-0 shadow-xl">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-700/60 mb-4">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300 text-lg">
                                 <i class="fa-solid fa-lightbulb"></i>
                             </span>
                             <div>
                                 <h3 class="text-sm md:text-base font-bold text-white tracking-wide">Agent Intelligence & Pitching Strategy</h3>
-                                <p class="text-xs text-slate-400">Real-time market insights tailored for your client presentations</p>
+                                <p class="text-xs text-slate-400 mt-0.5" id="agentGreeting">Real-time market insights tailored for your client presentations.</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span id="marketSentimentBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">
+                            <span id="marketSentimentBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 shadow-inner">
                                 <i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> Market: Balanced
                             </span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
                             <p class="text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
                                 <i class="fa-solid fa-tag text-teal-400 mr-1"></i> Target Pricing Spread (P25 - P75)
                             </p>
@@ -204,7 +224,7 @@
                             <p class="text-[11px] text-slate-300 mt-1" id="insight-spread-desc">Liquidity floor to premium ceiling</p>
                         </div>
 
-                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
                             <p class="text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
                                 <i class="fa-solid fa-chart-line text-blue-400 mr-1"></i> PSF Benchmark (Median)
                             </p>
@@ -212,7 +232,7 @@
                             <p class="text-[11px] text-slate-300 mt-1" id="insight-psf-desc">Key talking point for private downgraders</p>
                         </div>
 
-                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+                        <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
                             <p class="text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
                                 <i class="fa-solid fa-bullhorn text-amber-400 mr-1"></i> Recommended Pitch Angle
                             </p>
@@ -225,7 +245,7 @@
 
                 <!-- 2. HIGH-LEVEL EXECUTIVE KPIS -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                    <div class="glass-card p-4 md:p-5 border-l-4 border-blue-500">
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-blue-500 transition-transform hover:-translate-y-1">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Volume</p>
@@ -238,7 +258,7 @@
                         <p class="text-[10px] text-slate-400 mt-2 font-medium">Closed transactions in range</p>
                     </div>
 
-                    <div class="glass-card p-4 md:p-5 border-l-4 border-emerald-500">
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-emerald-500 transition-transform hover:-translate-y-1">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Median Price</p>
@@ -251,7 +271,7 @@
                         <p class="text-[10px] text-slate-400 mt-2 font-medium">Overall resale benchmark</p>
                     </div>
 
-                    <div class="glass-card p-4 md:p-5 border-l-4 border-purple-500">
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-purple-500 transition-transform hover:-translate-y-1">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Median PSF</p>
@@ -264,7 +284,7 @@
                         <p class="text-[10px] text-slate-400 mt-2 font-medium">Per square foot standard</p>
                     </div>
 
-                    <div class="glass-card p-4 md:p-5 border-l-4 border-amber-500">
+                    <div class="glass-card p-4 md:p-5 border-l-4 border-amber-500 transition-transform hover:-translate-y-1">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Median PSM</p>
@@ -339,14 +359,72 @@
         </div>
     </main>
 
+    <!-- CORE LOGIC & DASHBOARD SCRIPT -->
     <script>
+        const LOGIN_PAGE_URL = "index.html";
+
         let allData = [];
         let filteredData = [];
         let activeTowns = new Set();
         let activeFlatTypes = new Set();
-
-        // 1 sqm = 10.7639 sqft
         const SQM_TO_SQFT = 10.7639;
+
+        // --- AUTHENTICATION & PROFILE GUARD ---
+        function checkAuthAndLoadProfile() {
+            const rawLicense = localStorage.getItem('nexus_pro_license');
+            if (!rawLicense) {
+                window.location.href = LOGIN_PAGE_URL;
+                return;
+            }
+
+            try {
+                const license = JSON.parse(rawLicense);
+                const expiry = new Date(license.expiryDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+                if (isNaN(diffDays) || diffDays <= 0) {
+                    alert("Your subscription has expired. Please sign in again with an active token.");
+                    logoutAgent();
+                    return;
+                }
+
+                const statusText = document.getElementById('licenseStatusText');
+                if (statusText) statusText.innerText = `Pro: ${diffDays}d Left`;
+
+                // Load Agent Profile
+                const savedProfile = localStorage.getItem('nexus_agent_profile');
+                let profile = { name: license.agentName || "Agent", agency: license.agency || "Real Estate Agency", cea: "" };
+                
+                if (savedProfile) {
+                    try { profile = { ...profile, ...JSON.parse(savedProfile) }; } catch(e){}
+                }
+
+                const navName = document.getElementById('navAgentName');
+                const navAgency = document.getElementById('navAgentAgency');
+                if (navName) navName.innerText = profile.name;
+                if (navAgency) navAgency.innerText = profile.agency;
+                
+                // Dynamic greeting integration
+                const greeting = document.getElementById('agentGreeting');
+                if (greeting) {
+                    const firstName = profile.name.split(' ')[0];
+                    greeting.innerText = `Hi ${firstName}, real-time market insights tailored for your client presentations.`;
+                }
+
+            } catch (e) {
+                logoutAgent();
+            }
+        }
+
+        function logoutAgent() {
+            if (confirm("Are you sure you want to log out and switch profiles?")) {
+                localStorage.removeItem('nexus_pro_license');
+                localStorage.removeItem('nexus_agent_profile');
+                window.location.href = LOGIN_PAGE_URL;
+            }
+        }
 
         // --- MOBILE DRAWER TOGGLE ---
         function toggleMobileFilter() {
@@ -515,7 +593,7 @@
             const months = [...new Set(filteredData.map(d => d.month))].sort();
             let pitchScript = "";
             let sentimentBadge = "⚖️ Balanced Market";
-            let badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300";
+            let badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 shadow-inner";
 
             if (months.length >= 2) {
                 const firstMonthData = filteredData.filter(d => d.month === months[0]);
@@ -526,24 +604,29 @@
 
                 if (growthPct > 2.0) {
                     sentimentBadge = `🔥 Strong Seller's Market (+${growthPct}%)`;
-                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300";
+                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 shadow-inner";
                     pitchScript = `<strong>For Sellers:</strong> Strong upward momentum detected (+${growthPct}%). Push listing prices towards the 75th percentile (${formatSGD(p75Price)}) to capture buyers willing to pay cash over valuation (COV).`;
                 } else if (growthPct < -1.5) {
                     sentimentBadge = `❄️ Buyer Advantage (${growthPct}%)`;
-                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300";
+                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 shadow-inner";
                     pitchScript = `<strong>For Buyers:</strong> Price consolidation underway (${growthPct}%). Advise buyers to negotiate firmly around the 25th percentile (${formatSGD(p25Price)}) for genuine discount plays.`;
                 } else {
                     sentimentBadge = `⚖️ Stable / Resilient Market (${growthPct > 0 ? '+' : ''}${growthPct}%)`;
-                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300";
+                    badgeClass = "text-xs font-extrabold px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 shadow-inner";
                     pitchScript = `<strong>Strategy:</strong> Fair market pricing holds around ${formatSGD(medianPrice)} (S$ ${Math.round(medianPSF)} psf). Units on mid-to-high floors with remaining lease > 70 years can comfortably anchor listings at the median.`;
                 }
             } else {
                 pitchScript = `<strong>Market Pulse:</strong> Baseline median value sits at ${formatSGD(medianPrice)} across ${filteredData.length.toLocaleString()} active comparables.`;
             }
 
-            document.getElementById('marketSentimentBadge').innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> ${sentimentBadge}`;
-            document.getElementById('marketSentimentBadge').className = badgeClass;
-            document.getElementById('insight-pitch-angle').innerHTML = pitchScript;
+            const badgeElement = document.getElementById('marketSentimentBadge');
+            if (badgeElement) {
+                badgeElement.innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1 animate-pulse"></i> ${sentimentBadge}`;
+                badgeElement.className = badgeClass;
+            }
+            
+            const pitchElement = document.getElementById('insight-pitch-angle');
+            if (pitchElement) pitchElement.innerHTML = pitchScript;
 
             renderCharts();
             renderTable();
@@ -689,7 +772,11 @@
             reader.readAsText(file);
         });
 
-        window.onload = loadHDBDatasets;
+        // Initialize Guard First, Then Load Data
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthAndLoadProfile();
+            loadHDBDatasets();
+        });
     </script>
 </body>
 </html>
